@@ -52,6 +52,11 @@ namespace Astralis.Extended
                 {
                     a.Update();
                 });
+                if (_effects.Any(a => a.IsFinished))
+                {
+                    foreach (var effect in _effects.Where(a => a.IsFinished).ToArray())
+                        effect.OnFinished?.Invoke();
+                }
                 _effects.RemoveAll(a => a.IsFinished);
             }
         }

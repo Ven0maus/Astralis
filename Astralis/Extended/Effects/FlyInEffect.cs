@@ -18,6 +18,7 @@ namespace Astralis.Extended.Effects
         private bool _hasStarted = false;
 
         public bool IsFinished { get; private set; } = false;
+        public Action OnFinished { get; set; }
 
         /// <summary>
         /// Constructor for FlyInEffect
@@ -88,7 +89,7 @@ namespace Astralis.Extended.Effects
             double normalizedProgress = Math.Clamp(elapsedTime.TotalMilliseconds / _duration.TotalMilliseconds, 0.0, 1.0);
 
             // Interpolate between the initial and destination positions.
-            Point currentPosition = new Point(
+            Point newPosition = new Point(
                 (int)(_objectPosition.X + (_destinationPoint.X - _objectPosition.X) * normalizedProgress),
                 (int)(_objectPosition.Y + (_destinationPoint.Y - _objectPosition.Y) * normalizedProgress)
             );
@@ -97,11 +98,11 @@ namespace Astralis.Extended.Effects
             if (normalizedProgress >= 1.0)
             {
                 IsFinished = true;
-                currentPosition = _destinationPoint;
+                newPosition = _destinationPoint;
             }
 
             // Update the object's position.
-            _callBack(currentPosition);
+            _callBack(newPosition);
         }
 
         public enum Direction

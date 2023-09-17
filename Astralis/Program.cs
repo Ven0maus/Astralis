@@ -24,7 +24,7 @@ namespace Astralis
         private static void OnGameStart()
         {
             Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager);
-            Resolution.SetResolution(Constants.DefaultResolution.X, Constants.DefaultResolution.Y, true);
+            Resolution.SetResolution(Constants.DefaultResolution.X, Constants.DefaultResolution.Y, Constants.FullScreen);
         }
     }
 }

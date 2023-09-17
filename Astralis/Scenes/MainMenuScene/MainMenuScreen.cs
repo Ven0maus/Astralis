@@ -5,6 +5,7 @@ using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Astralis.Scenes.MainMenuScene
@@ -20,7 +21,6 @@ namespace Astralis.Scenes.MainMenuScene
             _loadGameScreen = new Extended.Lazy<LoadGameScreen>(() => { var screen = new LoadGameScreen(); Children.Add(screen); return screen; });
 
             DisplayGameTitle();
-            AddMenuButtons();
         }
 
         private enum ButtonType
@@ -33,12 +33,6 @@ namespace Astralis.Scenes.MainMenuScene
 
         private void DisplayGameTitle()
         {
-            // TODO:
-            // Scatter letters all over the screen
-            // Make them move into position to form the title
-            // Fade the shadow in after text is formed
-            // Show the buttons after this transition is done
-
             var titleParts = Constants.GameTitleFancy.Split("\r\n");
             int maxWidth = titleParts.Max(a => a.Length);
             int centerX = Width / 2;
@@ -57,15 +51,43 @@ namespace Astralis.Scenes.MainMenuScene
             ConfigureLayer(shadowLayer, 1);
             shadowLayer.Position *= new Point(Constants.FontSize.X, Constants.FontSize.Y);
             shadowLayer.Position -= new Point(3, -11);
+            shadowLayer.IsVisible = false;
 
             var mainLayer = new ScreenSurface(maxWidth, titleParts.Length);
             ConfigureLayer(mainLayer, 0);
+            mainLayer.IsVisible = false;
 
+            // Create scatter effect
+            var scatteredGlyphs = new List<ScatterEffect.ScatterGlyph>();
             for (int i = 0; i < titleParts.Length; i++)
             {
+                int x = 0;
+                foreach (var glyph in titleParts[i])
+                {
+                    var pos = new Point(centerX - maxWidth / 2 + x, startY + i);
+                    scatteredGlyphs.Add(new ScatterEffect.ScatterGlyph(new ColoredGlyph(Constants.GameTitleColor, Surface.Surface.DefaultBackground, glyph), pos));
+                    x++;
+                }
                 mainLayer.Print(0, i, titleParts[i], Constants.GameTitleColor);
                 shadowLayer.Print(0, i, titleParts[i], Constants.GameTitleShadowColor);
             }
+
+            var scatterEffect = new ScatterEffect(scatteredGlyphs, Surface, TimeSpan.FromMilliseconds(1500))
+            {
+                OnFinished = () =>
+                {
+                    Surface.Clear();
+                    mainLayer.IsVisible = true;
+                    shadowLayer.IsVisible = true;
+
+                    var fadeBlinkEffect = new FadeEffect(shadowLayer, TimeSpan.FromMilliseconds(700), FadeEffect.FadeMode.FadeIn, false)
+                    {
+                        OnFinished = AddMenuButtons
+                    };
+                    Effects.Add(fadeBlinkEffect);
+                }
+            };
+            Effects.Add(scatterEffect);
         }
 
         private void AddMenuButtons()
