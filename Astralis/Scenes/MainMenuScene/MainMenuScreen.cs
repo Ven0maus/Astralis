@@ -15,6 +15,9 @@ namespace Astralis.Scenes.MainMenuScene
         private readonly Extended.Lazy<OptionsScreen> _optionsScreen;
         private readonly Extended.Lazy<LoadGameScreen> _loadGameScreen;
 
+        private ScreenSurface _mainLayer, _shadowLayer;
+        private bool _buttonClicked = false;
+
         public MainMenuScreen()
         {
             _optionsScreen = new Extended.Lazy<OptionsScreen>(() => { var screen = new OptionsScreen(); Children.Add(screen); return screen; });
@@ -47,44 +50,45 @@ namespace Astralis.Scenes.MainMenuScene
             }
 
             // Add shadow layer with some offset
-            var shadowLayer = new ScreenSurface(maxWidth, titleParts.Length) { UsePixelPositioning = true };
-            ConfigureLayer(shadowLayer, 1);
-            shadowLayer.Position *= new Point(Constants.FontSize.X, Constants.FontSize.Y);
-            shadowLayer.Position -= new Point(3, -11);
-            shadowLayer.IsVisible = false;
+            _shadowLayer = new ScreenSurface(maxWidth, titleParts.Length) { UsePixelPositioning = true };
+            ConfigureLayer(_shadowLayer, 1);
+            _shadowLayer.Position *= new Point(Constants.FontSize.X, Constants.FontSize.Y);
+            _shadowLayer.Position -= new Point(3, -11);
+            _shadowLayer.IsVisible = false;
 
-            var mainLayer = new ScreenSurface(maxWidth, titleParts.Length);
-            ConfigureLayer(mainLayer, 0);
-            mainLayer.IsVisible = false;
+            _mainLayer = new ScreenSurface(maxWidth, titleParts.Length);
+            ConfigureLayer(_mainLayer, 0);
+            _mainLayer.IsVisible = false;
 
-            // Create scatter effect
-            var scatteredGlyphs = new List<ScatterEffect.ScatterGlyph>();
+            // Prepare scatter effect and backing surfaces
+            var scatteredGlyphs = new List<PositionedGlyph>();
             for (int i = 0; i < titleParts.Length; i++)
             {
                 int x = 0;
                 foreach (var glyph in titleParts[i])
                 {
                     var pos = new Point(centerX - maxWidth / 2 + x, startY + i);
-                    scatteredGlyphs.Add(new ScatterEffect.ScatterGlyph(new ColoredGlyph(Constants.GameTitleColor, Surface.Surface.DefaultBackground, glyph), pos));
+                    scatteredGlyphs.Add(new PositionedGlyph(new ColoredGlyph(Constants.GameTitleColor, Surface.Surface.DefaultBackground, glyph), pos));
                     x++;
                 }
-                mainLayer.Print(0, i, titleParts[i], Constants.GameTitleColor);
-                shadowLayer.Print(0, i, titleParts[i], Constants.GameTitleShadowColor);
+                _mainLayer.Print(0, i, titleParts[i], Constants.GameTitleColor);
+                _shadowLayer.Print(0, i, titleParts[i], Constants.GameTitleShadowColor);
             }
 
+            // Execute scatter effect and fade effect
             var scatterEffect = new ScatterEffect(scatteredGlyphs, Surface, TimeSpan.FromMilliseconds(1500))
             {
                 OnFinished = () =>
                 {
                     Surface.Clear();
-                    mainLayer.IsVisible = true;
-                    shadowLayer.IsVisible = true;
+                    _mainLayer.IsVisible = true;
+                    _shadowLayer.IsVisible = true;
 
-                    var fadeBlinkEffect = new FadeEffect(shadowLayer, TimeSpan.FromMilliseconds(700), FadeEffect.FadeMode.FadeIn, false)
+                    var fadeEffect = new FadeEffect(_shadowLayer, TimeSpan.FromMilliseconds(700), FadeEffect.FadeMode.FadeIn, false)
                     {
                         OnFinished = AddMenuButtons
                     };
-                    Effects.Add(fadeBlinkEffect);
+                    Effects.Add(fadeEffect);
                 }
             };
             Effects.Add(scatterEffect);
@@ -115,9 +119,19 @@ namespace Astralis.Scenes.MainMenuScene
 
                 button.SetThemeColors(themeColors);
                 button.Click += (sender, args) => HandleButtonClick(buttonType);
+                button.IsEnabled = false;
                 Controls.Add(button);
 
-                Effects.Add(FlyInEffect.Create(button, FlyInEffect.Direction.Bottom, TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(150 * i)));
+                var flyInEffect = FlyInEffect.Create(button, FlyInEffect.Direction.Bottom, TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(150 * i));
+                if (i == buttons.Length - 1)
+                {
+                    flyInEffect.OnFinished = () =>
+                    {
+                        foreach (var control in Controls)
+                            control.IsEnabled = true;
+                    };
+                }
+                Effects.Add(flyInEffect);
             }
         }
 
@@ -132,25 +146,78 @@ namespace Astralis.Scenes.MainMenuScene
 
         private void HandleButtonClick(ButtonType buttonType)
         {
-            // TODO:
-            // Do transition animation where the letters fall to the bottom of the screen
-            // Starting from the bottom part of the text, all the way to the top part of the text
-            // All the letters will lay on the bottom of the screen, added on top of eachother (decorators?)
+            if (_buttonClicked) return;
+            _buttonClicked = true;
 
-            switch (buttonType)
+            // Drop the buttons
+            var controls = Controls.Reverse().ToArray();
+            for (int ci=0; ci < controls.Length; ci++)
             {
-                case ButtonType.New_Game:
-                    // TODO: Start game intro
-                    break;
-                case ButtonType.Load_Game:
-                    ShowScreen(_loadGameScreen.Value);
-                    break;
-                case ButtonType.Options:
-                    ShowScreen(_optionsScreen.Value);
-                    break;
-                case ButtonType.Exit_Game:
-                    Environment.Exit(0);
-                    break;
+                var control = controls[ci];
+                var flyinEffect = new FlyInEffect(control.Position, new Point(control.Position.X, Height + control.Height), TimeSpan.FromMilliseconds(300), (pos) => { control.Position = pos; control.IsDirty = true; }, TimeSpan.FromMilliseconds(100 * ci));
+                if (ci == 0)
+                {
+                    flyinEffect.OnFinished = () =>
+                    {
+                        // Drop the text and removing the backing surfaces
+                        Children.Remove(_shadowLayer);
+                        Children.Remove(_mainLayer);
+
+                        // Prepare falling text effect
+                        var titleParts = Constants.GameTitleFancy.Split("\r\n").Reverse().ToArray();
+                        int maxWidth = titleParts.Max(a => a.Length);
+                        int centerX = Width / 2;
+                        int startY = (int)(Height / 100f * 15);
+                        var positionedGlyphs = new List<List<PositionedGlyph>>();
+                        for (int i = 0; i < titleParts.Length; i++)
+                        {
+                            var l = new List<PositionedGlyph>();
+                            int x = 0;
+                            foreach (var glyph in titleParts[i])
+                            {
+                                var destination = new Point(centerX - maxWidth / 2 + x, Height);
+                                var positionedGlyph = new PositionedGlyph(new ColoredGlyph(Constants.GameTitleColor, Surface.Surface.DefaultBackground, glyph), destination);
+                                positionedGlyph.Init(new Point(destination.X, startY + (titleParts.Length - 1) - i));
+                                l.Add(positionedGlyph);
+                                x++;
+
+                                // Print to the real console
+                                Surface.Surface[destination.X, startY + (titleParts.Length - 1) - i].CopyAppearanceFrom(positionedGlyph.Glyph, false);
+                            }
+                            positionedGlyphs.Add(l);
+                        }
+                        Surface.IsDirty = true;
+
+                        for (int i = 0; i < positionedGlyphs.Count; i++)
+                        {
+                            var l = positionedGlyphs[i];
+                            var fallingTextEffect = new MovingTextEffect(l, Surface, TimeSpan.FromMilliseconds(550), TimeSpan.FromMilliseconds(75 * i));
+                            if (i == positionedGlyphs.Count - 1)
+                            {
+                                fallingTextEffect.OnFinished = () =>
+                                {
+                                    switch (buttonType)
+                                    {
+                                        case ButtonType.New_Game:
+                                            // TODO: Start game intro
+                                            break;
+                                        case ButtonType.Load_Game:
+                                            ShowScreen(_loadGameScreen.Value);
+                                            break;
+                                        case ButtonType.Options:
+                                            ShowScreen(_optionsScreen.Value);
+                                            break;
+                                        case ButtonType.Exit_Game:
+                                            Environment.Exit(0);
+                                            break;
+                                    }
+                                };
+                            }
+                            Effects.Add(fallingTextEffect);
+                        }
+                    };
+                }
+                Effects.Add(flyinEffect);
             }
         }
 
