@@ -1,8 +1,6 @@
 ﻿using Astralis.Extended;
 using Astralis.Extended.Effects;
-using Microsoft.Xna.Framework.Graphics;
 using SadConsole;
-using SadConsole.Instructions;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;

@@ -23,11 +23,8 @@ namespace Astralis
         
         private static void OnGameStart()
         {
-            var graphicsDevice = SadConsole.Host.Global.GraphicsDeviceManager;
-            Resolution.Init(ref graphicsDevice);
-            //Resolution.SetVirtualResolution(Constants.VirtualResolution.X, Constants.VirtualResolution.Y);
+            Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager);
             Resolution.SetResolution(Constants.DefaultResolution.X, Constants.DefaultResolution.Y, true);
-            //Resolution.BeginDraw();
         }
     }
 }
