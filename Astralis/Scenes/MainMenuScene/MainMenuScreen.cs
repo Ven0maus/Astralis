@@ -149,9 +149,30 @@ namespace Astralis.Scenes.MainMenuScene
             if (_buttonClicked) return;
             _buttonClicked = true;
 
+            switch (buttonType)
+            {
+                case ButtonType.New_Game:
+                    StartGame();
+                    break;
+                case ButtonType.Load_Game:
+                    ShowScreen(_loadGameScreen.Value);
+                    _buttonClicked = false;
+                    break;
+                case ButtonType.Options:
+                    ShowScreen(_optionsScreen.Value);
+                    _buttonClicked = false;
+                    break;
+                case ButtonType.Exit_Game:
+                    Environment.Exit(0);
+                    break;
+            }
+        }
+
+        private void StartGame()
+        {
             // Drop the buttons
             var controls = Controls.Reverse().ToArray();
-            for (int ci=0; ci < controls.Length; ci++)
+            for (int ci = 0; ci < controls.Length; ci++)
             {
                 var control = controls[ci];
                 var flyinEffect = new FlyInEffect(control.Position, new Point(control.Position.X, Height + control.Height), TimeSpan.FromMilliseconds(300), (pos) => { control.Position = pos; control.IsDirty = true; }, TimeSpan.FromMilliseconds(100 * ci));
@@ -196,21 +217,8 @@ namespace Astralis.Scenes.MainMenuScene
                             {
                                 fallingTextEffect.OnFinished = () =>
                                 {
-                                    switch (buttonType)
-                                    {
-                                        case ButtonType.New_Game:
-                                            // TODO: Start game intro
-                                            break;
-                                        case ButtonType.Load_Game:
-                                            ShowScreen(_loadGameScreen.Value);
-                                            break;
-                                        case ButtonType.Options:
-                                            ShowScreen(_optionsScreen.Value);
-                                            break;
-                                        case ButtonType.Exit_Game:
-                                            Environment.Exit(0);
-                                            break;
-                                    }
+                                    Game.Instance.Screen = new OverworldScene();
+                                    _buttonClicked = false;
                                 };
                             }
                             Effects.Add(fallingTextEffect);

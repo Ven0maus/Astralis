@@ -9,13 +9,24 @@ namespace Astralis.Extended
 {
     internal class EffectHandler : IComponent
     {
-        public uint SortOrder => 0;
-        public bool IsUpdate => true;
-        public bool IsRender => false;
-        public bool IsMouse => false;
-        public bool IsKeyboard => false;
-
         private List<IEffect> _effects = new();
+
+        public void Update(IScreenObject host, TimeSpan delta)
+        {
+            if (_effects.Any())
+            {
+                _effects.ForEach(a =>
+                {
+                    a.Update();
+                });
+                if (_effects.Any(a => a.IsFinished))
+                {
+                    foreach (var effect in _effects.Where(a => a.IsFinished).ToArray())
+                        effect.OnFinished?.Invoke();
+                }
+                _effects.RemoveAll(a => a.IsFinished);
+            }
+        }
 
         public void OnAdded(IScreenObject host)
         {
@@ -41,24 +52,14 @@ namespace Astralis.Extended
             _effects.Remove(effect);
         }
 
+        public uint SortOrder => 0;
+        public bool IsUpdate => true;
+        public bool IsRender => false;
+        public bool IsMouse => false;
+        public bool IsKeyboard => false;
+
         public void ProcessKeyboard(IScreenObject host, Keyboard keyboard, out bool handled) => throw new NotImplementedException();
         public void ProcessMouse(IScreenObject host, MouseScreenObjectState state, out bool handled) => throw new NotImplementedException();
         public void Render(IScreenObject host, TimeSpan delta) => throw new NotImplementedException();
-        public void Update(IScreenObject host, TimeSpan delta)
-        {
-            if (_effects.Any())
-            {
-                _effects.ForEach(a =>
-                {
-                    a.Update();
-                });
-                if (_effects.Any(a => a.IsFinished))
-                {
-                    foreach (var effect in _effects.Where(a => a.IsFinished).ToArray())
-                        effect.OnFinished?.Invoke();
-                }
-                _effects.RemoveAll(a => a.IsFinished);
-            }
-        }
     }
 }
