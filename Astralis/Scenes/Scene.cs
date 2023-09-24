@@ -11,20 +11,43 @@ namespace Astralis.Scenes
         public int Width { get { return Constants.ScreenWidth; } }
         public int Height { get { return Constants.ScreenHeight; } }
 
-        private readonly ControlSurface _controlSurface;
-        private readonly EffectHandler _effectHandler;
+        private readonly Lazy<ControlSurface> _controlSurface;
+        private readonly Lazy<EffectHandler> _effectHandler;
 
-        public ControlHost Controls { get { return _controlSurface.Controls; } }
-        public ControlSurface Surface { get { return _controlSurface; } }
-        public EffectHandler Effects { get { return _effectHandler; } }
+        public ControlHost Controls 
+        { 
+            get 
+            { 
+                if (!_controlSurface.IsValueCreated)
+                    Children.Insert(0, _controlSurface.Value);
+                return _controlSurface.Value.Controls; 
+            } 
+        }
+
+        public ControlSurface Surface
+        {
+            get
+            {
+                if (!_controlSurface.IsValueCreated)
+                    Children.Insert(0, _controlSurface.Value);
+                return _controlSurface.Value;
+            }
+        }
+
+        public EffectHandler Effects 
+        { 
+            get 
+            {
+                if (!_effectHandler.IsValueCreated)
+                    SadComponents.Add(_effectHandler.Value);
+                return _effectHandler.Value; 
+            } 
+        }
 
         public Scene()
         {
-            _controlSurface = new ControlSurface(Width, Height);
-            Children.Add(_controlSurface);
-
-            _effectHandler = new EffectHandler();
-            SadComponents.Add(_effectHandler);
+            _controlSurface = new Lazy<ControlSurface>(() => new ControlSurface(Width, Height));
+            _effectHandler = new Lazy<EffectHandler>(() => new EffectHandler());
         }
     }
 }

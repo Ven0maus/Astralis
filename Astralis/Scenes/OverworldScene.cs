@@ -8,5 +8,9 @@ namespace Astralis.Scenes
 {
     internal class OverworldScene : Scene
     {
+        public OverworldScene()
+        {
+
+        }
     }
 }
