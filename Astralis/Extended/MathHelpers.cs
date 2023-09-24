@@ -30,5 +30,20 @@ namespace Astralis.Extended
         {
             return (int)((float)value / 100 * percent);
         }
+
+        public static float Smoothstep(float t)
+        {
+            // Apply the smoothstep formula
+            return t * t * (3 - 2 * t);
+        }
+
+        public static float Smoothstep(float min, float max, float t)
+        {
+            // Ensure t is clamped between 0 and 1
+            t = Mathf.Clamp01((t - min) / (max - min));
+
+            // Apply the smoothstep formula
+            return t * t * (3 - 2 * t);
+        }
     }
 }

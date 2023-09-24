@@ -36,24 +36,50 @@ namespace Astralis.GameCode
             _mapSeed = seed;
             _noise = new(_width, _height, _mapSeed);
 
-            GenerateMap();
+            GenerateMap(false);
         }
 
-        private void GenerateMap()
+        private void GenerateMap(bool applyIslandGradient)
         {
-            var heightMap = _noise.GenerateNoiseMap(12, 0.24f, 0.45f, 2.2f);
-            var islandGradient = _noise.GenerateIslandGradientMap();
+            var heightMap = _noise.GenerateNoiseMap(10, 1.0f, 0.5f, 2.0f);
+            var moistureMap = _noise.GenerateNoiseMap(8, 0.85f, 0.2f, 1.5f);
+            var heatMap = _noise.GenerateNoiseMap(6, 0.10f, 0.3f, 2.0f);
+            var islandGradient = applyIslandGradient ? _noise.GenerateIslandGradientMap() : Array.Empty<float>();
 
-            // Add moisture, heat maps?
-            
             for (int x=0; x < _width; x++)
             {
                 for (int y = 0; y < _height; y++)
                 {
-                    heightMap[y * _width + x] -= islandGradient[y * _width + x];
-                    _tiles[x, y] = new Tile { Foreground = Color.White, Background = Color.Lerp(Color.Black, Color.White, heightMap[y * _width + x]) };
+                    if (applyIslandGradient)
+                        heightMap[y * _width + x] -= islandGradient[y * _width + x];
+
+                    float height = heightMap[y * _width + x];
+                    float moisture = moistureMap[y * _width + x];
+                    float heat = heatMap[y * _width + x];
+
+                    _tiles[x, y] = GenerateTile(height, moisture, heat, applyIslandGradient);
                 }
             }
+        }
+
+        private Tile GenerateTile(float height, float moisture, float heat, bool islandApplied)
+        {
+            Color foreground = CalculateForeground(height, moisture, heat, islandApplied);
+            Color background = CalculateBackground(height, moisture, heat, islandApplied);
+
+            return new Tile { Foreground = foreground, Background = background };
+        }
+
+        private Color CalculateForeground(float height, float moisture, float heat, bool islandApplied)
+        {
+            // TODO
+            return Color.White;
+        }
+
+        private Color CalculateBackground(float height, float moisture, float heat, bool islandApplied)
+        {
+            // TODO
+            return Color.Lerp(Color.Black, Color.White, height);
         }
 
         // TODO: Move this out of the map class into AI class
