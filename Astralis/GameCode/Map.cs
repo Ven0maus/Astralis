@@ -41,13 +41,16 @@ namespace Astralis.GameCode
 
         private void GenerateMap()
         {
-            var heightMap = _noise.GenerateNoiseMap(6, 0.6f, 0.27f, 0.8f);
-            //var islandGradient = GenerateIslandGradientMap();
+            var heightMap = _noise.GenerateNoiseMap(12, 0.24f, 0.45f, 2.2f);
+            var islandGradient = _noise.GenerateIslandGradientMap();
+
+            // Add moisture, heat maps?
             
             for (int x=0; x < _width; x++)
             {
                 for (int y = 0; y < _height; y++)
                 {
+                    heightMap[y * _width + x] -= islandGradient[y * _width + x];
                     _tiles[x, y] = new Tile { Foreground = Color.White, Background = Color.Lerp(Color.Black, Color.White, heightMap[y * _width + x]) };
                 }
             }
