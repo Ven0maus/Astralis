@@ -2,6 +2,7 @@
 using GoRogue.FOV;
 using SadRogue.Primitives;
 using SadRogue.Primitives.GridViews;
+using System;
 
 namespace Astralis.GameCode
 {
@@ -10,6 +11,8 @@ namespace Astralis.GameCode
         public bool BlocksView;
         public bool IsExplored;
         public bool IsVisible;
+        public Color Foreground;
+        public Color Background;
     }
 
     internal class Map
@@ -21,15 +24,36 @@ namespace Astralis.GameCode
         private readonly int _width, _height;
         private readonly ArrayView<Tile> _tiles;
         private readonly IFOV _fov;
+        private readonly int _mapSeed;
+        private readonly NoiseHelper _noise;
 
-        public Map(int width, int height)
+        public Map(int width, int height, int seed = 1337)
         {
             _width = width;
             _height = height;
             _tiles = new ArrayView<Tile>(width, height);
             _fov = new RecursiveShadowcastingFOV(new LambdaTranslationGridView<Tile, bool>(_tiles, x => x.BlocksView));
+            _mapSeed = seed;
+            _noise = new(_width, _height, _mapSeed);
+
+            GenerateMap();
         }
 
+        private void GenerateMap()
+        {
+            var heightMap = _noise.GenerateNoiseMap(6, 0.6f, 0.27f, 0.8f);
+            //var islandGradient = GenerateIslandGradientMap();
+            
+            for (int x=0; x < _width; x++)
+            {
+                for (int y = 0; y < _height; y++)
+                {
+                    _tiles[x, y] = new Tile { Foreground = Color.White, Background = Color.Lerp(Color.Black, Color.White, heightMap[y * _width + x]) };
+                }
+            }
+        }
+
+        // TODO: Move this out of the map class into AI class
         public void UpdateFov(int x, int y, int radius = 5)
         {
             _fov.Calculate((x, y), radius, Distance.Euclidean);

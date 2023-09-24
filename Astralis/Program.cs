@@ -1,4 +1,5 @@
-﻿using Astralis.Scenes.MainMenuScene;
+﻿using Astralis.Scenes.GameplayScenes;
+using Astralis.Scenes.MainMenuScene;
 using SadConsole;
 
 namespace Astralis
@@ -13,8 +14,14 @@ namespace Astralis
 
             Game.Configuration gameStartup = new Game.Configuration()
                 .SetScreenSize(Constants.ScreenWidth, Constants.ScreenHeight)
-                .OnStart(OnGameStart)
-                .SetStartingScreen<MainMenuScreen>();
+                .OnStart(OnGameStart);
+
+            if (!Constants.DebugMode)
+                gameStartup = gameStartup
+                    .SetStartingScreen<MainMenuScreen>();
+            else
+                gameStartup = gameStartup
+                    .SetStartingScreen<OverworldScene>();
 
             Game.Create(gameStartup);
             Game.Instance.Run();

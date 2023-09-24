@@ -47,7 +47,9 @@ namespace Astralis.Extended.Effects
                 for (int y=0; y < _surface.Height; y++)
                 {
                     var foreground = _surface.Surface[x, y].Foreground;
+                    var background = _surface.Surface[x, y].Background;
                     _surface.Surface[x, y].Foreground = foreground.SetAlpha(ClampTo0_255(alpha));
+                    _surface.Surface[x, y].Background = background.SetAlpha(ClampTo0_255(alpha));
                 }
             }
             _surface.IsDirty = true;

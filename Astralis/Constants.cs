@@ -2,8 +2,10 @@
 
 namespace Astralis
 {
-    internal class Constants
+    public class Constants
     {
+        public const bool DebugMode = false;
+
         public static readonly Point FontSize = new(8, 16);
         public static readonly Point VirtualResolution = new(1280, 720); // new(1280, 720);
         public static readonly Point DefaultResolution = new(1920, 1080);

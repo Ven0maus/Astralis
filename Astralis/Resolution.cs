@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Astralis
 {
-    internal static class Resolution
+    public static class Resolution
     {
         private static GraphicsDeviceManager _Device = null;
         private static int _width, _height;
