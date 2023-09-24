@@ -1,15 +1,18 @@
 ﻿using Astralis.Extended;
+using Astralis.Extended.Effects.Core;
+using Astralis.Extended.SadConsole;
 using SadConsole;
 using SadConsole.UI;
-
 
 namespace Astralis.Scenes
 {
     internal abstract class Scene : ScreenObject
     {
-        public string Name { get { return GetType().Name; } }
-        public int Width { get { return Constants.ScreenWidth; } }
-        public int Height { get { return Constants.ScreenHeight; } }
+        public readonly int Width;
+        public readonly int Height;
+
+        private string _name;
+        public string Name { get { return _name ??= GetType().Name; } }
 
         private readonly Lazy<ControlSurface> _controlSurface;
         private readonly Lazy<EffectHandler> _effectHandler;
@@ -17,10 +20,10 @@ namespace Astralis.Scenes
         public ControlHost Controls 
         { 
             get 
-            { 
-                if (!_controlSurface.IsValueCreated)
-                    Children.Insert(0, _controlSurface.Value);
-                return _controlSurface.Value.Controls; 
+            {
+                if (!Surface.HasControls) 
+                    throw new System.Exception("Controls were removed from this scene.");
+                return Surface.Controls; 
             } 
         }
 
@@ -46,8 +49,15 @@ namespace Astralis.Scenes
 
         public Scene()
         {
+            Width = Constants.ScreenWidth;
+            Height = Constants.ScreenHeight;
             _controlSurface = new Lazy<ControlSurface>(() => new ControlSurface(Width, Height));
             _effectHandler = new Lazy<EffectHandler>(() => new EffectHandler());
+        }
+
+        public void RemoveControlLayer()
+        {
+            Surface.RemoveControlsLayer();
         }
     }
 }

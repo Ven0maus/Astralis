@@ -1,7 +1,7 @@
 ﻿using SadConsole;
 using SadRogue.Primitives;
 
-namespace Astralis.Extended
+namespace Astralis.Extended.Effects.Core
 {
     public class PositionedGlyph
     {
