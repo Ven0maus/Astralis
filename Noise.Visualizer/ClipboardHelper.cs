@@ -15,6 +15,9 @@ namespace Noise.Visualizer
         public static extern IntPtr SetClipboardData(uint uFormat, IntPtr hMem);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr GetClipboardData(uint uFormat);
+
+        [DllImport("user32.dll")]
         public static extern bool CloseClipboard();
 
         [DllImport("kernel32.dll")]
@@ -55,6 +58,41 @@ namespace Noise.Visualizer
             {
                 Console.WriteLine("Failed to open the clipboard.");
             }
+        }
+
+        public static string GetText()
+        {
+            if (OpenClipboard(IntPtr.Zero))
+            {
+                IntPtr clipboardData = GetClipboardData(CF_UNICODETEXT);
+
+                if (clipboardData != IntPtr.Zero)
+                {
+                    IntPtr lockedMemory = GlobalLock(clipboardData);
+
+                    if (lockedMemory != IntPtr.Zero)
+                    {
+                        string text = Marshal.PtrToStringUni(lockedMemory);
+
+                        // Release the locked memory
+                        GlobalUnlock(lockedMemory);
+
+                        // Close the clipboard
+                        CloseClipboard();
+
+                        return text;
+                    }
+                }
+
+                // Close the clipboard
+                CloseClipboard();
+            }
+            else
+            {
+                Console.WriteLine("Failed to open the clipboard.");
+            }
+
+            return null;
         }
     }
 }

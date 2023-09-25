@@ -21,14 +21,14 @@ namespace Noise.Visualizer
                 if (_seed != value)
                 {
                     _seed = value;
-                    _noise = new NoiseHelper(Width, Height, _seed);
+                    Noise = new NoiseHelper(Width, Height, _seed);
                 }
             }
         }
 
         public bool ApplyIslandGradient { get; set; } = true;
 
-        private NoiseHelper _noise;
+        public NoiseHelper Noise { get; private set; }
 
         private readonly List<NoiseMapConfiguration> _configuration = new();
         public IReadOnlyList<NoiseMapConfiguration> Configuration { get { return _configuration; } }
@@ -47,7 +47,7 @@ namespace Noise.Visualizer
             private readonly Func<NoiseHelper> _noiseGetter;
             public float[] Noise { get { return _noiseGetter().GenerateNoiseMap(Octaves, Scale, Persistance, Lacunarity); } }
 
-            public NoiseMapConfiguration(Func<NoiseHelper> noiseGetter, string name, int octaves, float persistance, float lacunarity, float scale, float weight)
+            public NoiseMapConfiguration(Func<NoiseHelper> noiseGetter, string name, int octaves, float scale, float persistance, float lacunarity, float weight)
             {
                 _noiseGetter = noiseGetter;
                 Name = name;
@@ -60,7 +60,7 @@ namespace Noise.Visualizer
 
             public NoiseMapConfiguration Clone()
             {
-                return new NoiseMapConfiguration(_noiseGetter, Name, Octaves, Persistance, Lacunarity, Scale, Weight);
+                return new NoiseMapConfiguration(_noiseGetter, Name, Octaves, Scale, Persistance, Lacunarity, Weight);
             }
 
             public override string ToString()
@@ -72,15 +72,20 @@ namespace Noise.Visualizer
         public NoiseScreen(int width, int height, int seed = 0) : base(width, height) 
         {
             _seed = seed;
-            _noise = new NoiseHelper(width, height, seed);
+            Noise = new NoiseHelper(width, height, seed);
             AddNoiseMap("layer1");
         }
 
         public NoiseMapConfiguration AddNoiseMap(string name)
         {
-            Current = new NoiseMapConfiguration(() => _noise, name, 1, 0.5f, 2.0f, 0.35f, 1f);
+            Current = new NoiseMapConfiguration(() => Noise, name, 1, 0.35f, 0.5f, 2.0f, 1f);
             _configuration.Add(Current);
             return Current;
+        }
+
+        public void AddNoiseMap(NoiseMapConfiguration config)
+        {
+            _configuration.Add(config);
         }
 
         private float[] GetNoiseMap()
@@ -111,7 +116,7 @@ namespace Noise.Visualizer
         public void Draw()
         {
             var noiseMap = GetNoiseMap();
-            var islandGradient = ApplyIslandGradient ? _noise.GenerateIslandGradientMap() : Array.Empty<float>();
+            var islandGradient = ApplyIslandGradient ? Noise.GenerateIslandGradientMap() : Array.Empty<float>();
 
             for (int x=0; x < Width; x++)
             {
@@ -138,6 +143,12 @@ namespace Noise.Visualizer
             if (Current == current)
                 Current = _configuration.LastOrDefault();
             return current;
+        }
+
+        internal void ClearNoiseMaps()
+        {
+            _configuration.Clear();
+            Current = null;
         }
     }
 }

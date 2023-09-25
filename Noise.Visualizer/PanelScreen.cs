@@ -1,9 +1,11 @@
 ﻿using SadConsole.UI;
 using SadConsole.UI.Controls;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Noise.Visualizer
 {
@@ -16,7 +18,7 @@ namespace Noise.Visualizer
         private readonly ListBox _noiseMaps;
         private readonly Random _random;
 
-        public PanelScreen(int width, int height, NoiseScreen noiseScreen) : base(width, height) 
+        public PanelScreen(int width, int height, NoiseScreen noiseScreen) : base(width, height)
         {
             _noiseScreen = noiseScreen;
             _random = new Random();
@@ -24,7 +26,7 @@ namespace Noise.Visualizer
             Border.CreateForSurface(this, "Settings");
 
             int y = 1;
-            Controls.Add(new Label("Seed") { Position = new (1, y) });
+            Controls.Add(new Label("Seed") { Position = new(1, y) });
             y++;
             _seedBox = new NumberBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Seed.ToString(CultureInfo.InvariantCulture), MaxLength = 5, NumberMinimum = -1000, NumberMaximum = 1000 };
             _seedBox.CaretPosition = _seedBox.Text.Length;
@@ -47,10 +49,10 @@ namespace Noise.Visualizer
             _octavesBox.CaretPosition = _octavesBox.Text.Length;
             y++;
             var slider2 = new ScrollBar(SadConsole.Orientation.Horizontal, Width - 4) { Position = new(1, y), Maximum = 12, Value = _noiseScreen.Current.Octaves };
-            slider2.ValueChanged += (sender, args) => 
-            { 
+            slider2.ValueChanged += (sender, args) =>
+            {
                 if (slider2.Value == 0)
-                    slider2.Value = 1; 
+                    slider2.Value = 1;
                 _octavesBox.Text = slider2.Value.ToString();
                 _octavesBox.IsDirty = true;
             };
@@ -137,12 +139,20 @@ namespace Noise.Visualizer
             Controls.Add(randomizeButton);
 
             y += 2;
-            var copyButton = new Button(Width - 4) { Position = new(1, y), Text = "Copy to clipboard" };
+            var copyButton = new Button(Width - 4) { Position = new(1, y), Text = "Export to clipboard" };
             copyButton.Click += (sender, args) =>
             {
                 CopyToClipboard();
             };
             Controls.Add(copyButton);
+
+            y += 2;
+            var importButton = new Button(Width - 4) { Position = new(1, y), Text = "Import from clipboard" };
+            importButton.Click += (sender, args) =>
+            {
+                ImportFromClipboard();
+            };
+            Controls.Add(importButton);
 
             y += 2;
             Controls.Add(new Label("Layers") { Position = new(1, y) });
@@ -151,10 +161,11 @@ namespace Noise.Visualizer
             _weightBox.TextChanged += (sender, args) => _noiseScreen.Current.Weight = float.TryParse(_weightBox.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out float wi) ? wi : 1f;
             Controls.Add(_weightBox);
             y++;
-            _noiseMaps = new ListBox(Width - 4, 8) { Position = new(1, y) };
+            _noiseMaps = new ListBox(Width - 4, 6) { Position = new(1, y) };
             _noiseMaps.SelectedItemChanged += (sender, args) =>
             {
                 var selected = (NoiseScreen.NoiseMapConfiguration)args.Item;
+                if (selected == null) return;
                 _noiseScreen.SetCurrent(selected);
                 selected = selected.Clone();
 
@@ -185,11 +196,13 @@ namespace Noise.Visualizer
             }
             Controls.Add(_noiseMaps);
 
-            y += 8;
+            y += 6;
             var newLayer = new Button(Width - 4) { Position = new(1, y), Text = "New layer" };
             newLayer.Click += (sender, args) =>
             {
-                _noiseMaps.Items.Add(_noiseScreen.AddNoiseMap("layer" + (_noiseMaps.Items.Count + 1)));
+                var config = _noiseScreen.AddNoiseMap("layer" + (_noiseMaps.Items.Count + 1));
+                _noiseMaps.Items.Add(config);
+                _noiseMaps.SelectedItem = config;
             };
             Controls.Add(newLayer);
 
@@ -205,6 +218,75 @@ namespace Noise.Visualizer
             Controls.Add(removeLayer);
 
             _noiseScreen.Draw();
+        }
+
+        private void ImportFromClipboard()
+        {
+            /* Example:
+            var layer1 = _noise.GenerateNoiseMap(7, -0.79f, -0.75f, 1.64f);
+            var layer2 = _noise.GenerateNoiseMap(10, -0.71f, 0.69f, 0.39f);
+            var layer3 = _noise.GenerateNoiseMap(2, 0.33f, -1.18f, 0.93f);
+            var layer4 = _noise.GenerateNoiseMap(4, 1.75f, -0.79f, 6.99f);
+
+            var layer1Weight = 1f;
+            var layer2Weight = 1f;
+            var layer3Weight = 1f;
+            var layer4Weight = 1f;
+            */
+
+            var text = ClipboardHelper.GetText();
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            var split = text.Split(Environment.NewLine);
+            var configs = new List<NoiseScreen.NoiseMapConfiguration>();
+            string patternLayer = @"var (\w+) = _noise.GenerateNoiseMap\((\d+), ([\d.-]+)f, ([\d.-]+)f, ([\d.-]+)f\);";
+            string patternWeight = @"var (\w+) = ([\d.-]+f);";
+            foreach (var line in split)
+            {
+                if (line.StartsWith("var layer"))
+                {
+                    Match match = Regex.Match(line, patternLayer);
+                    if (match.Success)
+                    {
+                        string name = match.Groups[1].Value;
+                        int octaves = int.Parse(match.Groups[2].Value);
+                        float scale = float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                        float persistance = float.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
+                        float lacunarity = float.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture);
+                        configs.Add(new NoiseScreen.NoiseMapConfiguration(() => _noiseScreen.Noise, name, octaves, scale, persistance, lacunarity, 1f));
+                    }
+                }
+                else if (line.StartsWith("var ") && line.Contains("Weight"))
+                {
+                    Match match = Regex.Match(line, patternWeight);
+
+                    if (match.Success)
+                    {
+                        string name = match.Groups[1].Value;
+                        string weight = match.Groups[2].Value;
+                        var config = configs.FirstOrDefault(a => a.Name.Equals(name));
+                        if (config == null) continue;
+                        config.Weight = float.TryParse(weight, NumberStyles.Float, CultureInfo.InvariantCulture, out float fW) ? fW : 1f;
+                    }
+                }
+            }
+
+            if (!configs.Any()) return;
+
+            _noiseMaps.Items.Clear();
+            _noiseScreen.ClearNoiseMaps();
+
+            foreach (var config in configs)
+            {
+                _noiseScreen.AddNoiseMap(config);
+                _noiseMaps.Items.Add(config);
+            }
+
+            if (_noiseScreen.Configuration.Count == 1) return;
+            var removed = _noiseScreen.RemoveNoiseMap(_noiseScreen.Current);
+            
+            _noiseMaps.SelectedItem = _noiseScreen.Current;
+            _noiseMaps.Items.Remove(removed);
         }
 
         private void CopyToClipboard()
@@ -228,7 +310,7 @@ namespace Noise.Visualizer
             sb.AppendLine();
             var combination = string.Join(" + ", _noiseScreen.Configuration.Select(a => $"{a.Name}[index] * {a.Name}Weight"));
             var combination2 = string.Join(" + ", _noiseScreen.Configuration.Select(a => $"{a.Name}Weight"));
-            sb.AppendLine($"combinedMap[index] = ({combination}) / ({combination2});");
+            sb.AppendLine($"Func<int, float> combiner = (index) => ({combination}) / ({combination2});");
 
             ClipboardHelper.SetText(sb.ToString());
         }

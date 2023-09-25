@@ -58,13 +58,17 @@ namespace Astralis.GameCode
 
         private float[] GetNoiseMap()
         {
-            var layer1 = _noise.GenerateNoiseMap(1, 0.35f, 0.5f, 2);
-            var layer2 = _noise.GenerateNoiseMap(1, 0.96f, -5.07f, 0.23f);
-            var layer3 = _noise.GenerateNoiseMap(2, -0.43f, -0.8f, 1.66f);
+            var layer1 = _noise.GenerateNoiseMap(7, -0.79f, -0.75f, 1.64f);
+            var layer2 = _noise.GenerateNoiseMap(10, -0.71f, 0.69f, 0.39f);
+            var layer3 = _noise.GenerateNoiseMap(2, 0.33f, -1.18f, 0.93f);
+            var layer4 = _noise.GenerateNoiseMap(4, 1.75f, -0.79f, 6.99f);
 
-            var layer1Weight = 0.5f;
-            var layer2Weight = 0.3f;
-            var layer3Weight = 0.7f;
+            var layer1Weight = 1f;
+            var layer2Weight = 1f;
+            var layer3Weight = 1f;
+            var layer4Weight = 1f;
+
+            Func<int, float> combiner = (index) => (layer1[index] * layer1Weight + layer2[index] * layer2Weight + layer3[index] * layer3Weight + layer4[index] * layer4Weight) / (layer1Weight + layer2Weight + layer3Weight + layer4Weight);
 
             // Initialize the combined map
             float[] combinedMap = new float[_width * _height];
@@ -77,7 +81,7 @@ namespace Astralis.GameCode
                     int index = y * _width + x;
 
                     // Combine the noise maps using weighted averaging
-                    combinedMap[index] = (layer1[index] * layer1Weight + layer2[index] * layer2Weight + layer3[index] * layer3Weight) / (layer1Weight + layer2Weight + layer3Weight);
+                    combinedMap[index] = combiner(index);
 
                     // Ensure the combined value is within the [0, 1] range
                     combinedMap[index] = Mathf.Clamp01(combinedMap[index]);
