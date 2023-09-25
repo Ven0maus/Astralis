@@ -237,26 +237,13 @@ namespace Noise.Visualizer
             var text = ClipboardHelper.GetText();
             if (string.IsNullOrWhiteSpace(text)) return;
 
-            var split = text.Split(Environment.NewLine);
+            var split = text.Split(Environment.NewLine, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             var configs = new List<NoiseScreen.NoiseMapConfiguration>();
             string patternLayer = @"var (\w+) = _noise.GenerateNoiseMap\((\d+), ([\d.-]+)f, ([\d.-]+)f, ([\d.-]+)f\);";
             string patternWeight = @"var (\w+) = ([\d.-]+f);";
             foreach (var line in split)
             {
-                if (line.StartsWith("var layer"))
-                {
-                    Match match = Regex.Match(line, patternLayer);
-                    if (match.Success)
-                    {
-                        string name = match.Groups[1].Value;
-                        int octaves = int.Parse(match.Groups[2].Value);
-                        float scale = float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
-                        float persistance = float.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
-                        float lacunarity = float.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture);
-                        configs.Add(new NoiseScreen.NoiseMapConfiguration(() => _noiseScreen.Noise, name, octaves, scale, persistance, lacunarity, 1f));
-                    }
-                }
-                else if (line.StartsWith("var ") && line.Contains("Weight"))
+                if (line.StartsWith("var ") && line.Contains("Weight"))
                 {
                     Match match = Regex.Match(line, patternWeight);
 
@@ -267,6 +254,19 @@ namespace Noise.Visualizer
                         var config = configs.FirstOrDefault(a => a.Name.Equals(name));
                         if (config == null) continue;
                         config.Weight = float.TryParse(weight, NumberStyles.Float, CultureInfo.InvariantCulture, out float fW) ? fW : 1f;
+                    }
+                }
+                else if (line.StartsWith("var layer"))
+                {
+                    Match match = Regex.Match(line, patternLayer);
+                    if (match.Success)
+                    {
+                        string name = match.Groups[1].Value;
+                        int octaves = int.Parse(match.Groups[2].Value);
+                        float scale = float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                        float persistance = float.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
+                        float lacunarity = float.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture);
+                        configs.Add(new NoiseScreen.NoiseMapConfiguration(() => _noiseScreen.Noise, name, octaves, scale, persistance, lacunarity, 1f));
                     }
                 }
             }
