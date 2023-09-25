@@ -78,6 +78,12 @@ namespace Noise.Visualizer
             Controls.Add(_islandGradientCheckbox);
             y += 2;
 
+            Controls.Add(new Label("Test decimals") { Position = new(1, y) });
+            y++;
+            var numberBox = new NumberBox(Width - 4) { Position = new(1, y), MaxLength = int.MaxValue, NumberMaximum = int.MaxValue, AllowDecimal = true };
+            Controls.Add(numberBox);
+            y += 2;
+
             var button = new Button(Width - 4) { Position = new(1, y), Text = "Generate" };
             button.Click += (sender, args) => 
             {
