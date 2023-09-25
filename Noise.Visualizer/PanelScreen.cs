@@ -2,6 +2,8 @@
 using SadConsole.UI.Controls;
 using System;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace Noise.Visualizer
 {
@@ -9,8 +11,9 @@ namespace Noise.Visualizer
     {
         private readonly NoiseScreen _noiseScreen;
         private readonly NumberBox _seedBox, _octavesBox;
-        private readonly TextBox _scaleBox, _persistanceBox, _lacunarityBox;
+        private readonly TextBox _scaleBox, _persistanceBox, _lacunarityBox, _weightBox;
         private readonly CheckBox _islandGradientOption;
+        private readonly ListBox _noiseMaps;
         private readonly Random _random;
 
         public PanelScreen(int width, int height, NoiseScreen noiseScreen) : base(width, height) 
@@ -40,10 +43,10 @@ namespace Noise.Visualizer
 
             Controls.Add(new Label("Octaves") { Position = new(1, y) });
             y++;
-            _octavesBox = new NumberBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Octaves.ToString(CultureInfo.InvariantCulture), MaxLength = int.MaxValue, NumberMinimum = 1, NumberMaximum = int.MaxValue };
+            _octavesBox = new NumberBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Current.Octaves.ToString(CultureInfo.InvariantCulture), MaxLength = int.MaxValue, NumberMinimum = 1, NumberMaximum = int.MaxValue };
             _octavesBox.CaretPosition = _octavesBox.Text.Length;
             y++;
-            var slider2 = new ScrollBar(SadConsole.Orientation.Horizontal, Width - 4) { Position = new(1, y), Maximum = 12, Value = _noiseScreen.Octaves };
+            var slider2 = new ScrollBar(SadConsole.Orientation.Horizontal, Width - 4) { Position = new(1, y), Maximum = 12, Value = _noiseScreen.Current.Octaves };
             slider2.ValueChanged += (sender, args) => 
             { 
                 if (slider2.Value == 0)
@@ -67,7 +70,7 @@ namespace Noise.Visualizer
 
             Controls.Add(new Label("Scale") { Position = new(1, y) });
             y++;
-            _scaleBox = new TextBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Scale.ToString(CultureInfo.InvariantCulture) };
+            _scaleBox = new TextBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Current.Scale.ToString(CultureInfo.InvariantCulture) };
             _scaleBox.CaretPosition = _scaleBox.Text.Length;
             y++;
             var scaleRButton = new Button(Width - 4) { Position = new(1, y), Text = "Randomize" };
@@ -87,7 +90,7 @@ namespace Noise.Visualizer
 
             Controls.Add(new Label("Persistance") { Position = new(1, y) });
             y++;
-            _persistanceBox = new TextBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Persistance.ToString(CultureInfo.InvariantCulture) };
+            _persistanceBox = new TextBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Current.Persistance.ToString(CultureInfo.InvariantCulture) };
             _persistanceBox.CaretPosition = _persistanceBox.Text.Length;
             y++;
             var persistanceRButton = new Button(Width - 4) { Position = new(1, y), Text = "Randomize" };
@@ -104,7 +107,7 @@ namespace Noise.Visualizer
 
             Controls.Add(new Label("Lacunarity") { Position = new(1, y) });
             y++;
-            _lacunarityBox = new TextBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Lacunarity.ToString(CultureInfo.InvariantCulture) };
+            _lacunarityBox = new TextBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Current.Lacunarity.ToString(CultureInfo.InvariantCulture) };
             y++;
             var lacunarityRButton = new Button(Width - 4) { Position = new(1, y), Text = "Randomize" };
             lacunarityRButton.Click += (sender, args) =>
@@ -141,19 +144,97 @@ namespace Noise.Visualizer
             };
             Controls.Add(copyButton);
 
+            y += 2;
+            Controls.Add(new Label("Layers") { Position = new(1, y) });
+            Controls.Add(new Label("Weight:") { Position = new(Width - 21, y) });
+            _weightBox = new TextBox(10) { Position = new(Width - 13, y) };
+            _weightBox.TextChanged += (sender, args) => _noiseScreen.Current.Weight = float.TryParse(_weightBox.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out float wi) ? wi : 1f;
+            Controls.Add(_weightBox);
+            y++;
+            _noiseMaps = new ListBox(Width - 4, 8) { Position = new(1, y) };
+            _noiseMaps.SelectedItemChanged += (sender, args) =>
+            {
+                var selected = (NoiseScreen.NoiseMapConfiguration)args.Item;
+                _noiseScreen.SetCurrent(selected);
+                selected = selected.Clone();
+
+                _weightBox.Text = selected.Weight.ToString(CultureInfo.InvariantCulture);
+                _weightBox.CaretPosition = _weightBox.Text.Length;
+                _weightBox.IsDirty = true;
+
+                _octavesBox.Text = selected.Octaves.ToString(CultureInfo.InvariantCulture);
+                _octavesBox.CaretPosition = _octavesBox.Text.Length;
+
+                _scaleBox.Text = selected.Scale.ToString(CultureInfo.InvariantCulture);
+                _scaleBox.CaretPosition = _scaleBox.Text.Length;
+
+                _persistanceBox.Text = selected.Persistance.ToString(CultureInfo.InvariantCulture);
+                _persistanceBox.CaretPosition = _persistanceBox.Text.Length;
+                _persistanceBox.IsDirty = true;
+
+                _lacunarityBox.Text = selected.Lacunarity.ToString(CultureInfo.InvariantCulture);
+                _lacunarityBox.CaretPosition = _lacunarityBox.Text.Length;
+
+                GenerateClick();
+            };
+            for (int i = 0; i < _noiseScreen.Configuration.Count; i++)
+            {
+                _noiseMaps.Items.Add(_noiseScreen.Configuration[i]);
+                if (i == 0)
+                    _noiseMaps.SelectedItem = _noiseScreen.Configuration[i];
+            }
+            Controls.Add(_noiseMaps);
+
+            y += 8;
+            var newLayer = new Button(Width - 4) { Position = new(1, y), Text = "New layer" };
+            newLayer.Click += (sender, args) =>
+            {
+                _noiseMaps.Items.Add(_noiseScreen.AddNoiseMap("layer" + (_noiseMaps.Items.Count + 1)));
+            };
+            Controls.Add(newLayer);
+
+            y += 2;
+            var removeLayer = new Button(Width - 4) { Position = new(1, y), Text = "Remove layer" };
+            removeLayer.Click += (sender, args) =>
+            {
+                if (_noiseScreen.Configuration.Count == 1) return;
+                var removed = _noiseScreen.RemoveNoiseMap(_noiseScreen.Current);
+                _noiseMaps.SelectedItem = _noiseScreen.Current;
+                _noiseMaps.Items.Remove(removed);
+            };
+            Controls.Add(removeLayer);
+
             _noiseScreen.Draw();
         }
 
         private void CopyToClipboard()
         {
-            ClipboardHelper.SetText($"GenerateNoiseMap({_octavesBox.Text}, {_scaleBox.Text}, {_persistanceBox.Text}, {_lacunarityBox.Text})");
+            var sb = new StringBuilder();
+            foreach (var config in _noiseScreen.Configuration)
+            {
+                sb.AppendLine($"var {config.Name} = _noise.GenerateNoiseMap(" +
+                    $"{config.Octaves}, " +
+                    $"{config.Scale.ToString(CultureInfo.InvariantCulture)}f, " +
+                    $"{config.Persistance.ToString(CultureInfo.InvariantCulture)}f, " +
+                    $"{config.Lacunarity.ToString(CultureInfo.InvariantCulture)}f" +
+                    $");");
+            }
+            sb.AppendLine();
+            foreach (var config in _noiseScreen.Configuration)
+            {
+                sb.AppendLine($"var {config.Name}Weight = {config.Weight.ToString(CultureInfo.InvariantCulture)}f;");
+            }
+
+            sb.AppendLine();
+            var combination = string.Join(" + ", _noiseScreen.Configuration.Select(a => $"{a.Name}[index] * {a.Name}Weight"));
+            var combination2 = string.Join(" + ", _noiseScreen.Configuration.Select(a => $"{a.Name}Weight"));
+            sb.AppendLine($"combinedMap[index] = ({combination}) / ({combination2});");
+
+            ClipboardHelper.SetText(sb.ToString());
         }
 
         private void RandomizeAllValues()
         {
-            _seedBox.Text = _random.Next(-1000, 1001).ToString();
-            _seedBox.CaretPosition = _seedBox.Text.Length;
-
             _octavesBox.Text = _random.Next(1, 13).ToString();
             _octavesBox.CaretPosition = _octavesBox.Text.Length;
 
@@ -177,13 +258,13 @@ namespace Noise.Visualizer
             if (int.TryParse(_seedBox.Text, out int value))
                 _noiseScreen.Seed = value;
             if (int.TryParse(_octavesBox.Text, out value))
-                _noiseScreen.Octaves = value;
+                _noiseScreen.Current.Octaves = value;
             if (float.TryParse(_scaleBox.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out float fValue))
-                _noiseScreen.Scale = fValue;
+                _noiseScreen.Current.Scale = fValue;
             if (float.TryParse(_persistanceBox.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out fValue))
-                _noiseScreen.Persistance = fValue;
+                _noiseScreen.Current.Persistance = fValue;
             if (float.TryParse(_lacunarityBox.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out fValue))
-                _noiseScreen.Lacunarity = fValue;
+                _noiseScreen.Current.Lacunarity = fValue;
             _noiseScreen.ApplyIslandGradient = _islandGradientOption.IsSelected;
             _noiseScreen.Draw();
         }
