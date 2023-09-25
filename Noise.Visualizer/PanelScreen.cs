@@ -43,7 +43,7 @@ namespace Noise.Visualizer
 
             Controls.Add(new Label("Octaves") { Position = new(1, y) });
             y++;
-            _octavesBox = new NumberBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Current.Octaves.ToString(CultureInfo.InvariantCulture), MaxLength = int.MaxValue, NumberMinimum = 1, NumberMaximum = int.MaxValue };
+            _octavesBox = new NumberBox(Width - 4) { Position = new(1, y), Text = _noiseScreen.Current.Octaves.ToString(CultureInfo.InvariantCulture), MaxLength = 2, NumberMinimum = 1, NumberMaximum = int.MaxValue };
             _octavesBox.CaretPosition = _octavesBox.Text.Length;
             y++;
             var slider2 = new ScrollBar(SadConsole.Orientation.Horizontal, Width - 4) { Position = new(1, y), Maximum = 12, Value = _noiseScreen.Current.Octaves };
