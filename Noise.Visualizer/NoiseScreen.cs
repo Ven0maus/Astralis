@@ -31,13 +31,15 @@ namespace Noise.Visualizer
 
         private NoiseHelper _noise;
 
-        public NoiseScreen(int width, int height, int seed = 1337) : base(width, height) 
+        public NoiseScreen(int width, int height, int seed = 0) : base(width, height) 
         {
             Octaves = 1;
             Persistance = 0.5f;
             Lacunarity = 2.0f;
             Scale = 0.35f;
-            Seed = seed;
+
+            _seed = seed;
+            _noise = new NoiseHelper(width, height, seed);
         }
 
         public void Draw()
