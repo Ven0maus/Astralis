@@ -1,5 +1,6 @@
 ﻿using Astralis.Scenes.GameplayScenes;
 using Astralis.Scenes.MainMenuScene;
+using Microsoft.Xna.Framework.Graphics;
 using SadConsole;
 
 namespace Astralis
@@ -14,7 +15,11 @@ namespace Astralis
 
             Game.Configuration gameStartup = new Game.Configuration()
                 .SetScreenSize(Constants.ScreenWidth, Constants.ScreenHeight)
-                .OnStart(OnGameStart);
+                .OnStart(OnGameStart)
+                .ConfigureFonts(f =>
+                {
+                    f.AddExtraFonts(Constants.Fonts.Aesomatica);
+                });
 
             if (!Constants.DebugMode)
                 gameStartup = gameStartup
@@ -31,7 +36,9 @@ namespace Astralis
         private static void OnGameStart()
         {
             Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager);
-            Resolution.SetResolution(Constants.DefaultResolution.X, Constants.DefaultResolution.Y, Constants.FullScreen);
+            int userDisplayWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            int userDisplayHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            Resolution.SetResolution(userDisplayWidth, userDisplayHeight, Constants.FullScreen);
         }
     }
 }

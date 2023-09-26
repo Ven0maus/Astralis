@@ -1,20 +1,26 @@
 ﻿using Astralis.Extended.Effects;
+using Astralis.GameCode;
 using SadConsole;
 using SadRogue.Primitives;
 using System;
-using Map = Astralis.GameCode.Map;
+using Venomaus.FlowVitae.Grids;
 
 namespace Astralis.Scenes.GameplayScenes
 {
     internal class OverworldScene : Scene
     {
-        private readonly Map _map;
+        private readonly World _map;
 
         public OverworldScene()
         {
             RemoveControlLayer();
 
-            _map = GenerateOverworld();
+            // Set Aesomatica font for the overworld
+            Surface.Font = Game.Instance.Fonts[Constants.Fonts.Aesomatica];
+
+            // Generate world
+            _map = GenerateOverworld(seed: 50);
+            _map.OnCellUpdate += OnCellUpdate;
 
             if (!Constants.DebugMode)
             {
@@ -33,23 +39,28 @@ namespace Astralis.Scenes.GameplayScenes
 
         }
 
-        private Map GenerateOverworld()
+        private World GenerateOverworld(int seed)
         {
-            var map = new Map(Width, Height);
+            var map = new World(Width, Height, seed, new WorldGenerator(seed));
 
             // Initial draw
-            for (int x = 0; x < Width; x++)
+            var viewPort = map.GetViewPortWorldCoordinates();
+            var cells = map.GetCells(viewPort);
+            foreach (var cell in cells)
             {
-                for (int y = 0; y < Height; y++)
-                {
-                    var tile = map[x, y];
-                    var foreground = !Constants.DebugMode ? tile.Foreground.SetAlpha(0) : tile.Foreground;
-                    var background = !Constants.DebugMode ? tile.Background.SetAlpha(0) : tile.Background;
-                    Surface.SetGlyph(x, y, tile.BlocksView ? '#' : 0, foreground, background);
-                }
+                var (x, y) = map.WorldToScreenCoordinate(cell.X, cell.Y);
+                Surface.Surface[x, y].CopyAppearanceFrom(cell);
+                Surface.Surface[x, y].IsVisible = cell.IsVisible;
             }
 
             return map;
+        }
+
+        public void OnCellUpdate(object sender, CellUpdateArgs<byte, Tile> args)
+        {
+            var surface = Surface.Surface;
+            surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(args.Cell);
+            surface[args.ScreenX, args.ScreenY].IsVisible = args.Cell.IsVisible;
         }
     }
 }
