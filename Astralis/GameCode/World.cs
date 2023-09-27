@@ -1,10 +1,13 @@
-﻿using SadRogue.Primitives;
+﻿using Astralis.Configuration;
+using Astralis.Configuration.Models;
+using SadRogue.Primitives;
+using System;
 using Venomaus.FlowVitae.Chunking.Generators;
 using Venomaus.FlowVitae.Grids;
 
 namespace Astralis.GameCode
 {
-    internal class World : GridBase<byte, Tile>
+    internal class World : GridBase<byte, Tile, WorldChunk>
     {
         public Tile this[Point pos] => GetCell(pos.X, pos.Y);
         public Tile this[int x, int y] => this[(x, y)];
@@ -12,8 +15,13 @@ namespace Astralis.GameCode
 
         private readonly int _seed;
 
-        public World(int width, int height, int seed, IProceduralGen<byte, Tile> generator) 
-            : base(width, height, chunkWidth: 25, chunkHeight: 25, generator)
+        /// <summary>
+        /// Contains all data representing how to generate the world
+        /// </summary>
+        private readonly WorldGeneration _worldGenData = GameConfiguration.Load<WorldGeneration>();
+
+        public World(int width, int height, int seed, IProceduralGen<byte, Tile, WorldChunk> generator) 
+            : base(width, height, chunkWidth: 200, chunkHeight: 200, generator)
         {
             _seed = seed;
         }
@@ -21,29 +29,57 @@ namespace Astralis.GameCode
         protected override Tile Convert(int x, int y, byte cellType)
         {
             var tile = base.Convert(x, y, cellType);
-            tile.Background = CalculateBackground(cellType);
+
+            // Retrieve chunk data + index of the coordinate on the elevation/moisture lookup array
+            var chunkCoordinate = GetChunkCoordinate(x, y);
+            var chunkData = GetChunkData(chunkCoordinate.x, chunkCoordinate.y);
+            var screenCoordinate = WorldToScreenCoordinate(x, y);
+            var index = screenCoordinate.y * Width + screenCoordinate.x;
+
+            tile.Background = CalculateBackground(cellType, chunkData.Elevation[index], chunkData.Moisture[index]);
             return tile;
         }
 
-        private static Color CalculateBackground(byte tileId)
+        private Color CalculateBackground(byte tileId, float elevation, float moisture)
         {
-            if (tileId == (byte)TileType.Snow)
-                return Color.Snow;
-            if (tileId == (byte)TileType.Mountain)
-                return Color.Gray;
-            if (tileId == (byte)TileType.DeepForest)
-                return Color.DarkGreen;
-            if (tileId == (byte)TileType.Forest)
-                return Color.Green;
-            if (tileId == (byte)TileType.Grasslands)
-                return Color.ForestGreen;
-            if (tileId == (byte)TileType.Beach)
-                return Color.AnsiYellowBright;
-            if (tileId == (byte)TileType.Water)
-                return Color.MidnightBlue;
-            if (tileId == (byte)TileType.Border)
-                return Color.AnsiMagentaBright;
-            return Color.Black;
+            switch (tileId)
+            {
+                case (byte)TileType.Border:
+                    return Color.AnsiMagentaBright;
+
+                default:
+                    // Get from json configuration
+                    var tileType = (TileType)tileId;
+                    if (!_worldGenData.Get.Biomes.TryGetValue(tileType, out var biome))
+                    {
+                        Console.WriteLine("Missing biome configuration: " + Enum.GetName(tileType));
+                        return Color.Black;
+                    }
+                    
+                    return biome.BackgroundColor;
+            }
+        }
+
+        private static Color BlendColors(Color color1, Color color2, float blendFactor)
+        {
+            int r = (int)(color1.R * (1 - blendFactor) + color2.R * blendFactor);
+            int g = (int)(color1.G * (1 - blendFactor) + color2.G * blendFactor);
+            int b = (int)(color1.B * (1 - blendFactor) + color2.B * blendFactor);
+            return new Color(r, g, b);
+        }
+
+        private static Color GetBiomeColor(Color biomeA, Color biomeB, float elevation, float moisture)
+        {
+            // Determine the transition zone
+            float TransitionStart = 0.3f/* Define the start of the transition zone */;
+            float TransitionEnd = 0.5f/* Define the end of the transition zone */;
+
+            // Calculate the blend factor based on moisture (you can use elevation too)
+            float blendFactor = (moisture - TransitionStart) / (TransitionEnd - TransitionStart);
+            blendFactor = Math.Max(0, Math.Min(1, blendFactor)); // Ensure it stays in [0, 1] range
+
+            // Blend the colors
+            return BlendColors(biomeA, biomeB, blendFactor);
         }
     }
 }

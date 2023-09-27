@@ -3,13 +3,28 @@
     public enum TileType
     {
         None = 0,
-        Water,
+        Border,
+
+        Ocean,
         Beach,
-        Grasslands,
-        Forest,
-        DeepForest,
-        Mountain,
+
+        Tundra,
+        Bare,
+        Scorched,
+
+        Shrubland,
+        Taiga,
+
+        TemperateDesert,
+        SubtropicalDesert,
+
+        Grassland,
+        TemperateForest,
+        TropicalForest,
+
+        TemperateRainForest,
+        TropicalRainForest,
+
         Snow,
-        Border
     }
 }

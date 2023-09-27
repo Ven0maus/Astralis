@@ -1,35 +1,50 @@
 ﻿using Astralis.Extended;
 using System;
-using Venomaus.FlowVitae.Chunking;
 using Venomaus.FlowVitae.Chunking.Generators;
 
 namespace Astralis.GameCode
 {
-    internal class WorldGenerator : IProceduralGen<byte, Tile>
+    internal class WorldGenerator : IProceduralGen<byte, Tile, WorldChunk>
     {
         public int Seed { get; }
+        private readonly NoiseHelper _noise;
 
         public WorldGenerator(int seed)
         { 
-            Seed = seed; 
+            Seed = seed;
+            _noise = new NoiseHelper(seed);
         }
 
-        public (byte[] chunkCells, IChunkData chunkData) Generate(int seed, int width, int height, (int x, int y) chunkCoordinate)
+        public (byte[] chunkCells, WorldChunk chunkData) Generate(int seed, int width, int height, (int x, int y) chunkCoordinate)
         {
+            // Create a unique random generator for this chunk
             var random = new Random(seed);
-            var noise = new NoiseHelper(seed);
-            var chunk = new byte[width * height];
 
+            // Create elevation and moisture lookup arrays
+            var elevation = new float[width * height];
+            var moisture = new float[width * height];
+            SetNoisemap(elevation, width, height, chunkCoordinate, _noise.GetElevation);
+            SetNoisemap(moisture, width, height, chunkCoordinate, _noise.GetMoisture);
+
+            // Set chunk based on provided lookup arrays
+            var chunk = new byte[width * height];
+            SetChunkValues(random, chunk, width, height, elevation, moisture);
+
+            return (chunk, new WorldChunk(elevation, moisture));
+        }
+
+        private static void SetNoisemap(float[] noiseMap, int width, int height, (int x, int y) chunkCoordinate, Func<float, float, float> func)
+        {
             float maxNoiseValue = float.MinValue;
             float minNoiseValue = float.MaxValue;
-            var noiseMap = new float[width * height];
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    int chunkX = chunkCoordinate.x + x;
-                    int chunkY = chunkCoordinate.y + y;
-                    var noiseValue = noise.GetNoiseFromCombinedMaps(chunkX, chunkY);
+                    float chunkX = chunkCoordinate.x + x;
+                    float chunkY = chunkCoordinate.y + y;
+
+                    var noiseValue = func(chunkX, chunkY);
                     noiseMap[y * width + x] = noiseValue;
 
                     maxNoiseValue = Math.Max(maxNoiseValue, noiseValue);
@@ -37,7 +52,7 @@ namespace Astralis.GameCode
                 }
             }
 
-            // Normalize the noise values to the range [0, 1]
+            // Normalize between 0-1
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -45,43 +60,60 @@ namespace Astralis.GameCode
                     noiseMap[y * width + x] = Mathf.InverseLerp(minNoiseValue, maxNoiseValue, noiseMap[y * width + x]);
                 }
             }
-
-            SetTilemapByNoise(random, chunk, width, height, noiseMap);
-            return (chunk, null);
         }
 
-        private static void SetTilemapByNoise(Random random, byte[] chunk, int width, int height, float[] noise)
+        private static void SetChunkValues(Random random, byte[] chunk, int width, int height, float[] elevation, float[] moisture)
         {
+            // TODO: Apply some random generation such as trees unique to the chunk
+
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
+                    var index = y * width + x;
                     if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && Constants.DebugMode)
                     {
-                        chunk[y * width + x] = (byte)TileType.Border;
+                        chunk[index] = (byte)TileType.Border;
                         continue;
                     }
 
-                    chunk[y * width + x] = GetTileId(noise[y * width + x]);
+                    chunk[index] = (byte)GetTileType(elevation[index], moisture[index]);
                 }
             }
         }
 
-        private static byte GetTileId(float noise)
+        private static TileType GetTileType(float elevation, float moisture)
         {
-            if (noise < 0.2f)
-                return (byte)TileType.Water;
-            if (noise < 0.3f)
-                return (byte)TileType.Beach;
-            if (noise < 0.45f)
-                return (byte)TileType.Grasslands;
-            if (noise < 0.65f)
-                return (byte)TileType.Forest;
-            if (noise < 0.80f)
-                return (byte)TileType.DeepForest;
-            if (noise < 0.90f)
-                return (byte)TileType.Mountain;
-            return (byte)TileType.Snow;
+            if (elevation < 0.1) return TileType.Ocean;
+            if (elevation < 0.12) return TileType.Beach;
+
+            if (elevation > 0.8)
+            {
+                if (moisture < 0.1) return TileType.Scorched;
+                if (moisture < 0.2) return TileType.Bare;
+                if (moisture < 0.5) return TileType.Tundra;
+                return TileType.Snow;
+            }
+
+            if (elevation > 0.6)
+            {
+                if (moisture < 0.33) return TileType.TemperateForest;
+                if (moisture < 0.66) return TileType.Shrubland;
+                return TileType.Taiga;
+            }
+
+            if (elevation > 0.3)
+            {
+                if (moisture < 0.16) return TileType.TemperateDesert;
+                if (moisture < 0.50) return TileType.Grassland;
+                if (moisture < 0.83) return TileType.TemperateForest;
+                return TileType.TemperateRainForest;
+            }
+
+            if (moisture < 0.16) return TileType.SubtropicalDesert;
+            if (moisture < 0.33) return TileType.Grassland;
+            if (moisture < 0.66) return TileType.TropicalForest;
+            return TileType.TropicalRainForest;
         }
     }
 }

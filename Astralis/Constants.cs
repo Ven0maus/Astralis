@@ -27,9 +27,20 @@ namespace Astralis
   / ___ \  \__ \ | |_  | |   | (_| | | | | | \__ \
  /_/   \_\ |___/  \__| |_|    \__,_| |_| |_| |___/";
 
-        public class Fonts
+        public static class Fonts
         {
             public const string Aesomatica = "Resources/Tilesets/Aesomatica_16x16.font";
+        }
+
+        public static class WorldGeneration
+        {
+            public const int ChunkWidth = 200;
+            public const int ChunkHeight = 200;
+        }
+
+        public static class Configuration
+        {
+            public const string JsonFilesPath = "Configuration/Data";
         }
     }
 }
