@@ -1,5 +1,4 @@
 ﻿using Astralis.Extended;
-using SadRogue.Primitives;
 using System;
 using Venomaus.FlowVitae.Chunking;
 using Venomaus.FlowVitae.Chunking.Generators;
@@ -58,7 +57,10 @@ namespace Astralis.GameCode
                 for (int x = 0; x < width; x++)
                 {
                     if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && Constants.DebugMode)
+                    {
+                        chunk[y * width + x] = (byte)TileType.Border;
                         continue;
+                    }
 
                     chunk[y * width + x] = GetTileId(noise[y * width + x]);
                 }

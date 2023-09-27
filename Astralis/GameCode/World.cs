@@ -13,7 +13,7 @@ namespace Astralis.GameCode
         private readonly int _seed;
 
         public World(int width, int height, int seed, IProceduralGen<byte, Tile> generator) 
-            : base(width, height, generator)
+            : base(width, height, chunkWidth: 25, chunkHeight: 25, generator)
         {
             _seed = seed;
         }
@@ -41,6 +41,8 @@ namespace Astralis.GameCode
                 return Color.AnsiYellowBright;
             if (tileId == (byte)TileType.Water)
                 return Color.MidnightBlue;
+            if (tileId == (byte)TileType.Border)
+                return Color.AnsiMagentaBright;
             return Color.Black;
         }
     }

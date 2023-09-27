@@ -16,6 +16,7 @@ namespace Astralis
             Game.Configuration gameStartup = new Game.Configuration()
                 .SetScreenSize(Constants.ScreenWidth, Constants.ScreenHeight)
                 .OnStart(OnGameStart)
+                .IsStartingScreenFocused(false)
                 .ConfigureFonts(f =>
                 {
                     f.AddExtraFonts(Constants.Fonts.Aesomatica);

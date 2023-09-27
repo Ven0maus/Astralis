@@ -9,6 +9,7 @@
         Forest,
         DeepForest,
         Mountain,
-        Snow
+        Snow,
+        Border
     }
 }
