@@ -241,7 +241,7 @@ namespace Astralis.Scenes.MainMenuScene
 
         private void ShowScreen(ControlSurface screen)
         {
-            var screens = new ILazy[] {_optionsScreen, _loadGameScreen}
+            var screens = new ILazy[] { _optionsScreen, _loadGameScreen }
                 .Where(a => a.IsValueCreated)
                 .Select(a => a.Value)
                 .Cast<ControlSurface>();

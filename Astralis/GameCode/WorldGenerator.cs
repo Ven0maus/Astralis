@@ -10,7 +10,7 @@ namespace Astralis.GameCode
         private readonly NoiseHelper _noise;
 
         public WorldGenerator(int seed)
-        { 
+        {
             Seed = seed;
             _noise = new NoiseHelper(seed);
         }

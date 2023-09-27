@@ -28,7 +28,7 @@ namespace Astralis
             // be set to anything equal to or smaller than the actual screen size.
             if (_fullScreen == false)
             {
-                if (_width <= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width && 
+                if (_width <= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width &&
                     _height <= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height)
                 {
                     _Device.PreferredBackBufferWidth = _width;

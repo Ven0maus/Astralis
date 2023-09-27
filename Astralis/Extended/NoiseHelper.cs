@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Astralis.Extended
+﻿namespace Astralis.Extended
 {
     public class NoiseHelper
     {
@@ -40,6 +38,6 @@ namespace Astralis.Extended
             }
 
             return noiseValue;
-        }       
+        }
     }
 }

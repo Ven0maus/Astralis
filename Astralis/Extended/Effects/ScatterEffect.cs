@@ -10,7 +10,7 @@ namespace Astralis.Extended.Effects
     {
         private readonly HashSet<Point> _positions;
 
-        public ScatterEffect(IEnumerable<PositionedGlyph> positionedGlyphs, ScreenSurface surface, TimeSpan duration) : 
+        public ScatterEffect(IEnumerable<PositionedGlyph> positionedGlyphs, ScreenSurface surface, TimeSpan duration) :
             base(positionedGlyphs, surface, duration)
         {
             _positions = new HashSet<Point>();

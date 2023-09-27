@@ -33,7 +33,7 @@ namespace Astralis
             Game.Instance.Run();
             Game.Instance.Dispose();
         }
-        
+
         private static void OnGameStart()
         {
             Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager);

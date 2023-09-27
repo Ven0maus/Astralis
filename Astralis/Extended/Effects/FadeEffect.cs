@@ -19,7 +19,7 @@ namespace Astralis.Extended.Effects
         private bool _fadeOut;
 
         public FadeEffect(ScreenSurface surface, TimeSpan fadeDuration, FadeMode fadeMode, bool loop = false)
-        { 
+        {
             _surface = surface;
             _fadeMode = fadeMode;
             _fadeOut = fadeMode == FadeMode.FadeOut;
@@ -42,9 +42,9 @@ namespace Astralis.Extended.Effects
         /// <param name="alpha">0.0 - 1.0 where 1 is invisible</param>
         private void SetGlyphsAlpha(double alpha)
         {
-            for (int x=0; x < _surface.Width; x++)
+            for (int x = 0; x < _surface.Width; x++)
             {
-                for (int y=0; y < _surface.Height; y++)
+                for (int y = 0; y < _surface.Height; y++)
                 {
                     var foreground = _surface.Surface[x, y].Foreground;
                     var background = _surface.Surface[x, y].Background;

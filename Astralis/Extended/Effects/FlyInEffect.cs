@@ -15,7 +15,7 @@ namespace Astralis.Extended.Effects
         private readonly Action<Point> _callBack;
 
         private DateTime _startTime;
-        private Point _objectPosition;
+        private readonly Point _objectPosition;
         private bool _hasStarted = false;
 
         public bool IsFinished { get; private set; } = false;
@@ -41,7 +41,7 @@ namespace Astralis.Extended.Effects
 
         public static FlyInEffect Create(ControlBase so, Direction flyInDirection, TimeSpan duration, TimeSpan? startAfter = null)
         {
-            if (so.Parent == null) 
+            if (so.Parent == null)
                 throw new Exception("Control is not part of a ControlHost.");
 
             int height = 0, width = 0;

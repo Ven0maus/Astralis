@@ -20,7 +20,7 @@ namespace Astralis.GameCode
         /// </summary>
         private readonly WorldGeneration _worldGenData = GameConfiguration.Load<WorldGeneration>();
 
-        public World(int width, int height, int seed, IProceduralGen<byte, Tile, WorldChunk> generator) 
+        public World(int width, int height, int seed, IProceduralGen<byte, Tile, WorldChunk> generator)
             : base(width, height, chunkWidth: 200, chunkHeight: 200, generator)
         {
             _seed = seed;

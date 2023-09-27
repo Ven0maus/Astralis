@@ -1,8 +1,6 @@
 ﻿using Astralis.Extended;
 using Astralis.Extended.Effects.Core;
-using Astralis.Extended.SadConsole;
 using SadConsole;
-using SadConsole.UI;
 
 namespace Astralis.Scenes
 {
@@ -16,14 +14,14 @@ namespace Astralis.Scenes
 
         private readonly Lazy<EffectHandler> _effectHandler;
 
-        public EffectHandler Effects 
-        { 
-            get 
+        public EffectHandler Effects
+        {
+            get
             {
                 if (!_effectHandler.IsValueCreated)
                     SadComponents.Add(_effectHandler.Value);
-                return _effectHandler.Value; 
-            } 
+                return _effectHandler.Value;
+            }
         }
 
         public Scene()

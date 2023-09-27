@@ -1,10 +1,6 @@
 ﻿using Astralis.Extended.Effects;
 using Astralis.GameCode;
-using SadConsole;
-using SadConsole.Input;
-using SadRogue.Primitives;
 using System;
-using Venomaus.FlowVitae.Grids;
 
 namespace Astralis.Scenes.GameplayScenes
 {
@@ -16,7 +12,7 @@ namespace Astralis.Scenes.GameplayScenes
         public OverworldScene()
         {
             // Generate world
-            var seed = 50;
+            var seed = new Random().Next(-1000000, 1000000);
             _world = new World(Constants.ScreenWidth, Constants.ScreenHeight, seed, new WorldGenerator(seed));
 
             // Create world renderer
@@ -25,7 +21,7 @@ namespace Astralis.Scenes.GameplayScenes
 
             // Center the camera
             _world.Center(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
-            _world.Center((Constants.ScreenWidth / 2) + 1, (Constants.ScreenHeight / 2) -1);
+            _world.Center((Constants.ScreenWidth / 2) + 1, (Constants.ScreenHeight / 2) - 1);
 
             if (!Constants.DebugMode)
             {
