@@ -55,8 +55,31 @@ namespace Astralis.GameCode
                         Console.WriteLine("Missing biome configuration: " + Enum.GetName(tileType));
                         return Color.Black;
                     }
-                    
+
                     return biome.BackgroundColor;
+                    /*
+                    // Check how we can handle neighbors with the chunks properly
+                    // Maybe we only get the outer border of each neighbor chunk to compare for the current chunks border tiles?
+                    // Check if this tile has neighboring tiles of the same type
+                    bool hasLeftNeighbor = // TODO;
+                    bool hasRightNeighbor = // TODO;
+                    bool hasTopNeighbor = // TODO;
+                    bool hasBottomNeighbor = // TODO;
+
+                    // Define neighboring biome colors
+                    Color leftNeighborColor = hasLeftNeighbor ? CalculateBackground(tileId, elevation, moisture) : biome.BackgroundColor;
+                    Color rightNeighborColor = hasRightNeighbor ? CalculateBackground(tileId, elevation, moisture) : biome.BackgroundColor;
+                    Color topNeighborColor = hasTopNeighbor ? CalculateBackground(tileId, elevation, moisture) : biome.BackgroundColor;
+                    Color bottomNeighborColor = hasBottomNeighbor ? CalculateBackground(tileId, elevation, moisture) : biome.BackgroundColor;
+
+                    // Blend the colors of the current tile and its neighbors
+                    Color blendedColor = GetBiomeColor(biome.BackgroundColor, leftNeighborColor, elevation, moisture);
+                    blendedColor = GetBiomeColor(blendedColor, rightNeighborColor, elevation, moisture);
+                    blendedColor = GetBiomeColor(blendedColor, topNeighborColor, elevation, moisture);
+                    blendedColor = GetBiomeColor(blendedColor, bottomNeighborColor, elevation, moisture);
+
+                    return blendedColor;
+                    */
             }
         }
 
