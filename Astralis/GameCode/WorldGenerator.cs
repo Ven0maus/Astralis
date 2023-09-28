@@ -76,35 +76,35 @@ namespace Astralis.GameCode
 
         private static TileType GetTileType(float elevation, float moisture)
         {
-            if (elevation < 0.1) return TileType.Ocean;
-            if (elevation < 0.12) return TileType.Beach;
+            if (elevation < 0.05 || (moisture > 0.95 && elevation < 0.2)) return TileType.Ocean;
+            if (elevation < 0.2) return TileType.Beach;
 
-            if (elevation > 0.8)
+            if (elevation > 0.9)
             {
                 if (moisture < 0.1) return TileType.Scorched;
-                if (moisture < 0.2) return TileType.Bare;
-                if (moisture < 0.5) return TileType.Tundra;
+                if (moisture < 0.25) return TileType.Bare;
+                if (moisture < 0.6) return TileType.Tundra;
                 return TileType.Snow;
             }
 
-            if (elevation > 0.6)
+            if (elevation > 0.7)
             {
-                if (moisture < 0.33) return TileType.TemperateForest;
-                if (moisture < 0.66) return TileType.Shrubland;
+                if (moisture < 0.4) return TileType.TemperateForest;
+                if (moisture < 0.75) return TileType.Shrubland;
                 return TileType.Taiga;
             }
 
-            if (elevation > 0.3)
+            if (elevation > 0.4)
             {
-                if (moisture < 0.16) return TileType.TemperateDesert;
-                if (moisture < 0.50) return TileType.Grassland;
-                if (moisture < 0.83) return TileType.TemperateForest;
+                if (moisture < 0.2) return TileType.TemperateDesert;
+                if (moisture < 0.55) return TileType.Grassland;
+                if (moisture < 0.8) return TileType.TemperateForest;
                 return TileType.TemperateRainForest;
             }
 
-            if (moisture < 0.16) return TileType.SubtropicalDesert;
-            if (moisture < 0.33) return TileType.Grassland;
-            if (moisture < 0.66) return TileType.TropicalForest;
+            if (moisture < 0.2) return TileType.SubtropicalDesert;
+            if (moisture < 0.4) return TileType.Grassland;
+            if (moisture < 0.7) return TileType.TropicalForest;
             return TileType.TropicalRainForest;
         }
 
