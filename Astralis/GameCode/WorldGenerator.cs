@@ -23,8 +23,10 @@ namespace Astralis.GameCode
             // Create elevation and moisture lookup arrays
             var elevation = new float[width * height];
             var moisture = new float[width * height];
-            SetNoisemap(elevation, width, height, chunkCoordinate, _noise.GetElevation);
-            SetNoisemap(moisture, width, height, chunkCoordinate, _noise.GetMoisture);
+
+            SetNoisemap(width, height, chunkCoordinate,
+                new NoiseData(elevation, _noise.GetElevation),
+                new NoiseData(moisture, _noise.GetMoisture));
 
             // Set chunk based on provided lookup arrays
             var chunk = new byte[width * height];
@@ -33,10 +35,8 @@ namespace Astralis.GameCode
             return (chunk, new WorldChunk(elevation, moisture));
         }
 
-        private static void SetNoisemap(float[] noiseMap, int width, int height, (int x, int y) chunkCoordinate, Func<float, float, float> func)
+        private static void SetNoisemap(int width, int height, (int x, int y) chunkCoordinate, params NoiseData[] noiseData)
         {
-            float maxNoiseValue = float.MinValue;
-            float minNoiseValue = float.MaxValue;
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -44,28 +44,20 @@ namespace Astralis.GameCode
                     float chunkX = chunkCoordinate.x + x;
                     float chunkY = chunkCoordinate.y + y;
 
-                    var noiseValue = func(chunkX, chunkY);
-                    noiseMap[y * width + x] = noiseValue;
+                    foreach (var data in noiseData)
+                    {
+                        var noiseValue = data.NoiseFunc(chunkX, chunkY);
 
-                    maxNoiseValue = Math.Max(maxNoiseValue, noiseValue);
-                    minNoiseValue = Math.Min(minNoiseValue, noiseValue);
-                }
-            }
-
-            // Normalize between 0-1
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    noiseMap[y * width + x] = Mathf.InverseLerp(minNoiseValue, maxNoiseValue, noiseMap[y * width + x]);
+                        data.Noisemap[y * width + x] = noiseValue;
+                        data.MaxValue = Math.Max(data.MaxValue, noiseValue);
+                        data.MinValue = Math.Min(data.MinValue, noiseValue);
+                    }
                 }
             }
         }
 
         private static void SetChunkValues(Random random, byte[] chunk, int width, int height, float[] elevation, float[] moisture)
         {
-            // TODO: Apply some random generation such as trees unique to the chunk
-
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -114,6 +106,23 @@ namespace Astralis.GameCode
             if (moisture < 0.33) return TileType.Grassland;
             if (moisture < 0.66) return TileType.TropicalForest;
             return TileType.TropicalRainForest;
+        }
+
+        class NoiseData
+        {
+            public readonly float[] Noisemap;
+            public readonly Func<float, float, float> NoiseFunc;
+
+            public float MinValue;
+            public float MaxValue;
+
+            public NoiseData(float[] noiseMap, Func<float, float, float> noiseFunc)
+            {
+                Noisemap = noiseMap;
+                NoiseFunc = noiseFunc;
+                MinValue = float.MaxValue;
+                MaxValue = float.MinValue;
+            }
         }
     }
 }

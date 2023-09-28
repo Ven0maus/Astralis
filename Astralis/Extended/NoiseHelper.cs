@@ -37,7 +37,7 @@
                 frequency *= lacunarity;
             }
 
-            return noiseValue;
+            return Mathf.Remap(noiseValue, -1, 1, 0, 1);
         }
     }
 }
