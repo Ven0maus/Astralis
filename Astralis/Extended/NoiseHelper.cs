@@ -11,13 +11,13 @@
 
         public float GetElevation(float x, float y)
         {
-            return GetNoise(x, y, 7, -0.79f, -0.75f, 1.64f);
+            return GetNoise(x, y, 7, 3.25f, -0.75f, 1.64f);
 
         }
 
         public float GetMoisture(float x, float y)
         {
-            return GetNoise(x, y, 10, -0.71f, 0.69f, 0.39f);
+            return GetNoise(x, y, 10, 1.70f, 0.69f, 0.39f);
         }
 
         private float GetNoise(float x, float y, int octaves, float scale, float persistence, float lacunarity)

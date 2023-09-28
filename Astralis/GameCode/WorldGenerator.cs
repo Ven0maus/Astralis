@@ -7,12 +7,12 @@ namespace Astralis.GameCode
     internal class WorldGenerator : IProceduralGen<byte, Tile, WorldChunk>
     {
         public int Seed { get; }
-        private readonly NoiseHelper _noise;
+        public readonly NoiseHelper NoiseHelper;
 
-        public WorldGenerator(int seed)
+        public WorldGenerator(int seed, NoiseHelper noiseHelper)
         {
             Seed = seed;
-            _noise = new NoiseHelper(seed);
+            NoiseHelper = noiseHelper;
         }
 
         public (byte[] chunkCells, WorldChunk chunkData) Generate(int seed, int width, int height, (int x, int y) chunkCoordinate)
@@ -25,14 +25,14 @@ namespace Astralis.GameCode
             var moisture = new float[width * height];
 
             SetNoisemap(width, height, chunkCoordinate,
-                new NoiseData(elevation, _noise.GetElevation),
-                new NoiseData(moisture, _noise.GetMoisture));
+                new NoiseData(elevation, NoiseHelper.GetElevation),
+                new NoiseData(moisture, NoiseHelper.GetMoisture));
 
             // Set chunk based on provided lookup arrays
             var chunk = new byte[width * height];
             SetChunkValues(random, chunk, width, height, elevation, moisture);
 
-            return (chunk, new WorldChunk(elevation, moisture));
+            return (chunk, new WorldChunk(chunk, width, height));
         }
 
         private static void SetNoisemap(int width, int height, (int x, int y) chunkCoordinate, params NoiseData[] noiseData)
@@ -63,7 +63,7 @@ namespace Astralis.GameCode
                 for (int x = 0; x < width; x++)
                 {
                     var index = y * width + x;
-                    if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && Constants.DebugMode)
+                    if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && Constants.DebugMode && Constants.WorldGeneration.DrawBordersOnDebugMode)
                     {
                         chunk[index] = (byte)TileType.Border;
                         continue;
@@ -74,7 +74,7 @@ namespace Astralis.GameCode
             }
         }
 
-        private static TileType GetTileType(float elevation, float moisture)
+        public static TileType GetTileType(float elevation, float moisture)
         {
             if (elevation < 0.05 || (moisture > 0.95 && elevation < 0.2)) return TileType.Ocean;
             if (elevation < 0.2) return TileType.Beach;

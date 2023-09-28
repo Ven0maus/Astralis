@@ -41,7 +41,7 @@ namespace Astralis.GameCode
 
             Point mousePos = state.CellPosition;
 
-            if (state.Mouse.MiddleButtonDown && !isDragging)
+            if (state.Mouse.LeftButtonDown && !isDragging)
             {
                 // Mouse button is pressed, start tracking the drag operation
                 isDragging = true;
@@ -74,7 +74,7 @@ namespace Astralis.GameCode
                 }
             }
 
-            if (!state.Mouse.MiddleButtonDown && isDragging)
+            if (!state.Mouse.LeftButtonDown && isDragging)
             {
                 // Mouse button was released after dragging, stop tracking the drag operation
                 isDragging = false;

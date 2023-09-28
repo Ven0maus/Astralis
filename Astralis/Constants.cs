@@ -4,7 +4,7 @@ namespace Astralis
 {
     public class Constants
     {
-        public const bool DebugMode = false;
+        public const bool DebugMode = true;
 
         public static readonly Point FontSize = new(8, 16);
 
@@ -34,6 +34,7 @@ namespace Astralis
 
         public static class WorldGeneration
         {
+            public const bool DrawBordersOnDebugMode = false;
             public const int ChunkWidth = 200;
             public const int ChunkHeight = 200;
         }
