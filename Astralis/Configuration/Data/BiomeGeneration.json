@@ -2,63 +2,67 @@
   "biomes": [
     {
       "name": "Ocean",
-      "BackgroundColor": "#0077BE"
+      "color": "#0077BE"
     },
     {
       "name": "Beach",
-      "BackgroundColor": "#F2E6A9"
+      "color": "#F2E6A9"
     },
     {
       "name": "Tundra",
-      "BackgroundColor": "#D3E0FF"
+      "color": "#D3E0FF"
     },
     {
       "name": "Bare",
-      "BackgroundColor": "#C2B280"
+      "color": "#C2B280"
     },
     {
       "name": "Scorched",
-      "BackgroundColor": "#434343"
+      "color": "#434343"
     },
     {
       "name": "Shrubland",
-      "BackgroundColor": "#A9CCB5"
+      "color": "#A9CCB5"
     },
     {
       "name": "Taiga",
-      "BackgroundColor": "#354231"
+      "color": "#354231"
     },
     {
       "name": "TemperateDesert",
-      "BackgroundColor": "#E3C089"
+      "color": "#E3C089"
     },
     {
       "name": "SubtropicalDesert",
-      "BackgroundColor": "#D5B185"
+      "color": "#D5B185"
     },
     {
       "name": "Grassland",
-      "BackgroundColor": "#9BCB7A"
+      "color": "#9BCB7A"
     },
     {
       "name": "TemperateForest",
-      "BackgroundColor": "#2D865B"
+      "color": "#2D865B",
+      "objects": [ 1 ]
     },
     {
       "name": "TropicalForest",
-      "BackgroundColor": "#2F8F5E"
+      "color": "#2F8F5E",
+      "objects": [ 1 ]
     },
     {
       "name": "TemperateRainForest",
-      "BackgroundColor": "#2C835F"
+      "color": "#2C835F",
+      "objects": [ 1 ]
     },
     {
       "name": "TropicalRainForest",
-      "BackgroundColor": "#30815D"
+      "color": "#30815D",
+      "objects": [ 1 ]
     },
     {
       "name": "Snow",
-      "BackgroundColor": "#FFFFFF"
+      "color": "#FFFFFF"
     }
   ]
 }

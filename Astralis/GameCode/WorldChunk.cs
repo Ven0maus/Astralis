@@ -10,27 +10,34 @@ namespace Astralis.GameCode
     {
         public int Seed { get; set; }
         public (int x, int y) ChunkCoordinate { get; set; }
-        public Color[] Colors { get; set; }
+        public Color[] BiomeColors { get; private set; }
 
-        private readonly byte[] _chunkTiles;
-
+        private readonly byte[] _objects;
         public readonly int Width, Height;
 
-        public WorldChunk(byte[] chunkTiles, int chunkWidth, int chunkHeight)
+        public WorldChunk(byte[] biomes, byte[] objects, int chunkWidth, int chunkHeight)
         {
+            _objects = objects;
             Width = chunkWidth;
             Height = chunkHeight;
-
-            _chunkTiles = chunkTiles;
-
-            Colors = new Color[Width * Height];
+            BiomeColors = new Color[Width * Height];
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    Colors[y * Width + x] = CalculateBiomeColor((ChunkCoordinate.x + x, ChunkCoordinate.y + y), _chunkTiles[y * Width + x]);
+                    BiomeColors[y * Width + x] = CalculateBiomeColor((ChunkCoordinate.x + x, ChunkCoordinate.y + y), biomes[y * Width + x], biomes);
                 }
             }
+        }
+
+        public byte GetObject(int x, int y)
+        {
+            return _objects[(y - ChunkCoordinate.y) * Width + (x - ChunkCoordinate.x)];
+        }
+
+        public Color GetBiomeColor(int x, int y)
+        {
+            return BiomeColors[(y - ChunkCoordinate.y) * Width + (x - ChunkCoordinate.x)];
         }
 
         private static IEnumerable<(int x, int y)> GetNeighborBorderPositions(int chunkWidth, int chunkHeight)
@@ -38,7 +45,7 @@ namespace Astralis.GameCode
             int newWidth = chunkWidth + 2;  // New width
             int newHeight = chunkHeight + 2; // New height
 
-            List<(int x, int y)> borderCoordinates = new List<(int x, int y)>();
+            List<(int x, int y)> borderCoordinates = new();
 
             // Iterate through the top and bottom rows
             for (int x = 0; x < newWidth; x++)
@@ -57,32 +64,32 @@ namespace Astralis.GameCode
             return borderCoordinates;
         }
 
-        private static Color GetTileBaseColor(byte tileId, bool msgOnMissingBiomeConfiguration = true)
+        private static Color GetTileBaseColor(byte tileId, bool throwExceptionOnMissingConfiguration = true)
         {
-            if (!World.GenerationData.Get.Biomes.TryGetValue((TileType)tileId, out var biome))
+            if (!World.BiomeData.Get.Biomes.TryGetValue((BiomeType)tileId, out var biome))
             {
-                if (msgOnMissingBiomeConfiguration)
-                    Console.WriteLine("Missing biome configuration: " + Enum.GetName((TileType)tileId));
-                return Color.Black;
+                if (throwExceptionOnMissingConfiguration)
+                    throw new Exception("Missing biome configuration: " + Enum.GetName((BiomeType)tileId));
+                return Color.AnsiMagentaBright;
             }
-            return biome.BackgroundColor;
+            return biome.Color;
         }
 
-        private Color CalculateBiomeColor((int x, int y) pos, byte cellType)
+        private Color CalculateBiomeColor((int x, int y) pos, byte cellType, byte[] biomes)
         {
             switch (cellType)
             {
-                case (byte)TileType.Border:
+                case (byte)BiomeType.Border:
                     return Color.AnsiMagentaBright;
 
                 default:
                     // Get from json configuration
                     var baseColor = GetTileBaseColor(cellType);
 
-                    var leftNeighbor = GetNeighborTileData(pos, Dir.Left);
-                    var rightNeighbor = GetNeighborTileData(pos, Dir.Right);
-                    var topNeighbor = GetNeighborTileData(pos, Dir.Up);
-                    var bottomNeighbor = GetNeighborTileData(pos, Dir.Down);
+                    var leftNeighbor = GetNeighborTileData(pos, Dir.Left, biomes);
+                    var rightNeighbor = GetNeighborTileData(pos, Dir.Right, biomes);
+                    var topNeighbor = GetNeighborTileData(pos, Dir.Up, biomes);
+                    var bottomNeighbor = GetNeighborTileData(pos, Dir.Down, biomes);
 
                     // Define neighboring biome colors that are different from eachother
                     var neighbors = new[]
@@ -109,7 +116,7 @@ namespace Astralis.GameCode
             }
         }
 
-        private byte? GetNeighborTileData((int x, int y) pos, Dir direction)
+        private byte? GetNeighborTileData((int x, int y) pos, Dir direction, byte[] biomes)
         {
             (int x, int y) coordinate = (x: pos.x - ChunkCoordinate.x, y: pos.y - ChunkCoordinate.y);
 
@@ -130,7 +137,7 @@ namespace Astralis.GameCode
             }
 
             int index = coordinate.y * Width + coordinate.x;
-            return InBoundsNeighbor(coordinate.x, coordinate.y) ? _chunkTiles[index] : null;
+            return InBoundsNeighbor(coordinate.x, coordinate.y) ? biomes[index] : null;
         }
 
         private bool InBoundsNeighbor(int x, int y)

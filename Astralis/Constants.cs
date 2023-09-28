@@ -11,7 +11,7 @@ namespace Astralis
         /// <summary>
         /// The perceived or effective resolution of the game, which can differ from the physical or native resolution of the display device itself.
         /// </summary>
-        public static readonly Point VirtualResolution = new(1920, 1080); // new(1280, 720);
+        public static readonly Point VirtualResolution = new(1280, 720); // new(1280, 720);
 
         public const bool FullScreen = false;
         public static int ScreenWidth { get { return VirtualResolution.X / FontSize.X; } }

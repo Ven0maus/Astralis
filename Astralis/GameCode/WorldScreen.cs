@@ -1,4 +1,5 @@
-﻿using SadConsole;
+﻿using Astralis.Extended.SadConsole;
+using SadConsole;
 using SadConsole.Input;
 using SadRogue.Primitives;
 using Venomaus.FlowVitae.Grids;
@@ -12,10 +13,18 @@ namespace Astralis.GameCode
         private bool isDragging = false;
         private const float cameraMoveSpeed = 0.3f;
 
+        private readonly FontWindow _fontWindow;
+
         public WorldScreen(World world) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
             // Set Aesomatica font for the overworld
             Font = Game.Instance.Fonts[Constants.Fonts.Aesomatica];
+
+            _fontWindow = new FontWindow(Font);
+            _fontWindow.OnClick += (sender, index) => System.Console.WriteLine($"Char ({index}) '{(char)index}'");
+            Children.Add(_fontWindow);
+            _fontWindow.DrawFontSurface();
+            _fontWindow.IsVisible = Constants.DebugMode;
 
             // Setup world object
             _world = world;
@@ -32,6 +41,15 @@ namespace Astralis.GameCode
             surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(args.Cell);
             surface[args.ScreenX, args.ScreenY].IsVisible = args.Cell.IsVisible;
             surface.IsDirty = true;
+        }
+
+        public override bool ProcessKeyboard(Keyboard keyboard)
+        {
+            if (keyboard.IsKeyPressed(Keys.P))
+            {
+                _fontWindow.IsVisible = !_fontWindow.IsVisible;
+            }
+            return base.ProcessKeyboard(keyboard);
         }
 
         public override bool ProcessMouse(MouseScreenObjectState state)

@@ -29,10 +29,11 @@ namespace Astralis.GameCode
                 new NoiseData(moisture, NoiseHelper.GetMoisture));
 
             // Set chunk based on provided lookup arrays
-            var chunk = new byte[width * height];
-            SetChunkValues(random, chunk, width, height, elevation, moisture);
+            var biomes = new byte[width * height];
+            var objects = new byte[width * height];
+            SetChunkValues(random, biomes, objects, width, height, elevation, moisture);
 
-            return (chunk, new WorldChunk(chunk, width, height));
+            return (biomes, new WorldChunk(biomes, objects, width, height));
         }
 
         private static void SetNoisemap(int width, int height, (int x, int y) chunkCoordinate, params NoiseData[] noiseData)
@@ -56,7 +57,7 @@ namespace Astralis.GameCode
             }
         }
 
-        private static void SetChunkValues(Random random, byte[] chunk, int width, int height, float[] elevation, float[] moisture)
+        private static void SetChunkValues(Random random, byte[] biomes, byte[] objects, int width, int height, float[] elevation, float[] moisture)
         {
             for (int y = 0; y < height; y++)
             {
@@ -65,47 +66,64 @@ namespace Astralis.GameCode
                     var index = y * width + x;
                     if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && Constants.DebugMode && Constants.WorldGeneration.DrawBordersOnDebugMode)
                     {
-                        chunk[index] = (byte)TileType.Border;
+                        biomes[index] = (byte)BiomeType.Border;
                         continue;
                     }
 
-                    chunk[index] = (byte)GetTileType(elevation[index], moisture[index]);
+                    var biomeType = GetTileType(elevation[index], moisture[index]);
+                    var objectType = GetPossibleObject(random, biomeType);
+                    biomes[index] = (byte)biomeType;
+                    objects[index] = (byte)objectType;
                 }
             }
         }
 
-        public static TileType GetTileType(float elevation, float moisture)
+        private static ObjectType GetPossibleObject(Random random, BiomeType biomeType)
         {
-            if (elevation < 0.05 || (moisture > 0.95 && elevation < 0.2)) return TileType.Ocean;
-            if (elevation < 0.2) return TileType.Beach;
+            if (biomeType == BiomeType.TemperateForest ||
+                biomeType == BiomeType.TemperateRainForest ||
+                biomeType == BiomeType.TropicalForest ||
+                biomeType == BiomeType.TropicalRainForest)
+            {
+                // 5% for a tree
+                if (random.Next(0, 100) < 5)
+                    return ObjectType.Tree;
+            }
+            return ObjectType.None;
+        }
+
+        public static BiomeType GetTileType(float elevation, float moisture)
+        {
+            if (elevation < 0.05 || (moisture > 0.95 && elevation < 0.2)) return BiomeType.Ocean;
+            if (elevation < 0.2) return BiomeType.Beach;
 
             if (elevation > 0.9)
             {
-                if (moisture < 0.1) return TileType.Scorched;
-                if (moisture < 0.25) return TileType.Bare;
-                if (moisture < 0.6) return TileType.Tundra;
-                return TileType.Snow;
+                if (moisture < 0.1) return BiomeType.Scorched;
+                if (moisture < 0.25) return BiomeType.Bare;
+                if (moisture < 0.6) return BiomeType.Tundra;
+                return BiomeType.Snow;
             }
 
             if (elevation > 0.7)
             {
-                if (moisture < 0.4) return TileType.TemperateForest;
-                if (moisture < 0.75) return TileType.Shrubland;
-                return TileType.Taiga;
+                if (moisture < 0.4) return BiomeType.TemperateForest;
+                if (moisture < 0.75) return BiomeType.Shrubland;
+                return BiomeType.Taiga;
             }
 
             if (elevation > 0.4)
             {
-                if (moisture < 0.2) return TileType.TemperateDesert;
-                if (moisture < 0.55) return TileType.Grassland;
-                if (moisture < 0.8) return TileType.TemperateForest;
-                return TileType.TemperateRainForest;
+                if (moisture < 0.2) return BiomeType.TemperateDesert;
+                if (moisture < 0.55) return BiomeType.Grassland;
+                if (moisture < 0.8) return BiomeType.TemperateForest;
+                return BiomeType.TemperateRainForest;
             }
 
-            if (moisture < 0.2) return TileType.SubtropicalDesert;
-            if (moisture < 0.4) return TileType.Grassland;
-            if (moisture < 0.7) return TileType.TropicalForest;
-            return TileType.TropicalRainForest;
+            if (moisture < 0.2) return BiomeType.SubtropicalDesert;
+            if (moisture < 0.4) return BiomeType.Grassland;
+            if (moisture < 0.7) return BiomeType.TropicalForest;
+            return BiomeType.TropicalRainForest;
         }
 
         class NoiseData

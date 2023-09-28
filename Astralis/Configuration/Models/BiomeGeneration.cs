@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Astralis.Configuration.Models
 {
-    internal class WorldGeneration
+    internal class BiomeGeneration
     {
         private Cache _cache;
         public Cache Get { get { return _cache ??= new Cache(this); } }
@@ -18,10 +18,10 @@ namespace Astralis.Configuration.Models
 
         public class Cache
         {
-            private readonly WorldGeneration _worldGeneration;
-            public Dictionary<TileType, Biome> Biomes { get; private set; }
+            private readonly BiomeGeneration _worldGeneration;
+            public Dictionary<BiomeType, Biome> Biomes { get; private set; }
 
-            public Cache(WorldGeneration worldGeneration)
+            public Cache(BiomeGeneration worldGeneration)
             {
                 _worldGeneration = worldGeneration;
 
@@ -30,7 +30,7 @@ namespace Astralis.Configuration.Models
 
             private void InitBiomesCache()
             {
-                var tileTypes = ((TileType[])Enum.GetValues(typeof(TileType)))
+                var tileTypes = ((BiomeType[])Enum.GetValues(typeof(BiomeType)))
                     .ToDictionary(a => Enum.GetName(a), a => a);
                 Biomes = _worldGeneration.Biomes.Select(a =>
                 {
@@ -44,7 +44,7 @@ namespace Astralis.Configuration.Models
             public string Name { get; set; }
 
             [JsonConverter(typeof(ColorConverter))]
-            public Color BackgroundColor { get; set; }
+            public Color Color { get; set; }
         }
     }
 }

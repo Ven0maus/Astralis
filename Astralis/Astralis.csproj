@@ -16,7 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Configuration\Data\WorldGeneration.json">
+    <None Update="Configuration\Data\BiomeGeneration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Configuration\Data\WorldObjects.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Tilesets\Aesomatica_16x16.font">

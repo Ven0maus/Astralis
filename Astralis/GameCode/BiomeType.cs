@@ -1,6 +1,6 @@
 ﻿namespace Astralis.GameCode
 {
-    public enum TileType
+    public enum BiomeType
     {
         None = 0,
         Border,
