@@ -1,7 +1,7 @@
 ﻿using Astralis.Configuration.Models;
+using Astralis.Extended;
 using SadRogue.Primitives;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Venomaus.FlowVitae.Chunking;
 
@@ -14,14 +14,18 @@ namespace Astralis.GameCode
         public Color[] BiomeColors { get; private set; }
 
         private readonly WorldObject[] _objects;
+        private readonly NoiseHelper _noiseHelper;
         public readonly int Width, Height;
 
-        public WorldChunk(byte[] biomes, WorldObject[] objects, int chunkWidth, int chunkHeight)
+        public WorldChunk(byte[] biomes, WorldObject[] objects, int chunkWidth, int chunkHeight, NoiseHelper noiseHelper)
         {
             _objects = objects;
+            _noiseHelper = noiseHelper;
+
             Width = chunkWidth;
             Height = chunkHeight;
             BiomeColors = new Color[Width * Height];
+
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
@@ -39,30 +43,6 @@ namespace Astralis.GameCode
         public Color GetBiomeColor(int x, int y)
         {
             return BiomeColors[(y - ChunkCoordinate.y) * Width + (x - ChunkCoordinate.x)];
-        }
-
-        private static IEnumerable<(int x, int y)> GetNeighborBorderPositions(int chunkWidth, int chunkHeight)
-        {
-            int newWidth = chunkWidth + 2;  // New width
-            int newHeight = chunkHeight + 2; // New height
-
-            List<(int x, int y)> borderCoordinates = new();
-
-            // Iterate through the top and bottom rows
-            for (int x = 0; x < newWidth; x++)
-            {
-                borderCoordinates.Add((x - 1, -1));
-                borderCoordinates.Add((x - 1, newHeight - 2));
-            }
-
-            // Iterate through the left and right columns, excluding the corners
-            for (int y = 1; y < newHeight - 1; y++)
-            {
-                borderCoordinates.Add((-1, y - 1));
-                borderCoordinates.Add((newWidth - 2, y - 1));
-            }
-
-            return borderCoordinates;
         }
 
         private static Color GetTileBaseColor(byte tileId, bool throwExceptionOnMissingConfiguration = true)
@@ -93,7 +73,7 @@ namespace Astralis.GameCode
                     var bottomNeighbor = GetNeighborTileData(pos, Dir.Down, biomes);
 
                     // Define neighboring biome colors that are different from eachother
-                    var neighbors = new[]
+                    var neighborColors = new[]
                     {
                         leftNeighbor,
                         rightNeighbor,
@@ -101,16 +81,17 @@ namespace Astralis.GameCode
                         bottomNeighbor
                     }
                         .Where(a => a != null)
-                        .Select(a => new { Color = GetTileBaseColor(a.Value, false), Obj = a })
-                        .DistinctBy(a => a.Color);
+                        .Select(a => GetTileBaseColor(a.Value, false))
+                        .Distinct();
 
                     Color blendedColor = baseColor;
                     bool baseColorSet = false;
-                    foreach (var neighbor in neighbors)
+                    foreach (var color in neighborColors)
                     {
+                        if (color == baseColor) continue;
                         if (!baseColorSet)
                             baseColorSet = true;
-                        blendedColor = GetBiomeColor(!baseColorSet ? baseColor : blendedColor, neighbor.Color);
+                        blendedColor = GetBiomeColor(!baseColorSet ? baseColor : blendedColor, color);
                     }
 
                     return blendedColor;
@@ -124,21 +105,32 @@ namespace Astralis.GameCode
             switch (direction)
             {
                 case Dir.Up:
-                    coordinate = (coordinate.x, y: coordinate.y + 1);
+                    coordinate = (coordinate.x, coordinate.y + 1);
                     break;
                 case Dir.Down:
-                    coordinate = (coordinate.x, y: coordinate.y - 1);
+                    coordinate = (coordinate.x, coordinate.y - 1);
                     break;
                 case Dir.Left:
-                    coordinate = (coordinate.x - 1, y: coordinate.y);
+                    coordinate = (coordinate.x - 1, coordinate.y);
                     break;
                 case Dir.Right:
-                    coordinate = (coordinate.x + 1, y: coordinate.y);
+                    coordinate = (coordinate.x + 1, coordinate.y);
                     break;
             }
 
             int index = coordinate.y * Width + coordinate.x;
-            return InBoundsNeighbor(coordinate.x, coordinate.y) ? biomes[index] : null;
+            var inBounds = InBoundsNeighbor(coordinate.x, coordinate.y);
+            if (inBounds)
+                return biomes[index];
+            return null;
+
+            // Calculate biome from neighbor chunk
+            // TODO: Fix so that it doesn't look weird, something is wrong with the elevation/moisture or something?
+            // It seems different than what is in the actual chunk at that location
+            // But how? It uses the same function, seed, parameters, coordinate etc..
+            var elevation = _noiseHelper.GetElevation(ChunkCoordinate.x + coordinate.x, ChunkCoordinate.y + coordinate.y);
+            var moisture = _noiseHelper.GetMoisture(ChunkCoordinate.x + coordinate.x, ChunkCoordinate.y + coordinate.y);
+            return (byte)WorldGenerator.GetTileType(elevation, moisture);
         }
 
         private bool InBoundsNeighbor(int x, int y)

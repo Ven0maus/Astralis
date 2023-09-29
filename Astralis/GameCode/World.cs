@@ -2,7 +2,6 @@
 using Astralis.Configuration.Models;
 using SadConsole;
 using SadRogue.Primitives;
-using System;
 using Venomaus.FlowVitae.Grids;
 
 namespace Astralis.GameCode
@@ -22,14 +21,14 @@ namespace Astralis.GameCode
         /// </summary>
         public static readonly WorldObjects ObjectData = GameConfiguration.Load<WorldObjects>();
 
-        private readonly int _seed;
+        public readonly int Seed;
         private readonly WorldGenerator _generator;
 
         public World(int width, int height, WorldGenerator generator)
             : base(width, height, chunkWidth: 200, chunkHeight: 200, generator)
         {
             _generator = generator;
-            _seed = generator.Seed;
+            Seed = generator.Seed;
         }
 
         protected override Tile Convert(int x, int y, byte cellType)

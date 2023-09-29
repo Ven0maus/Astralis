@@ -35,7 +35,7 @@ namespace Astralis.GameCode
             var objects = new WorldObject[width * height];
             SetChunkValues(random, biomes, objects, width, height, elevation, moisture);
 
-            return (biomes, new WorldChunk(biomes, objects, width, height));
+            return (biomes, new WorldChunk(biomes, objects, width, height, NoiseHelper));
         }
 
         private static void SetNoisemap(int width, int height, (int x, int y) chunkCoordinate, params NoiseData[] noiseData)
@@ -50,10 +50,7 @@ namespace Astralis.GameCode
                     foreach (var data in noiseData)
                     {
                         var noiseValue = data.NoiseFunc(chunkX, chunkY);
-
                         data.Noisemap[y * width + x] = noiseValue;
-                        data.MaxValue = Math.Max(data.MaxValue, noiseValue);
-                        data.MinValue = Math.Min(data.MinValue, noiseValue);
                     }
                 }
             }
@@ -92,7 +89,7 @@ namespace Astralis.GameCode
                     if (World.ObjectData.Get.Objects.TryGetValue(randomObject.Name, out var obj))
                     {
                         return obj;
-                    }   
+                    }
                 }
             }
             return null;
@@ -137,15 +134,10 @@ namespace Astralis.GameCode
             public readonly float[] Noisemap;
             public readonly Func<float, float, float> NoiseFunc;
 
-            public float MinValue;
-            public float MaxValue;
-
             public NoiseData(float[] noiseMap, Func<float, float, float> noiseFunc)
             {
                 Noisemap = noiseMap;
                 NoiseFunc = noiseFunc;
-                MinValue = float.MaxValue;
-                MaxValue = float.MinValue;
             }
         }
     }

@@ -12,7 +12,6 @@ namespace Astralis.GameCode
         private readonly World _world;
         private Point startDragPos, cameraPosition = new(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
         private bool isDragging = false;
-        private const float cameraMoveSpeed = 0.3f;
 
         private readonly FontWindow _fontWindow;
 
@@ -78,8 +77,8 @@ namespace Astralis.GameCode
                 if (deltaX != 0 || deltaY != 0)
                 {
                     // Apply a scaling factor to control camera speed
-                    deltaX = -1 * (int)(deltaX * cameraMoveSpeed);
-                    deltaY = -1 * (int)(deltaY * cameraMoveSpeed);
+                    deltaX = -1 * deltaX;
+                    deltaY = -1 * deltaY;
 
                     // Apply smoothing to camera movement
                     var cameraVelocity = new Point(deltaX, deltaY);
