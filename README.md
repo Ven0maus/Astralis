@@ -8,19 +8,13 @@ Astralis offers a rich gaming experience that will keep you engaged for hours on
 #### Gameplay
 Astralis offers a rich and immersive gameplay experience. Here are some tips to help you get started:
 
-**Character Customization:** Begin by customizing your character's appearance and selecting traits that suit your playstyle.
-
-**Exploration:** Venture out into the world to discover new biomes, NPCs, and hidden treasures.
-
-**Quests:** Interact with NPCs to pick up quests and follow their stories to earn rewards and experience.
-
-**Combat:** Engage in combat with various creatures and enemies. Utilize your collected items and skills to survive.
-
-**Leveling Up:** Gain experience points to level up and unlock new abilities and perks.
-
-**Base Building:** Establish and expand your base to serve as a safe haven and resource hub.
-
-**Events:** Keep an eye out for dynamic in-game events that can present both opportunities and challenges.
+- Begin by customizing your character's appearance and selecting traits that suit your playstyle.
+- Venture out into the world to discover new biomes, NPCs, and hidden treasures.
+- Interact with NPCs to pick up quests and follow their stories to earn rewards and experience.
+- Engage in combat with various creatures and enemies. Utilize your collected items and skills to survive.
+- Gain experience points to level up and unlock new abilities and perks.
+- Establish and expand your base to serve as a safe haven and resource hub.
+- Keep an eye out for dynamic in-game events that can present both opportunities and challenges.
 
 #### Found bugs?
 Please create a new issue with a detailed explanation of your bug, 
