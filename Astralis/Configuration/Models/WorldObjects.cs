@@ -29,7 +29,8 @@ namespace Astralis.Configuration.Models
 
             public WorldObject GetCustomObject(CustomObject customObject)
             {
-                return Objects.TryGetValue(Enum.GetName(customObject), out var value) ? value : null;
+                var name = Enum.GetName(customObject);
+                return Objects.TryGetValue(name, out var value) ? value : throw new Exception($"Missing world object configuration: {name}");
             }
 
             private void InitObjectsCache()
