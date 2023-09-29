@@ -1,4 +1,5 @@
-﻿using SadRogue.Primitives;
+﻿using Astralis.Configuration.Models;
+using SadRogue.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,10 @@ namespace Astralis.GameCode
         public (int x, int y) ChunkCoordinate { get; set; }
         public Color[] BiomeColors { get; private set; }
 
-        private readonly byte[] _objects;
+        private readonly WorldObject[] _objects;
         public readonly int Width, Height;
 
-        public WorldChunk(byte[] biomes, byte[] objects, int chunkWidth, int chunkHeight)
+        public WorldChunk(byte[] biomes, WorldObject[] objects, int chunkWidth, int chunkHeight)
         {
             _objects = objects;
             Width = chunkWidth;
@@ -30,7 +31,7 @@ namespace Astralis.GameCode
             }
         }
 
-        public byte GetObject(int x, int y)
+        public WorldObject GetObject(int x, int y)
         {
             return _objects[(y - ChunkCoordinate.y) * Width + (x - ChunkCoordinate.x)];
         }

@@ -43,22 +43,42 @@
     {
       "name": "TemperateForest",
       "color": "#2D865B",
-      "objects": [ 1 ]
+      "objects": [
+        {
+          "name": "Tree",
+          "spawnchance": 2
+        }
+      ]
     },
     {
       "name": "TropicalForest",
       "color": "#2F8F5E",
-      "objects": [ 1 ]
+      "objects": [
+        {
+          "name": "Tree",
+          "spawnchance": 2
+        }
+      ]
     },
     {
       "name": "TemperateRainForest",
       "color": "#2C835F",
-      "objects": [ 1 ]
+      "objects": [
+        {
+          "name": "Tree",
+          "spawnchance": 2
+        }
+      ]
     },
     {
       "name": "TropicalRainForest",
       "color": "#30815D",
-      "objects": [ 1 ]
+      "objects": [
+        {
+          "name": "Tree",
+          "spawnchance": 2
+        }
+      ]
     },
     {
       "name": "Snow",

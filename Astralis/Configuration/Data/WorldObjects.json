@@ -1,8 +1,8 @@
 {
   "objects": [
     {
-      "glyph": 5,
       "name": "Tree",
+      "glyph": 5,
       "color": "#30815D"
     }
   ]

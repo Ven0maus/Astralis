@@ -1,5 +1,7 @@
-﻿using Astralis.Extended;
+﻿using Astralis.Configuration.Models;
+using Astralis.Extended;
 using System;
+using System.Linq;
 using Venomaus.FlowVitae.Chunking.Generators;
 
 namespace Astralis.GameCode
@@ -30,7 +32,7 @@ namespace Astralis.GameCode
 
             // Set chunk based on provided lookup arrays
             var biomes = new byte[width * height];
-            var objects = new byte[width * height];
+            var objects = new WorldObject[width * height];
             SetChunkValues(random, biomes, objects, width, height, elevation, moisture);
 
             return (biomes, new WorldChunk(biomes, objects, width, height));
@@ -57,7 +59,7 @@ namespace Astralis.GameCode
             }
         }
 
-        private static void SetChunkValues(Random random, byte[] biomes, byte[] objects, int width, int height, float[] elevation, float[] moisture)
+        private static void SetChunkValues(Random random, byte[] biomes, WorldObject[] objects, int width, int height, float[] elevation, float[] moisture)
         {
             for (int y = 0; y < height; y++)
             {
@@ -71,25 +73,29 @@ namespace Astralis.GameCode
                     }
 
                     var biomeType = GetTileType(elevation[index], moisture[index]);
-                    var objectType = GetPossibleObject(random, biomeType);
+                    var objectType = GetRandomBiomeObject(random, biomeType);
                     biomes[index] = (byte)biomeType;
-                    objects[index] = (byte)objectType;
+                    objects[index] = objectType;
                 }
             }
         }
 
-        private static ObjectType GetPossibleObject(Random random, BiomeType biomeType)
+        private static WorldObject GetRandomBiomeObject(Random random, BiomeType biomeType)
         {
-            if (biomeType == BiomeType.TemperateForest ||
-                biomeType == BiomeType.TemperateRainForest ||
-                biomeType == BiomeType.TropicalForest ||
-                biomeType == BiomeType.TropicalRainForest)
+            if (World.BiomeData.Get.Biomes.TryGetValue(biomeType, out var biome) && biome.Objects != null)
             {
-                // 5% for a tree
-                if (random.Next(0, 100) < 5)
-                    return ObjectType.Tree;
+                var randomObject = biome.Objects
+                    .Where(a => random.Next(0, 100) < a.SpawnChance)
+                    .RandomOrDefault(random);
+                if (randomObject != null)
+                {
+                    if (World.ObjectData.Get.Objects.TryGetValue(randomObject.Name, out var obj))
+                    {
+                        return obj;
+                    }   
+                }
             }
-            return ObjectType.None;
+            return null;
         }
 
         public static BiomeType GetTileType(float elevation, float moisture)

@@ -43,8 +43,16 @@ namespace Astralis.Configuration.Models
         {
             public string Name { get; set; }
 
+            public BiomeObject[] Objects { get; set; }
+
             [JsonConverter(typeof(ColorConverter))]
             public Color Color { get; set; }
+        }
+
+        internal class BiomeObject
+        {
+            public string Name { get; set; }
+            public int SpawnChance { get; set; }
         }
     }
 }
