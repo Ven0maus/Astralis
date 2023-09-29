@@ -164,7 +164,7 @@ namespace Astralis.GameCode
         private static Color GetBiomeColor(Color biomeA, Color biomeB)
         {
             // Adjust the blend factor as needed
-            float blendFactor = 0.06f;
+            float blendFactor = 0.12f;
 
             // Blend the colors
             return BlendColors(biomeA, biomeB, blendFactor);
