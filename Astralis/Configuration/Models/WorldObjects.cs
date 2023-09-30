@@ -18,7 +18,7 @@ namespace Astralis.Configuration.Models
         public class Cache
         {
             private readonly WorldObjects _worldObjects;
-            public Dictionary<ObjectType, WorldObject> Objects { get; private set; }
+            public Dictionary<string, WorldObject> Objects { get; private set; }
 
             public Cache(WorldObjects worldObjects)
             {
@@ -27,14 +27,15 @@ namespace Astralis.Configuration.Models
                 InitObjectsCache();
             }
 
+            public WorldObject GetCustomObject(CustomObject customObject)
+            {
+                var name = Enum.GetName(customObject);
+                return Objects.TryGetValue(name, out var value) ? value : throw new Exception($"Missing world object configuration: {name}");
+            }
+
             private void InitObjectsCache()
             {
-                var objectTypes = ((ObjectType[])Enum.GetValues(typeof(ObjectType)))
-                    .ToDictionary(a => Enum.GetName(a), a => a);
-                Objects = _worldObjects.Objects.Select(a =>
-                {
-                    return new { Object = a, ObjectType = objectTypes[a.Name] };
-                }).ToDictionary(a => a.ObjectType, a => a.Object);
+                Objects = _worldObjects.Objects.ToDictionary(a => a.Name, a => a);
             }
         }
     }

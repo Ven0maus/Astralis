@@ -6,6 +6,60 @@ namespace Astralis.Extended
 {
     internal static class Extensions
     {
+        public static T Random<T>(this IEnumerable<T> collection, Random random)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (random == null)
+                throw new ArgumentNullException(nameof(random));
+
+            int count = 0;
+            T selected = default;
+
+            foreach (var item in collection)
+            {
+                count++;
+                if (random.Next(count) == 0)
+                {
+                    selected = item;
+                }
+            }
+
+            if (count == 0)
+            {
+                throw new InvalidOperationException("The collection is empty.");
+            }
+
+            return selected;
+        }
+
+        public static T RandomOrDefault<T>(this IEnumerable<T> collection, Random random)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            if (random == null)
+                throw new ArgumentNullException(nameof(random));
+
+            int count = 0;
+            T selected = default;
+
+            foreach (var item in collection)
+            {
+                count++;
+                if (random.Next(count) == 0)
+                {
+                    selected = item;
+                }
+            }
+
+            if (count == 0)
+            {
+                return default;
+            }
+
+            return selected;
+        }
+
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach (var item in source)
