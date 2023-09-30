@@ -1,5 +1,6 @@
 ﻿using Astralis.Configuration;
 using Astralis.Configuration.Models;
+using Astralis.Extended;
 using SadConsole;
 using SadRogue.Primitives;
 using Venomaus.FlowVitae.Grids;
@@ -25,7 +26,7 @@ namespace Astralis.GameCode
         private readonly WorldGenerator _generator;
 
         public World(int width, int height, int chunkWidth, int chunkHeight, WorldGenerator generator)
-            : base(width, height, chunkWidth, chunkHeight, generator, 2)
+            : base(width, height, chunkWidth, chunkHeight, generator, Constants.WorldGeneration.ExtraChunkRadius)
         {
             _generator = generator;
             Seed = generator.Seed;
@@ -45,7 +46,7 @@ namespace Astralis.GameCode
             var obj = chunkData.GetObject(x, y);
             if (obj != null)
             {
-                tile.Decorators = new[] { new CellDecorator(obj.Color, obj.Glyph, Mirror.None) };
+                tile.Decorators = new[] { new CellDecorator(obj.Color, obj.Glyphs.Random(chunkData.Random), Mirror.None) };
             }
 
             return tile;

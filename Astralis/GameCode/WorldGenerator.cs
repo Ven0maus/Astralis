@@ -35,7 +35,7 @@ namespace Astralis.GameCode
             var objects = new WorldObject[width * height];
             SetChunkValues(random, biomes, objects, width, height, elevation, moisture);
 
-            return (biomes, new WorldChunk(biomes, objects, width, height, NoiseHelper));
+            return (biomes, new WorldChunk(biomes, objects, width, height, random));
         }
 
         private static void SetNoisemap(int width, int height, (int x, int y) chunkCoordinate, params NoiseData[] noiseData)
@@ -82,7 +82,7 @@ namespace Astralis.GameCode
             if (World.BiomeData.Get.Biomes.TryGetValue(biomeType, out var biome) && biome.Objects != null)
             {
                 var randomObject = biome.Objects
-                    .Where(a => random.Next(0, 100) < a.SpawnChance)
+                    .Where(a => random.Next(0, GetRandomRollByRarity(a.Rarity)) < a.SpawnChance)
                     .RandomOrDefault(random);
                 if (randomObject != null)
                 {
@@ -93,6 +93,20 @@ namespace Astralis.GameCode
                 }
             }
             return null;
+        }
+
+        private static int GetRandomRollByRarity(BiomeGeneration.Rarity rarity)
+        {
+            switch (rarity)
+            {
+                case BiomeGeneration.Rarity.Normal: return 100;
+                case BiomeGeneration.Rarity.Uncommon: return 200;
+                case BiomeGeneration.Rarity.Rare: return 300;
+                case BiomeGeneration.Rarity.Epic: return 500;
+                case BiomeGeneration.Rarity.Legendary: return 750;
+                case BiomeGeneration.Rarity.Mythical: return 1000;
+            }
+            return 100;
         }
 
         public static BiomeType GetTileType(float elevation, float moisture)

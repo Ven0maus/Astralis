@@ -6,11 +6,25 @@
     },
     {
       "name": "Beach",
-      "color": "#F2E6A9"
+      "color": "#F2E6A9",
+      "objects": [
+        {
+          "name": "PalmTree",
+          "spawnchance": 1,
+          "rarity": "Epic"
+        }
+      ]
     },
     {
       "name": "Tundra",
-      "color": "#D3E0FF"
+      "color": "#D3E0FF",
+      "objects": [
+        {
+          "name": "Rock",
+          "spawnchance": 1,
+          "rarity": "Epic"
+        }
+      ]
     },
     {
       "name": "Bare",
@@ -18,7 +32,14 @@
     },
     {
       "name": "Scorched",
-      "color": "#434343"
+      "color": "#434343",
+      "objects": [
+        {
+          "name": "Rock",
+          "spawnchance": 3,
+          "rarity": "Epic"
+        }
+      ]
     },
     {
       "name": "Shrubland",
@@ -38,14 +59,21 @@
     },
     {
       "name": "Grassland",
-      "color": "#9BCB7A"
+      "color": "#9BCB7A",
+      "objects": [
+        {
+          "name": "SwampTree",
+          "spawnchance": 5,
+          "rarity": "Legendary"
+        }
+      ]
     },
     {
       "name": "TemperateForest",
       "color": "#2D865B",
       "objects": [
         {
-          "name": "Tree",
+          "name": "OakTree",
           "spawnchance": 2
         }
       ]
@@ -55,7 +83,7 @@
       "color": "#2F8F5E",
       "objects": [
         {
-          "name": "Tree",
+          "name": "OakTree",
           "spawnchance": 5
         }
       ]
@@ -65,7 +93,7 @@
       "color": "#2C835F",
       "objects": [
         {
-          "name": "Tree",
+          "name": "OakTree",
           "spawnchance": 18
         }
       ]
@@ -75,14 +103,21 @@
       "color": "#30815D",
       "objects": [
         {
-          "name": "Tree",
+          "name": "OakTree",
           "spawnchance": 20
         }
       ]
     },
     {
       "name": "Snow",
-      "color": "#f7fff9"
+      "color": "#f7fff9",
+      "objects": [
+        {
+          "name": "Rock",
+          "spawnchance": 2,
+          "rarity": "Rare"
+        }
+      ]
     }
   ]
 }

@@ -1,9 +1,24 @@
 {
   "objects": [
     {
-      "name": "Tree",
-      "glyph": 5,
+      "name": "OakTree",
+      "glyphs": [ 5 ],
       "color": "#30815D"
+    },
+    {
+      "name": "SwampTree",
+      "glyphs": [ 6 ],
+      "color": "#7c9465"
+    },
+    {
+      "name": "PalmTree",
+      "glyphs": [ 226 ],
+      "color": "#568749"
+    },
+    {
+      "name": "Rock",
+      "glyphs": [ 7 ],
+      "color": "#545454"
     }
   ]
 }

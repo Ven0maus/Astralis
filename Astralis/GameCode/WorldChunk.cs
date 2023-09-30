@@ -12,16 +12,17 @@ namespace Astralis.GameCode
         public int Seed { get; set; }
         public (int x, int y) ChunkCoordinate { get; set; }
         public Color[] BiomeColors { get; private set; }
+        public Random Random { get; }
 
-        private readonly WorldObject[] _objects;
-        private readonly NoiseHelper _noiseHelper;
         public readonly int Width, Height;
 
-        public WorldChunk(byte[] biomes, WorldObject[] objects, int chunkWidth, int chunkHeight, NoiseHelper noiseHelper)
+        private readonly WorldObject[] _objects;
+
+        public WorldChunk(byte[] biomes, WorldObject[] objects, int chunkWidth, int chunkHeight, Random random)
         {
             _objects = objects;
-            _noiseHelper = noiseHelper;
 
+            Random = random;
             Width = chunkWidth;
             Height = chunkHeight;
             BiomeColors = new Color[Width * Height];

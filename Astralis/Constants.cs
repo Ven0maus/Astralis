@@ -35,6 +35,7 @@ namespace Astralis
         public static class WorldGeneration
         {
             public const bool DrawBordersOnDebugMode = false;
+            public const int ExtraChunkRadius = 2;
             public const int ChunkSize = 50;
         }
 

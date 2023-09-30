@@ -53,6 +53,17 @@ namespace Astralis.Configuration.Models
         {
             public string Name { get; set; }
             public int SpawnChance { get; set; }
+            public Rarity Rarity { get; set; }
+        }
+
+        internal enum Rarity
+        {
+            Normal,
+            Uncommon,
+            Rare,
+            Epic,
+            Legendary,
+            Mythical
         }
     }
 }

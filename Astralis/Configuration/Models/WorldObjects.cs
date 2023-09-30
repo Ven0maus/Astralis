@@ -42,7 +42,8 @@ namespace Astralis.Configuration.Models
 
     internal class WorldObject
     {
-        public int Glyph { get; set; }
+        [JsonConverter(typeof(IntArrayConverter))]
+        public int[] Glyphs { get; set; }
         public string Name { get; set; }
 
         [JsonConverter(typeof(ColorConverter))]
