@@ -123,14 +123,6 @@ namespace Astralis.GameCode
             if (inBounds)
                 return biomes[index];
             return null;
-
-            // Calculate biome from neighbor chunk
-            // TODO: Fix so that it doesn't look weird, something is wrong with the elevation/moisture or something?
-            // It seems different than what is in the actual chunk at that location
-            // But how? It uses the same function, seed, parameters, coordinate etc..
-            var elevation = _noiseHelper.GetElevation(ChunkCoordinate.x + coordinate.x, ChunkCoordinate.y + coordinate.y);
-            var moisture = _noiseHelper.GetMoisture(ChunkCoordinate.x + coordinate.x, ChunkCoordinate.y + coordinate.y);
-            return (byte)WorldGenerator.GetTileType(elevation, moisture);
         }
 
         private bool InBoundsNeighbor(int x, int y)

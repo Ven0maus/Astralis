@@ -14,7 +14,8 @@ namespace Astralis.Scenes.GameplayScenes
             // Generate world
             var seed = new Random().Next(-1000000, 1000000);
             var worldGenerator = new WorldGenerator(seed, new Extended.NoiseHelper(seed));
-            _world = new World(Constants.ScreenWidth, Constants.ScreenHeight, worldGenerator);
+            var chunkSize = Constants.WorldGeneration.ChunkSize;
+            _world = new World(Constants.ScreenWidth, Constants.ScreenHeight, chunkSize, chunkSize, worldGenerator);
 
             // Create world renderer
             _worldScreen = new WorldScreen(_world);

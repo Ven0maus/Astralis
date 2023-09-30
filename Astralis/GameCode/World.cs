@@ -24,8 +24,8 @@ namespace Astralis.GameCode
         public readonly int Seed;
         private readonly WorldGenerator _generator;
 
-        public World(int width, int height, WorldGenerator generator)
-            : base(width, height, chunkWidth: 200, chunkHeight: 200, generator)
+        public World(int width, int height, int chunkWidth, int chunkHeight, WorldGenerator generator)
+            : base(width, height, chunkWidth, chunkHeight, generator, 2)
         {
             _generator = generator;
             Seed = generator.Seed;

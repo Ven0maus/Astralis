@@ -35,8 +35,7 @@ namespace Astralis
         public static class WorldGeneration
         {
             public const bool DrawBordersOnDebugMode = false;
-            public const int ChunkWidth = 50;
-            public const int ChunkHeight = 50;
+            public const int ChunkSize = 50;
         }
 
         public static class Configuration
