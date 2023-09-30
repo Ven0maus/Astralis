@@ -52,7 +52,6 @@ namespace Astralis.GameCode
             return base.ProcessKeyboard(keyboard);
         }
 
-        private Point initialCameraPosition;
         public override bool ProcessMouse(MouseScreenObjectState state)
         {
             if (!IsVisible || !state.IsOnScreenObject)
@@ -65,7 +64,6 @@ namespace Astralis.GameCode
                 // Mouse button is pressed, start tracking the drag operation
                 isDragging = true;
                 startDragPos = mousePos;
-                initialCameraPosition = cameraPosition;
             }
 
             if (isDragging)
@@ -74,32 +72,21 @@ namespace Astralis.GameCode
                 int deltaX = startDragPos.X - mousePos.X;
                 int deltaY = startDragPos.Y - mousePos.Y;
 
-                if (deltaX != 0 || deltaY != 0)
-                {
-                    // Apply a scaling factor to control camera speed
-                    deltaX = -1 * deltaX;
-                    deltaY = -1 * deltaY;
+                // Apply a scaling factor to control camera speed
+                deltaX = -1 * deltaX;
+                deltaY = -1 * deltaY;
 
-                    // Apply smoothing to camera movement
-                    var cameraVelocity = new Point(deltaX, deltaY);
+                // Apply smoothing to camera movement
+                var cameraVelocity = new Point(deltaX, deltaY);
 
-                    // Check if the camera has reached the same distance as the mouse drag
-                    if (Math.Abs(cameraPosition.X - initialCameraPosition.X) < Math.Abs(startDragPos.X - mousePos.X) &&
-                        Math.Abs(cameraPosition.Y - initialCameraPosition.Y) < Math.Abs(startDragPos.Y - mousePos.Y))
-                    {
-                        // Update the camera position based on velocity
-                        cameraPosition -= cameraVelocity;
+                // Update the camera position based on velocity
+                cameraPosition -= cameraVelocity;
 
-                        // Move the viewport based on the camera position
-                        _world.Center(cameraPosition.X, cameraPosition.Y);
-                    }
-                    else
-                    {
-                        // Reached position, reset
-                        initialCameraPosition = cameraPosition;
-                        startDragPos = mousePos;
-                    }
-                }
+                // Move the viewport based on the camera position
+                _world.Center(cameraPosition.X, cameraPosition.Y);
+
+                // Update the starting position to the current mouse position
+                startDragPos = mousePos;
             }
 
             if (!state.Mouse.LeftButtonDown && isDragging)
