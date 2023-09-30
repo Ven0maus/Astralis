@@ -5,7 +5,7 @@ using SadConsole;
 using SadRogue.Primitives;
 using Venomaus.FlowVitae.Grids;
 
-namespace Astralis.GameCode
+namespace Astralis.GameCode.WorldGen
 {
     internal class World : GridBase<byte, Tile, WorldChunk>
     {

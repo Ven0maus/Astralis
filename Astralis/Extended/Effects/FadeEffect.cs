@@ -50,6 +50,8 @@ namespace Astralis.Extended.Effects
                     var background = _surface.Surface[x, y].Background;
                     _surface.Surface[x, y].Foreground = foreground.SetAlpha(ClampTo0_255(alpha));
                     _surface.Surface[x, y].Background = background.SetAlpha(ClampTo0_255(alpha));
+                    _surface.Surface[x, y].Decorators = AdjustDecoratorsColor(_surface.Surface[x, y].Decorators, ClampTo0_255(alpha));
+
                 }
             }
             _surface.IsDirty = true;
@@ -61,6 +63,18 @@ namespace Astralis.Extended.Effects
             int roundedValue = (int)Math.Round(scaledValue);
             byte clampedValue = (byte)Math.Max(0, Math.Min(255, roundedValue));
             return clampedValue;
+        }
+
+        private static CellDecorator[] AdjustDecoratorsColor(CellDecorator[] decorators, byte alpha)
+        {
+            if (decorators == null || decorators.Length == 0) return decorators;
+            CellDecorator[] newDecorators = new CellDecorator[decorators.Length];
+            for (int i=0; i < decorators.Length; i++)
+            {
+                var dec = decorators[i];
+                newDecorators[i] = new CellDecorator(dec.Color.SetAlpha(alpha), dec.Glyph, dec.Mirror);
+            }
+            return newDecorators;
         }
 
         private void FadeOut(double alpha)

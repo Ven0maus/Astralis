@@ -1,11 +1,11 @@
 ﻿using Astralis.Extended.SadConsole;
+using Astralis.GameCode.WorldGen;
 using SadConsole;
 using SadConsole.Input;
 using SadRogue.Primitives;
-using System;
 using Venomaus.FlowVitae.Grids;
 
-namespace Astralis.GameCode
+namespace Astralis.Scenes.Screens
 {
     internal class WorldScreen : ScreenSurface
     {

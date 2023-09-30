@@ -11,7 +11,7 @@
         {
           "name": "PalmTree",
           "spawnchance": 1,
-          "rarity": "Epic"
+          "spawnrarity": "Epic"
         }
       ]
     },
@@ -22,7 +22,7 @@
         {
           "name": "Rock",
           "spawnchance": 1,
-          "rarity": "Epic"
+          "spawnrarity": "Epic"
         }
       ]
     },
@@ -37,7 +37,7 @@
         {
           "name": "Rock",
           "spawnchance": 3,
-          "rarity": "Epic"
+          "spawnrarity": "Epic"
         }
       ]
     },
@@ -63,8 +63,8 @@
       "objects": [
         {
           "name": "SwampTree",
-          "spawnchance": 5,
-          "rarity": "Legendary"
+          "spawnchance": 2,
+          "spawnrarity": "Rare"
         }
       ]
     },
@@ -115,7 +115,7 @@
         {
           "name": "Rock",
           "spawnchance": 2,
-          "rarity": "Rare"
+          "spawnrarity": "Rare"
         }
       ]
     }

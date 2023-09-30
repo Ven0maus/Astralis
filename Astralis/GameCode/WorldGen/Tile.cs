@@ -2,7 +2,7 @@
 using System;
 using Venomaus.FlowVitae.Cells;
 
-namespace Astralis.GameCode
+namespace Astralis.GameCode.WorldGen
 {
     internal class Tile : ColoredGlyph, ICell<byte>, IEquatable<ICell<byte>>, IEquatable<(int x, int y)>
     {

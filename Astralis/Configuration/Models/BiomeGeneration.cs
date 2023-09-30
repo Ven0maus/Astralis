@@ -1,5 +1,5 @@
 ﻿using Astralis.Configuration.JsonHelpers;
-using Astralis.GameCode;
+using Astralis.GameCode.WorldGen;
 using Newtonsoft.Json;
 using SadRogue.Primitives;
 using System;
@@ -53,7 +53,7 @@ namespace Astralis.Configuration.Models
         {
             public string Name { get; set; }
             public int SpawnChance { get; set; }
-            public Rarity Rarity { get; set; }
+            public Rarity SpawnRarity { get; set; }
         }
 
         internal enum Rarity

@@ -1,5 +1,6 @@
 ﻿using Astralis.Extended.Effects;
-using Astralis.GameCode;
+using Astralis.GameCode.WorldGen;
+using Astralis.Scenes.Screens;
 using System;
 
 namespace Astralis.Scenes.GameplayScenes

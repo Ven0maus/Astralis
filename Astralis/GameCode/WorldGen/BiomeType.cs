@@ -1,4 +1,4 @@
-﻿namespace Astralis.GameCode
+﻿namespace Astralis.GameCode.WorldGen
 {
     public enum BiomeType
     {

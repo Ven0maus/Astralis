@@ -1,11 +1,10 @@
 ﻿using Astralis.Configuration.Models;
-using Astralis.Extended;
 using SadRogue.Primitives;
 using System;
 using System.Linq;
 using Venomaus.FlowVitae.Chunking;
 
-namespace Astralis.GameCode
+namespace Astralis.GameCode.WorldGen
 {
     internal class WorldChunk : IChunkData
     {

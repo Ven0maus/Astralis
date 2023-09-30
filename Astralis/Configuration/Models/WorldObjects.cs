@@ -1,5 +1,5 @@
 ﻿using Astralis.Configuration.JsonHelpers;
-using Astralis.GameCode;
+using Astralis.GameCode.WorldGen;
 using Newtonsoft.Json;
 using SadRogue.Primitives;
 using System;

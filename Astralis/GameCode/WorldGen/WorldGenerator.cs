@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using Venomaus.FlowVitae.Chunking.Generators;
 
-namespace Astralis.GameCode
+namespace Astralis.GameCode.WorldGen
 {
     internal class WorldGenerator : IProceduralGen<byte, Tile, WorldChunk>
     {
@@ -82,7 +82,7 @@ namespace Astralis.GameCode
             if (World.BiomeData.Get.Biomes.TryGetValue(biomeType, out var biome) && biome.Objects != null)
             {
                 var randomObject = biome.Objects
-                    .Where(a => random.Next(0, GetRandomRollByRarity(a.Rarity)) < a.SpawnChance)
+                    .Where(a => random.Next(0, GetRandomRollByRarity(a.SpawnRarity)) < a.SpawnChance)
                     .RandomOrDefault(random);
                 if (randomObject != null)
                 {
@@ -111,7 +111,7 @@ namespace Astralis.GameCode
 
         public static BiomeType GetTileType(float elevation, float moisture)
         {
-            if (elevation < 0.05 || (moisture > 0.95 && elevation < 0.2)) return BiomeType.Ocean;
+            if (elevation < 0.05 || moisture > 0.95 && elevation < 0.2) return BiomeType.Ocean;
             if (elevation < 0.2) return BiomeType.Beach;
 
             if (elevation > 0.9)
