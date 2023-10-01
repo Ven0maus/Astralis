@@ -10,6 +10,8 @@ namespace Astralis.Scenes.GameplayScenes
         private readonly World _world;
         private readonly WorldScreen _worldScreen;
 
+        public event EventHandler OnMainMenuVisualLoaded;
+
         public OverworldScene()
         {
             // Generate world
@@ -25,17 +27,37 @@ namespace Astralis.Scenes.GameplayScenes
             // Center the camera
             _world.Center(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
             _world.Center((Constants.ScreenWidth / 2) + 1, (Constants.ScreenHeight / 2) - 1);
+        }
 
-            if (!Constants.DebugMode)
+        public void Initialize(bool mainMenuVisuals)
+        {
+            if (mainMenuVisuals)
             {
-                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
-                fadeEffect.OnFinished += GameStart;
+                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(1), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
+                fadeEffect.OnFinished += () => { _worldScreen.MainMenuCamera = mainMenuVisuals; OnMainMenuVisualLoaded?.Invoke(null, null); };
                 Effects.Add(fadeEffect);
             }
             else
             {
-                GameStart();
+                if (!Constants.DebugMode)
+                {
+                    var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
+                    fadeEffect.OnFinished += GameStart;
+                    Effects.Add(fadeEffect);
+                }
+                else
+                {
+                    GameStart();
+                }
             }
+        }
+
+        public void DeintializeMainMenuVisuals()
+        {
+            _worldScreen.MainMenuCamera = false;
+            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, _worldScreen.GetSurfaces());
+            fadeEffect.OnFinished += () => { OnMainMenuVisualLoaded?.Invoke(null, null); };
+            Effects.Add(fadeEffect);
         }
 
         private void GameStart()

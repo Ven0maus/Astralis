@@ -16,11 +16,11 @@ namespace Astralis
         public static int ScreenWidth { get { return VirtualResolution.X / FontSize.X; } }
         public static int ScreenHeight { get { return VirtualResolution.Y / FontSize.Y; } }
 
-        public static readonly Color GameTitleColor = Color.White;
+        public static readonly Color GameTitleColor = Color.Black;
         public static readonly Color GameTitleShadowColor = Color.Lerp(Color.Red, Color.Black, 0.75f);
         public const string GameTitle = "Astralis";
         public const string GameTitleFancy = @"
-     _            _                    _   _       
+     _            _                   _   _       
     / \     ___  | |_   _ __   __ _  | | (_)  ___ 
    / _ \   / __| | __| | '__| / _` | | | | | / __|
   / ___ \  \__ \ | |_  | |   | (_| | | | | | \__ \
@@ -30,6 +30,7 @@ namespace Astralis
         {
             public const string Aesomatica = "Resources/Tilesets/Aesomatica_16x16.font";
             public const string WorldObjects = "Resources/Tilesets/WorldObjects_16x16.font";
+            public const string LordNightmare = "Resources/Tilesets/Lord_Nightmare-Fixedsys-03_8x16.font";
         }
 
         public static class WorldGeneration

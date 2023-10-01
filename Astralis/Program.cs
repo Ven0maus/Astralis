@@ -19,7 +19,7 @@ namespace Astralis
                 .IsStartingScreenFocused(false)
                 .ConfigureFonts(f =>
                 {
-                    f.AddExtraFonts(Constants.Fonts.Aesomatica, Constants.Fonts.WorldObjects);
+                    f.AddExtraFonts(Constants.Fonts.Aesomatica, Constants.Fonts.WorldObjects, Constants.Fonts.LordNightmare);
                 });
 
             if (!Constants.DebugMode)

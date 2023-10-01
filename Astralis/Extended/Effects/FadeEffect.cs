@@ -2,6 +2,8 @@
 using SadConsole;
 using SadRogue.Primitives;
 using System;
+using System.Collections.Generic;
+using Venomaus.FlowVitae.Helpers;
 
 namespace Astralis.Extended.Effects
 {
@@ -13,31 +15,61 @@ namespace Astralis.Extended.Effects
         private readonly ScreenSurface[] _surfaces;
         private readonly TimeSpan _fadeDuration;
         private readonly bool _loop;
+        private readonly FadeContext _fadeContext;
 
         private DateTime _startTime;
         private bool _fadeOut;
 
-        public FadeEffect(TimeSpan fadeDuration, FadeMode fadeMode, bool loop, params ScreenSurface[] surfaces)
+        private readonly Dictionary<ScreenSurface, Dictionary<(int x, int y), (byte foreground, byte background)>> _startAlphas;
+        private readonly TupleComparer<int> _comparer;
+
+        public FadeEffect(TimeSpan fadeDuration, FadeContext fadeContext, FadeMode fadeMode, bool loop, params ScreenSurface[] surfaces)
         {
             _surfaces = surfaces;
             _fadeOut = fadeMode == FadeMode.FadeOut;
+            _fadeContext = fadeContext;
             _loop = loop;
             _fadeDuration = fadeDuration;
             _startTime = DateTime.Now;
+            _comparer = new TupleComparer<int>();
+            _startAlphas = new Dictionary<ScreenSurface, Dictionary<(int x, int y), (byte foreground, byte background)>>();
 
+            // Store original alpha values before starting the fade
+            StoreOriginalAlphas();
+
+            // Initialize glyphs with the current alpha values
             SetGlyphsAlpha(_fadeOut ? 1 : 0);
         }
 
-        public enum FadeMode
+        private void StoreOriginalAlphas()
         {
-            FadeIn,
-            FadeOut,
+            foreach (var surface in _surfaces)
+            {
+                if (!surface.IsVisible) continue;
+                for (int x = 0; x < surface.Width; x++)
+                {
+                    for (int y = 0; y < surface.Height; y++)
+                    {
+                        if (!surface.Surface[x, y].IsVisible) continue;
+
+                        var foreground = surface.Surface[x, y].Foreground;
+                        var background = surface.Surface[x, y].Background;
+
+                        // Store original alpha values
+                        if (!_startAlphas.TryGetValue(surface, out var alphas))
+                        {
+                            _startAlphas.Add(surface, alphas = new Dictionary<(int x, int y), (byte, byte)>(_comparer));
+                        }
+                        alphas[(x, y)] = (foreground.A, background.A);
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Sets the foreground alpha on each glyph on the surface that has a valid glyph
         /// </summary>
-        /// <param name="alpha">0.0 - 1.0 where 1 is invisible</param>
+        /// <param name="alpha">0.0 - 1.0 where 1 is visible</param>
         private void SetGlyphsAlpha(double alpha)
         {
             foreach (var surface in _surfaces)
@@ -48,17 +80,51 @@ namespace Astralis.Extended.Effects
                     for (int y = 0; y < surface.Height; y++)
                     {
                         if (!surface.Surface[x, y].IsVisible) continue;
+
                         var foreground = surface.Surface[x, y].Foreground;
                         var background = surface.Surface[x, y].Background;
-                        if (foreground != Color.Transparent)
-                            surface.Surface[x, y].Foreground = foreground.SetAlpha(ClampTo0_255(alpha));
-                        if (background != Color.Transparent)
-                            surface.Surface[x, y].Background = background.SetAlpha(ClampTo0_255(alpha));
-                        surface.Surface[x, y].Decorators = AdjustDecoratorsColor(surface.Surface[x, y].Decorators, ClampTo0_255(alpha));
+
+                        // Get original alpha values
+                        var originalAlphas = _startAlphas[surface][(x, y)];
+                        var clampedValue = ClampTo0_255(alpha);
+
+                        if (_fadeOut)
+                        {
+                            // Fading out: Use the current alpha values as the source
+                            if (clampedValue <= originalAlphas.foreground && foreground != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Foreground)
+                                surface.Surface[x, y].Foreground = foreground.SetAlpha(clampedValue);
+                            if (clampedValue <= originalAlphas.background && background != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Background)
+                                surface.Surface[x, y].Background = background.SetAlpha(clampedValue);
+                            if (clampedValue <= originalAlphas.foreground && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Foreground)
+                                surface.Surface[x, y].Decorators = AdjustDecoratorsColor(surface.Surface[x, y].Decorators, clampedValue);
+                        }
+                        else
+                        {
+                            // Fading in: Use 0 as the source
+                            if (clampedValue <= originalAlphas.foreground && foreground != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Foreground)
+                                surface.Surface[x, y].Foreground = foreground.SetAlpha(clampedValue);
+                            if (clampedValue <= originalAlphas.background && background != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Background)
+                                surface.Surface[x, y].Background = background.SetAlpha(clampedValue);
+                            if (clampedValue <= originalAlphas.foreground && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Foreground)
+                                surface.Surface[x, y].Decorators = AdjustDecoratorsColor(surface.Surface[x, y].Decorators, clampedValue);
+                        }
                     }
                 }
                 surface.IsDirty = true;
             }
+        }
+
+        public enum FadeMode
+        {
+            FadeIn,
+            FadeOut,
+        }
+
+        public enum FadeContext
+        {
+            Foreground,
+            Background,
+            Both
         }
 
         private static byte ClampTo0_255(double value)

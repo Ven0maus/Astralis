@@ -17,23 +17,35 @@ namespace Astralis.Scenes.MainMenuScene
     {
         private readonly ControlSurface _surface;
         private readonly ControlHost _controls;
-        private readonly Extended.Lazy<OptionsScreen> _optionsScreen;
-        private readonly Extended.Lazy<LoadGameScreen> _loadGameScreen;
+        private readonly OptionsScreen _optionsScreen;
+        private readonly LoadGameScreen _loadGameScreen;
 
+        private readonly OverworldScene _overworldScene;
         private ScreenSurface _mainLayer, _shadowLayer;
         private bool _buttonClicked = false;
 
         public MainMenuScreen()
         {
-            _optionsScreen = new Extended.Lazy<OptionsScreen>(() => { var screen = new OptionsScreen(); Children.Add(screen); return screen; });
-            _loadGameScreen = new Extended.Lazy<LoadGameScreen>(() => { var screen = new LoadGameScreen(); Children.Add(screen); return screen; });
+            _overworldScene = new OverworldScene();
+            Children.Add(_overworldScene);
+            _overworldScene.OnMainMenuVisualLoaded += DisplayGameTitle;
+
+            _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
+            _loadGameScreen = new LoadGameScreen() { IsVisible = false }; Children.Add(_loadGameScreen);
 
             _surface = new ControlSurface(Constants.ScreenWidth, Constants.ScreenHeight);
+            _surface.Font = Game.Instance.Fonts[Constants.Fonts.LordNightmare];
             _controls = new ControlHost();
             _surface.SadComponents.Add(_controls);
+            _surface.Surface.DefaultBackground = Color.Transparent;
+            _surface.IsVisible = false;
             Children.Add(_surface);
 
-            DisplayGameTitle();
+            foreach (var cell in _surface.Surface)
+                cell.Background = Color.Transparent;
+            _surface.Surface.IsDirty = true;
+
+            _overworldScene.Initialize(true);
         }
 
         private enum ButtonType
@@ -44,30 +56,34 @@ namespace Astralis.Scenes.MainMenuScene
             Exit_Game
         }
 
-        private void DisplayGameTitle()
+        private void DisplayGameTitle(object sender, EventArgs args)
         {
+            _overworldScene.OnMainMenuVisualLoaded -= DisplayGameTitle;
+            _surface.IsVisible = true;
+
             var titleParts = Constants.GameTitleFancy.Split("\r\n");
             int maxWidth = titleParts.Max(a => a.Length);
             int centerX = Width / 2;
             int startY = (int)(Height / 100f * 15);
 
-            void ConfigureLayer(ScreenSurface layer, int xOffset)
+            void ConfigureLayer(ScreenSurface layer, int xOffset, Color bg)
             {
+                layer.Font = Game.Instance.Fonts[Constants.Fonts.LordNightmare];
                 layer.Surface.DefaultBackground = Color.Transparent;
-                layer.Surface.DefaultForeground = Color.Transparent;
+                layer.Surface.DefaultForeground = bg;
                 layer.Position = new Point(centerX + xOffset - maxWidth / 2, startY - xOffset);
                 Children.Add(layer);
             }
 
             // Add shadow layer with some offset
             _shadowLayer = new ScreenSurface(maxWidth, titleParts.Length) { UsePixelPositioning = true };
-            ConfigureLayer(_shadowLayer, 1);
+            ConfigureLayer(_shadowLayer, 1, Color.Transparent);
             _shadowLayer.Position *= new Point(Constants.FontSize.X, Constants.FontSize.Y);
             _shadowLayer.Position -= new Point(3, -11);
             _shadowLayer.IsVisible = false;
 
             _mainLayer = new ScreenSurface(maxWidth, titleParts.Length);
-            ConfigureLayer(_mainLayer, 0);
+            ConfigureLayer(_mainLayer, 0, Color.Transparent);
             _mainLayer.IsVisible = false;
 
             // Prepare scatter effect and backing surfaces
@@ -81,12 +97,12 @@ namespace Astralis.Scenes.MainMenuScene
                     scatteredGlyphs.Add(new PositionedGlyph(new ColoredGlyph(Constants.GameTitleColor, _surface.Surface.DefaultBackground, glyph), pos));
                     x++;
                 }
-                _mainLayer.Print(0, i, titleParts[i], Constants.GameTitleColor);
-                _shadowLayer.Print(0, i, titleParts[i], Constants.GameTitleShadowColor);
+                _mainLayer.Print(0, i, titleParts[i], Constants.GameTitleColor, Color.Transparent);
+                _shadowLayer.Print(0, i, titleParts[i], Constants.GameTitleShadowColor, Color.Transparent);
             }
 
             // Execute scatter effect and fade effect
-            var scatterEffect = new ScatterEffect(scatteredGlyphs, _surface, TimeSpan.FromMilliseconds(1500))
+            var scatterEffect = new ScatterEffect(scatteredGlyphs, _surface, TimeSpan.FromMilliseconds(1000))
             {
                 OnFinished = () =>
                 {
@@ -94,7 +110,7 @@ namespace Astralis.Scenes.MainMenuScene
                     _mainLayer.IsVisible = true;
                     _shadowLayer.IsVisible = true;
 
-                    var fadeEffect = new FadeEffect(TimeSpan.FromMilliseconds(700), FadeEffect.FadeMode.FadeIn, false, _shadowLayer)
+                    var fadeEffect = new FadeEffect(TimeSpan.FromMilliseconds(700), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _shadowLayer)
                     {
                         OnFinished = AddMenuButtons
                     };
@@ -149,7 +165,13 @@ namespace Astralis.Scenes.MainMenuScene
         {
             var themeColors = button.FindThemeColors().Clone();
             themeColors.Lines.SetColor(Constants.GameTitleShadowColor);
+            themeColors.ControlBackgroundNormal.SetColor(Color.Transparent);
+            themeColors.ControlBackgroundDisabled.SetColor(Color.Transparent);
             themeColors.ControlForegroundNormal.SetColor(Constants.GameTitleColor);
+            themeColors.ControlForegroundDisabled.SetColor(Constants.GameTitleColor);
+            themeColors.ControlForegroundFocused.SetColor(Constants.GameTitleColor);
+            themeColors.ControlForegroundMouseDown.SetColor(Constants.GameTitleColor);
+            themeColors.ControlForegroundSelected.SetColor(Constants.GameTitleColor);
             themeColors.RebuildAppearances();
             return themeColors;
         }
@@ -165,11 +187,11 @@ namespace Astralis.Scenes.MainMenuScene
                     StartGame();
                     break;
                 case ButtonType.Load_Game:
-                    ShowScreen(_loadGameScreen.Value);
+                    ShowScreen(_loadGameScreen);
                     _buttonClicked = false;
                     break;
                 case ButtonType.Options:
-                    ShowScreen(_optionsScreen.Value);
+                    ShowScreen(_optionsScreen);
                     _buttonClicked = false;
                     break;
                 case ButtonType.Exit_Game:
@@ -180,6 +202,14 @@ namespace Astralis.Scenes.MainMenuScene
 
         private void StartGame()
         {
+            _overworldScene.OnMainMenuVisualLoaded += (a, b) =>
+            {
+                var overworld = new OverworldScene();
+                Game.Instance.Screen = overworld;
+                overworld.Initialize(false);
+                _buttonClicked = false;
+            };
+
             // Drop the buttons
             var controls = _controls.Reverse().ToArray();
             for (int ci = 0; ci < controls.Length; ci++)
@@ -227,8 +257,7 @@ namespace Astralis.Scenes.MainMenuScene
                             {
                                 fallingTextEffect.OnFinished = () =>
                                 {
-                                    Game.Instance.Screen = new OverworldScene();
-                                    _buttonClicked = false;
+                                    _overworldScene.DeintializeMainMenuVisuals();
                                 };
                             }
                             Effects.Add(fallingTextEffect);
@@ -241,14 +270,9 @@ namespace Astralis.Scenes.MainMenuScene
 
         private void ShowScreen(ControlSurface screen)
         {
-            var screens = new ILazy[] { _optionsScreen, _loadGameScreen }
-                .Where(a => a.IsValueCreated)
-                .Select(a => a.Value)
-                .Cast<ControlSurface>();
-
+            var screens = new ControlSurface[] { _optionsScreen, _loadGameScreen };
             foreach (var s in screens)
                 s.IsVisible = false;
-
             screen.IsVisible = true;
         }
     }

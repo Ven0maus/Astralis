@@ -3,6 +3,7 @@ using Astralis.GameCode.WorldGen;
 using SadConsole;
 using SadConsole.Input;
 using SadRogue.Primitives;
+using System;
 using Venomaus.FlowVitae.Grids;
 
 namespace Astralis.Scenes.Screens
@@ -10,11 +11,18 @@ namespace Astralis.Scenes.Screens
     internal class WorldScreen : ScreenSurface
     {
         private readonly World _world;
-        private Point startDragPos, cameraPosition = new(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
+        private Point startDragPos;
         private bool isDragging = false;
 
         private readonly FontWindow _fontWindow;
         private readonly ScreenSurface _objectsLayer;
+
+        public Point CameraPosition { get; private set; } = new(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
+
+        /// <summary>
+        /// If true will auto pan the camera into one direction forever, to be shown on the main menu.
+        /// </summary>
+        public bool MainMenuCamera { get; set; } = false;
 
         public WorldScreen(World world) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
@@ -37,7 +45,7 @@ namespace Astralis.Scenes.Screens
 
             _fontWindow.OnClick += (sender, index) => System.Console.WriteLine($"Char ({index}) '{(char)index}'");
             _fontWindow.DrawFontSurface();
-            _fontWindow.IsVisible = Constants.DebugMode;
+            _fontWindow.IsVisible = Constants.DebugMode && !MainMenuCamera;
 
 
             // Setup world object
@@ -84,8 +92,28 @@ namespace Astralis.Scenes.Screens
             }
         }
 
+        private double _timePassed;
+        public override void Update(TimeSpan delta)
+        {
+            base.Update(delta);
+
+            if (MainMenuCamera)
+            {
+                if (_timePassed >= 500)
+                {
+                    _timePassed = 0;
+                    MoveCamera(CameraPosition, CameraPosition + Direction.Right);
+                }
+                else
+                {
+                    _timePassed += delta.TotalMilliseconds;
+                }
+            }
+        }
+
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
+            if (MainMenuCamera) return false;
             if (keyboard.IsKeyPressed(Keys.P))
             {
                 _fontWindow.IsVisible = !_fontWindow.IsVisible;
@@ -95,8 +123,8 @@ namespace Astralis.Scenes.Screens
 
         public override bool ProcessMouse(MouseScreenObjectState state)
         {
-            if (!IsVisible || !state.IsOnScreenObject)
-                return base.ProcessMouse(state);
+            if (MainMenuCamera || !IsVisible || !state.IsOnScreenObject)
+                return false;
 
             Point mousePos = state.CellPosition;
 
@@ -109,22 +137,8 @@ namespace Astralis.Scenes.Screens
 
             if (isDragging)
             {
-                // Calculate the distance the mouse was dragged
-                int deltaX = startDragPos.X - mousePos.X;
-                int deltaY = startDragPos.Y - mousePos.Y;
-
-                // Apply a scaling factor to control camera speed
-                deltaX = -1 * deltaX;
-                deltaY = -1 * deltaY;
-
-                // Apply smoothing to camera movement
-                var cameraVelocity = new Point(deltaX, deltaY);
-
-                // Update the camera position based on velocity
-                cameraPosition -= cameraVelocity;
-
-                // Move the viewport based on the camera position
-                _world.Center(cameraPosition.X, cameraPosition.Y);
+                // Do camera movement
+                MoveCamera(startDragPos, mousePos);
 
                 // Update the starting position to the current mouse position
                 startDragPos = mousePos;
@@ -138,6 +152,26 @@ namespace Astralis.Scenes.Screens
 
             // If not dragging, call the base method to handle other mouse events
             return base.ProcessMouse(state);
+        }
+
+        private void MoveCamera(Point startPosition, Point targetPosition)
+        {
+            // Calculate the distance the mouse was dragged
+            int deltaX = startPosition.X - targetPosition.X;
+            int deltaY = startPosition.Y - targetPosition.Y;
+
+            // Apply a scaling factor to control camera speed
+            deltaX = -1 * deltaX;
+            deltaY = -1 * deltaY;
+
+            // Apply smoothing to camera movement
+            var cameraVelocity = new Point(deltaX, deltaY);
+
+            // Update the camera position based on velocity
+            CameraPosition -= cameraVelocity;
+
+            // Move the viewport based on the camera position
+            _world.Center(CameraPosition.X, CameraPosition.Y);
         }
     }
 }
