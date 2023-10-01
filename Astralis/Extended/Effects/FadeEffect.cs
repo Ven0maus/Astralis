@@ -42,14 +42,18 @@ namespace Astralis.Extended.Effects
         {
             foreach (var surface in _surfaces)
             {
+                if (!surface.IsVisible) continue;
                 for (int x = 0; x < surface.Width; x++)
                 {
                     for (int y = 0; y < surface.Height; y++)
                     {
+                        if (!surface.Surface[x, y].IsVisible) continue;
                         var foreground = surface.Surface[x, y].Foreground;
                         var background = surface.Surface[x, y].Background;
-                        surface.Surface[x, y].Foreground = foreground.SetAlpha(ClampTo0_255(alpha));
-                        surface.Surface[x, y].Background = background.SetAlpha(ClampTo0_255(alpha));
+                        if (foreground != Color.Transparent)
+                            surface.Surface[x, y].Foreground = foreground.SetAlpha(ClampTo0_255(alpha));
+                        if (background != Color.Transparent)
+                            surface.Surface[x, y].Background = background.SetAlpha(ClampTo0_255(alpha));
                         surface.Surface[x, y].Decorators = AdjustDecoratorsColor(surface.Surface[x, y].Decorators, ClampTo0_255(alpha));
                     }
                 }
@@ -69,9 +73,10 @@ namespace Astralis.Extended.Effects
         {
             if (decorators == null || decorators.Length == 0) return decorators;
             CellDecorator[] newDecorators = new CellDecorator[decorators.Length];
-            for (int i=0; i < decorators.Length; i++)
+            for (int i = 0; i < decorators.Length; i++)
             {
                 var dec = decorators[i];
+                if (dec.Color == Color.Transparent) continue;
                 newDecorators[i] = new CellDecorator(dec.Color.SetAlpha(alpha), dec.Glyph, dec.Mirror);
             }
             return newDecorators;

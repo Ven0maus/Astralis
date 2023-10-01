@@ -23,10 +23,10 @@ namespace Astralis.Scenes.Screens
 
             _objectsLayer = new ScreenSurface(Width, Height)
             {
-                Font = Game.Instance.Fonts[Constants.Fonts.WorldObjects]
+                Font = Game.Instance.Fonts[Constants.Fonts.WorldObjects],
+                UseMouse = false,
+                UseKeyboard = false
             };
-            _objectsLayer.UseMouse = false;
-            _objectsLayer.UseKeyboard = false;
             foreach (var cell in _objectsLayer.Surface)
                 cell.IsVisible = false;
             _objectsLayer.Surface.IsDirty = true;
@@ -51,7 +51,7 @@ namespace Astralis.Scenes.Screens
 
         public ScreenSurface[] GetSurfaces()
         {
-            return new[] { this, _objectsLayer }; 
+            return new[] { this, _objectsLayer };
         }
 
         public void OnCellUpdate(object sender, CellUpdateArgs<byte, Tile> args)

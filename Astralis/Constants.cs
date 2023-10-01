@@ -4,7 +4,7 @@ namespace Astralis
 {
     public class Constants
     {
-        public const bool DebugMode = true;
+        public const bool DebugMode = false;
 
         public static readonly Point FontSize = new(8, 16);
 

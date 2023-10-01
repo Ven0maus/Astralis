@@ -1,7 +1,5 @@
 ﻿using Astralis.Configuration;
 using Astralis.Configuration.Models;
-using Astralis.Extended;
-using SadConsole;
 using SadRogue.Primitives;
 using Venomaus.FlowVitae.Grids;
 
