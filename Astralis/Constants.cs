@@ -4,8 +4,8 @@ namespace Astralis
 {
     public class Constants
     {
-        public static int? GameSeed = 545;
-        public const bool DebugMode = false;
+        public static int GameSeed = 545;
+        public const bool DebugMode = true;
         public const bool FullScreen = false;
 
         public static readonly Point FontSize = new(8, 16);
