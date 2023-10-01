@@ -5,6 +5,7 @@ namespace Astralis
     public class Constants
     {
         public const bool DebugMode = false;
+        public const bool FullScreen = false;
 
         public static readonly Point FontSize = new(8, 16);
 
@@ -12,8 +13,6 @@ namespace Astralis
         /// The perceived or effective resolution of the game, which can differ from the physical or native resolution of the display device itself.
         /// </summary>
         public static readonly Point VirtualResolution = new(1280, 720); // new(1280, 720);
-
-        public const bool FullScreen = false;
         public static int ScreenWidth { get { return VirtualResolution.X / FontSize.X; } }
         public static int ScreenHeight { get { return VirtualResolution.Y / FontSize.Y; } }
 

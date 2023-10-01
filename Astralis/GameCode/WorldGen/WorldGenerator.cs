@@ -70,19 +70,21 @@ namespace Astralis.GameCode.WorldGen
                     }
 
                     var biomeType = GetTileType(elevation[index], moisture[index]);
-                    var objectType = GetRandomBiomeObject(random, biomeType);
+                    var objectType = GetRandomBiomeObject(random, biomeType, true);
                     biomes[index] = (byte)biomeType;
                     objects[index] = objectType;
                 }
             }
+
+            CellularAutomaton.Apply(objects, biomes, width, height, 3);
         }
 
-        private static WorldObject GetRandomBiomeObject(Random random, BiomeType biomeType)
+        private static WorldObject GetRandomBiomeObject(Random random, BiomeType biomeType, bool applyRarity)
         {
             if (World.BiomeData.Get.Biomes.TryGetValue(biomeType, out var biome) && biome.Objects != null)
             {
                 var randomObject = biome.Objects
-                    .Where(a => random.Next(0, GetRandomRollByRarity(a.SpawnRarity)) < a.SpawnChance)
+                    .Where(a => !applyRarity || random.Next(0, GetRandomRollByRarity(a.SpawnRarity)) < a.SpawnChance)
                     .RandomOrDefault(random);
                 if (randomObject != null)
                 {

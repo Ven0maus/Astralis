@@ -101,7 +101,9 @@
       "objects": [
         {
           "name": "OakTree",
-          "spawnchance": 18
+          "spawnchance": 15,
+          "minNeighborsGrowth": 3,
+          "minNeighborsSurvival": 2
         }
       ]
     },
@@ -111,7 +113,9 @@
       "objects": [
         {
           "name": "OakTree",
-          "spawnchance": 20
+          "spawnchance": 17,
+          "minNeighborsGrowth": 2,
+          "minNeighborsSurvival": 3
         }
       ]
     },

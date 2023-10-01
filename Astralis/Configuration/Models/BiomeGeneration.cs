@@ -54,6 +54,8 @@ namespace Astralis.Configuration.Models
             public string Name { get; set; }
             public int SpawnChance { get; set; }
             public Rarity SpawnRarity { get; set; }
+            public int? MinNeighborsGrowth { get; set; }
+            public int? MinNeighborsSurvival { get; set; }
         }
 
         internal enum Rarity
