@@ -28,7 +28,7 @@ namespace Astralis.Scenes.GameplayScenes
 
             if (!Constants.DebugMode)
             {
-                var fadeEffect = new FadeEffect(_worldScreen, TimeSpan.FromSeconds(2), FadeEffect.FadeMode.FadeIn, false);
+                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
                 fadeEffect.OnFinished += GameStart;
                 Effects.Add(fadeEffect);
             }

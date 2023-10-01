@@ -1,24 +1,34 @@
 {
   "objects": [
     {
+      "id" : 1,
       "name": "OakTree",
-      "glyphs": [ 5 ],
+      "glyphs": [ 1 ],
       "color": "#30815D"
     },
     {
+      "id": 2,
       "name": "SwampTree",
-      "glyphs": [ 6 ],
+      "glyphs": [ 2 ],
       "color": "#7c9465"
     },
     {
+      "id": 3,
       "name": "PalmTree",
-      "glyphs": [ 226 ],
+      "glyphs": [ 5 ],
       "color": "#568749"
     },
     {
+      "id": 4,
       "name": "Rock",
-      "glyphs": [ 7 ],
+      "glyphs": [ 3, 4 ],
       "color": "#545454"
+    },
+    {
+      "id": 5,
+      "name": "Wave",
+      "glyphs": [ 6 ],
+      "color": "#0077BE"
     }
   ]
 }

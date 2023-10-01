@@ -43,10 +43,13 @@ namespace Astralis.GameCode.WorldGen
             // Set biome color
             tile.Glyph = '▓';
             tile.Background = chunkData.GetBiomeColor(x, y);
+
+            // Set object data
             var obj = chunkData.GetObject(x, y);
             if (obj != null)
             {
-                tile.Decorators = new[] { new CellDecorator(obj.Color, obj.Glyphs.Random(chunkData.Random), Mirror.None) };
+                tile.WorldObject = obj;
+                tile.Random = chunkData.Random;
             }
 
             return tile;

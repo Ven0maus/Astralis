@@ -4,7 +4,7 @@ namespace Astralis
 {
     public class Constants
     {
-        public const bool DebugMode = false;
+        public const bool DebugMode = true;
 
         public static readonly Point FontSize = new(8, 16);
 
@@ -30,6 +30,7 @@ namespace Astralis
         public static class Fonts
         {
             public const string Aesomatica = "Resources/Tilesets/Aesomatica_16x16.font";
+            public const string WorldObjects = "Resources/Tilesets/WorldObjects_16x16.font";
         }
 
         public static class WorldGeneration

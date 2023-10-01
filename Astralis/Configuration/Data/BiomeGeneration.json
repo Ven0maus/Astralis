@@ -2,7 +2,14 @@
   "biomes": [
     {
       "name": "Ocean",
-      "color": "#0077BE"
+      "color": "#0077BE",
+      "objects": [
+        {
+          "name": "Wave",
+          "spawnchance": 5,
+          "spawnrarity": "Mythical"
+        }
+      ]
     },
     {
       "name": "Beach",

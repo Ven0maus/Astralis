@@ -1,0 +1,9 @@
+{
+  "$type": "SadConsole.SadFont, SadConsole",
+  "FilePath": "WorldObjects_16x16.png",
+  "GlyphHeight": 16,
+  "GlyphPadding": 0,
+  "GlyphWidth": 16,
+  "Name": "Resources/Tilesets/WorldObjects_16x16.font",
+  "SolidGlyphIndex": 219
+}

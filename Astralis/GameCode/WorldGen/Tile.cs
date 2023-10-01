@@ -1,4 +1,5 @@
-﻿using SadConsole;
+﻿using Astralis.Configuration.Models;
+using SadConsole;
 using System;
 using Venomaus.FlowVitae.Cells;
 
@@ -11,6 +12,8 @@ namespace Astralis.GameCode.WorldGen
         public byte CellType { get; set; }
         public bool BlocksView { get; set; }
         public bool IsExplored { get; set; }
+        public WorldObject WorldObject { get; set; }
+        public Random Random { get; set; }
 
         public Tile() : base() { }
 

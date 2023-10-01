@@ -10,18 +10,16 @@ namespace Astralis.Extended.Effects
         public bool IsFinished { get; private set; }
         public Action OnFinished { get; set; }
 
-        private readonly ScreenSurface _surface;
+        private readonly ScreenSurface[] _surfaces;
         private readonly TimeSpan _fadeDuration;
-        private readonly FadeMode _fadeMode;
         private readonly bool _loop;
 
         private DateTime _startTime;
         private bool _fadeOut;
 
-        public FadeEffect(ScreenSurface surface, TimeSpan fadeDuration, FadeMode fadeMode, bool loop = false)
+        public FadeEffect(TimeSpan fadeDuration, FadeMode fadeMode, bool loop, params ScreenSurface[] surfaces)
         {
-            _surface = surface;
-            _fadeMode = fadeMode;
+            _surfaces = surfaces;
             _fadeOut = fadeMode == FadeMode.FadeOut;
             _loop = loop;
             _fadeDuration = fadeDuration;
@@ -42,19 +40,21 @@ namespace Astralis.Extended.Effects
         /// <param name="alpha">0.0 - 1.0 where 1 is invisible</param>
         private void SetGlyphsAlpha(double alpha)
         {
-            for (int x = 0; x < _surface.Width; x++)
+            foreach (var surface in _surfaces)
             {
-                for (int y = 0; y < _surface.Height; y++)
+                for (int x = 0; x < surface.Width; x++)
                 {
-                    var foreground = _surface.Surface[x, y].Foreground;
-                    var background = _surface.Surface[x, y].Background;
-                    _surface.Surface[x, y].Foreground = foreground.SetAlpha(ClampTo0_255(alpha));
-                    _surface.Surface[x, y].Background = background.SetAlpha(ClampTo0_255(alpha));
-                    _surface.Surface[x, y].Decorators = AdjustDecoratorsColor(_surface.Surface[x, y].Decorators, ClampTo0_255(alpha));
-
+                    for (int y = 0; y < surface.Height; y++)
+                    {
+                        var foreground = surface.Surface[x, y].Foreground;
+                        var background = surface.Surface[x, y].Background;
+                        surface.Surface[x, y].Foreground = foreground.SetAlpha(ClampTo0_255(alpha));
+                        surface.Surface[x, y].Background = background.SetAlpha(ClampTo0_255(alpha));
+                        surface.Surface[x, y].Decorators = AdjustDecoratorsColor(surface.Surface[x, y].Decorators, ClampTo0_255(alpha));
+                    }
                 }
+                surface.IsDirty = true;
             }
-            _surface.IsDirty = true;
         }
 
         private static byte ClampTo0_255(double value)

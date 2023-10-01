@@ -1,6 +1,8 @@
 ﻿using Astralis.Configuration.JsonHelpers;
+using Astralis.Extended;
 using Astralis.GameCode.WorldGen;
 using Newtonsoft.Json;
+using SadConsole;
 using SadRogue.Primitives;
 using System;
 using System.Collections.Generic;
@@ -42,11 +44,24 @@ namespace Astralis.Configuration.Models
 
     internal class WorldObject
     {
+        public byte Id { get; set; }
+
+        public string Name { get; set; }
+
         [JsonConverter(typeof(IntArrayConverter))]
         public int[] Glyphs { get; set; }
-        public string Name { get; set; }
 
         [JsonConverter(typeof(ColorConverter))]
         public Color Color { get; set; }
+
+        public ColoredGlyph ToColoredGlyph(Random random)
+        {
+            return new ColoredGlyph
+            {
+                Background = Color.Transparent,
+                Foreground = Color,
+                Glyph = Glyphs.Random(random),
+            };
+        }
     }
 }

@@ -14,17 +14,31 @@ namespace Astralis.Scenes.Screens
         private bool isDragging = false;
 
         private readonly FontWindow _fontWindow;
+        private readonly ScreenSurface _objectsLayer;
 
         public WorldScreen(World world) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
             // Set Aesomatica font for the overworld
             Font = Game.Instance.Fonts[Constants.Fonts.Aesomatica];
 
+            _objectsLayer = new ScreenSurface(Width, Height)
+            {
+                Font = Game.Instance.Fonts[Constants.Fonts.WorldObjects]
+            };
+            _objectsLayer.UseMouse = false;
+            _objectsLayer.UseKeyboard = false;
+            foreach (var cell in _objectsLayer.Surface)
+                cell.IsVisible = false;
+            _objectsLayer.Surface.IsDirty = true;
+            Children.Add(_objectsLayer);
+
             _fontWindow = new FontWindow(Font);
-            _fontWindow.OnClick += (sender, index) => System.Console.WriteLine($"Char ({index}) '{(char)index}'");
             Children.Add(_fontWindow);
+
+            _fontWindow.OnClick += (sender, index) => System.Console.WriteLine($"Char ({index}) '{(char)index}'");
             _fontWindow.DrawFontSurface();
             _fontWindow.IsVisible = Constants.DebugMode;
+
 
             // Setup world object
             _world = world;
@@ -35,12 +49,39 @@ namespace Astralis.Scenes.Screens
             IsFocused = true;
         }
 
+        public ScreenSurface[] GetSurfaces()
+        {
+            return new[] { this, _objectsLayer }; 
+        }
+
         public void OnCellUpdate(object sender, CellUpdateArgs<byte, Tile> args)
         {
             var surface = Surface;
-            surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(args.Cell);
-            surface[args.ScreenX, args.ScreenY].IsVisible = args.Cell.IsVisible;
+            var cell = args.Cell;
+            if (cell == null)
+            {
+                surface[args.ScreenX, args.ScreenY].IsVisible = false;
+                return;
+            }
+
+            surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(cell, false);
+            surface[args.ScreenX, args.ScreenY].IsVisible = cell.IsVisible;
             surface.IsDirty = true;
+
+            if (cell.WorldObject != null)
+            {
+                _objectsLayer.Surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(cell.WorldObject.ToColoredGlyph(cell.Random), false);
+                _objectsLayer.Surface[args.ScreenX, args.ScreenY].IsVisible = cell.IsVisible;
+                _objectsLayer.Surface.IsDirty = true;
+            }
+            else
+            {
+                var prev = _objectsLayer.Surface[args.ScreenX, args.ScreenY].IsVisible;
+                _objectsLayer.Surface[args.ScreenX, args.ScreenY].IsVisible = false;
+
+                if (prev != false)
+                    _objectsLayer.Surface.IsDirty = true;
+            }
         }
 
         public override bool ProcessKeyboard(Keyboard keyboard)

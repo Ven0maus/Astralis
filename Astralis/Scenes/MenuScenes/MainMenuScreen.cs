@@ -94,7 +94,7 @@ namespace Astralis.Scenes.MainMenuScene
                     _mainLayer.IsVisible = true;
                     _shadowLayer.IsVisible = true;
 
-                    var fadeEffect = new FadeEffect(_shadowLayer, TimeSpan.FromMilliseconds(700), FadeEffect.FadeMode.FadeIn, false)
+                    var fadeEffect = new FadeEffect(TimeSpan.FromMilliseconds(700), FadeEffect.FadeMode.FadeIn, false, _shadowLayer)
                     {
                         OnFinished = AddMenuButtons
                     };
