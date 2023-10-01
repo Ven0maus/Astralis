@@ -75,11 +75,30 @@
     },
     {
       "name": "TemperateDesert",
-      "color": "#E3C089"
+      "color": "#E3C089",
+      "objects": [
+        {
+          "name": "Cactus",
+          "spawnchance": 2,
+          "spawnrarity": "Rare"
+        }
+      ]
     },
     {
       "name": "SubtropicalDesert",
-      "color": "#D5B185"
+      "color": "#D5B185",
+      "objects": [
+        {
+          "name": "Cactus",
+          "spawnchance": 2,
+          "spawnrarity": "Rare"
+        },
+        {
+          "name": "Grass",
+          "spawnchance": 4,
+          "copybiomecolor": true
+        }
+      ]
     },
     {
       "name": "Grassland",

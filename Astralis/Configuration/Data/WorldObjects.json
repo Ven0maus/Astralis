@@ -32,14 +32,14 @@
       "id": 5,
       "name": "Wave",
       "blocksview": false,
-      "glyphs": [ 6 ],
+      "glyphs": [ 6, 16 ],
       "colors": [ "#0077BE" ]
     },
     {
       "id": 6,
       "name": "Grass",
       "blocksview": false,
-      "glyphs": [ 7, 8 ],
+      "glyphs": [ 7, 8, 18 ],
       "colors": [ "#00cc66" ]
     },
     {
@@ -69,6 +69,13 @@
       "blocksview": false,
       "glyphs": [ 15 ],
       "colors": [ "#FFFFFF" ]
+    },
+    {
+      "id": 11,
+      "name": "Cactus",
+      "blocksview": false,
+      "glyphs": [ 16, 17 ],
+      "colors": [ "#009933", "#006622" ]
     }
   ]
 }
