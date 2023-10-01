@@ -82,6 +82,16 @@
         {
           "name": "OakTree",
           "spawnchance": 2
+        },
+        {
+          "name": "Grass",
+          "spawnchance": 10,
+          "copybiomecolor": true
+        },
+        {
+          "name": "Flowers",
+          "spawnchance": 5,
+          "spawnrarity": "Epic"
         }
       ]
     },
@@ -92,6 +102,16 @@
         {
           "name": "OakTree",
           "spawnchance": 5
+        },
+        {
+          "name": "Grass",
+          "spawnchance": 15,
+          "copybiomecolor": true
+        },
+        {
+          "name": "Flowers",
+          "spawnchance": 7,
+          "spawnrarity": "Epic"
         }
       ]
     },
@@ -104,6 +124,16 @@
           "spawnchance": 15,
           "minNeighborsGrowth": 3,
           "minNeighborsSurvival": 2
+        },
+        {
+          "name": "Grass",
+          "spawnchance": 20,
+          "copybiomecolor": true
+        },
+        {
+          "name": "Flowers",
+          "spawnchance": 10,
+          "spawnrarity": "Epic"
         }
       ]
     },
@@ -116,6 +146,16 @@
           "spawnchance": 17,
           "minNeighborsGrowth": 2,
           "minNeighborsSurvival": 3
+        },
+        {
+          "name": "Grass",
+          "spawnchance": 30,
+          "copybiomecolor": true
+        },
+        {
+          "name": "Flowers",
+          "spawnchance": 15,
+          "spawnrarity": "Epic"
         }
       ]
     },

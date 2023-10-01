@@ -6,12 +6,12 @@ namespace Astralis.GameCode.WorldGen
 {
     internal class CellularAutomaton
     {
-        public static void Apply(WorldObject[] objects, byte[] biomes, int width, int height, int iterations)
+        public static void Apply(BiomeGeneration.BiomeObject[] objects, byte[] biomes, int width, int height, int iterations)
         {
             if (iterations <= 0)
                 iterations = 1;
 
-            var original = new WorldObject[objects.Length];
+            var original = new BiomeGeneration.BiomeObject[objects.Length];
             Copy(objects, original, width, height);
 
             var objectLookup = World.ObjectData.Objects.ToDictionary(a => a.Id, a => a);
@@ -19,7 +19,7 @@ namespace Astralis.GameCode.WorldGen
             // Iterate over the cells and apply the automaton rules based on the biome and object preferences.
             for (int i = 0; i < iterations; i++)
             {
-                var newGrid = new WorldObject[original.Length];
+                var newGrid = new BiomeGeneration.BiomeObject[original.Length];
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
@@ -42,7 +42,7 @@ namespace Astralis.GameCode.WorldGen
                             var neighborType = GetHighestNeighborType(neighbors, out neighborCount);
                             if (neighborCount > 0)
                             {
-                                obj = objectLookup[neighborType];
+                                obj = biome.Objects.First(a => a.WorldObject.Id == neighborType);
                             }
                             else
                             {
@@ -51,25 +51,21 @@ namespace Astralis.GameCode.WorldGen
                             }
                         }
 
-                        var biomeObject = biome.Objects.FirstOrDefault(a => a.Name == obj.Name);
-                        if (biomeObject == null)
-                            throw new System.Exception("Could not find biome object: " + obj.Name);
-
                         // Check if the object at this location should undergo cellular automaton.
-                        if (ShouldApplyAutomaton(biomeObject))
+                        if (ShouldApplyAutomaton(obj))
                         {
                             if (neighborCount == 0)
-                                neighborCount = neighbors.Count(a => a != null && a.Id == obj.Id);
+                                neighborCount = neighbors.Count(a => a != null && a.WorldObject.Id == obj.WorldObject.Id);
 
                             // Apply cellular automaton rules based on the object's preferences.
-                            if (original[index] == null && biomeObject.MinNeighborsGrowth.HasValue &&
-                                neighborCount >= biomeObject.MinNeighborsGrowth.Value)
+                            if (original[index] == null && obj.MinNeighborsGrowth.HasValue &&
+                                neighborCount >= obj.MinNeighborsGrowth.Value)
                             {
                                 // Growth logic
                                 newGrid[index] = obj;
                             }
-                            else if (original[index] != null && biomeObject.MinNeighborsSurvival.HasValue &&
-                                     neighborCount < biomeObject.MinNeighborsSurvival.Value)
+                            else if (original[index] != null && obj.MinNeighborsSurvival.HasValue &&
+                                     neighborCount < obj.MinNeighborsSurvival.Value)
                             {
                                 // Survival logic.
                                 newGrid[index] = null;
@@ -103,18 +99,18 @@ namespace Astralis.GameCode.WorldGen
             }
         }
 
-        private static byte GetHighestNeighborType(WorldObject[] neighbors, out int amount)
+        private static byte GetHighestNeighborType(BiomeGeneration.BiomeObject[] neighbors, out int amount)
         {
             var neighborCounts = new Dictionary<byte, int>();
-            foreach (var neighbor in neighbors.Where(a => a != null && a.Id != 0))
+            foreach (var neighbor in neighbors.Where(a => a != null && a.WorldObject.Id != 0))
             {
-                if (neighborCounts.ContainsKey(neighbor.Id))
+                if (neighborCounts.ContainsKey(neighbor.WorldObject.Id))
                 {
-                    neighborCounts[neighbor.Id]++;
+                    neighborCounts[neighbor.WorldObject.Id]++;
                 }
                 else
                 {
-                    neighborCounts[neighbor.Id] = 1;
+                    neighborCounts[neighbor.WorldObject.Id] = 1;
                 }
             }
 

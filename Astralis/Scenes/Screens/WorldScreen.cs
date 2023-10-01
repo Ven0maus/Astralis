@@ -68,9 +68,9 @@ namespace Astralis.Scenes.Screens
             surface[args.ScreenX, args.ScreenY].IsVisible = cell.IsVisible;
             surface.IsDirty = true;
 
-            if (cell.WorldObject != null)
+            if (cell.Object != null)
             {
-                _objectsLayer.Surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(cell.WorldObject.ToColoredGlyph(cell.Random), false);
+                _objectsLayer.Surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(cell.Object, false);
                 _objectsLayer.Surface[args.ScreenX, args.ScreenY].IsVisible = cell.IsVisible;
                 _objectsLayer.Surface.IsDirty = true;
             }

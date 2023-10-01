@@ -1,34 +1,53 @@
 {
   "objects": [
     {
-      "id" : 1,
+      "id": 1,
       "name": "OakTree",
+      "blocksview": true,
       "glyphs": [ 1 ],
-      "color": "#30815D"
+      "colors": [ "#30815D" ]
     },
     {
       "id": 2,
       "name": "SwampTree",
+      "blocksview": true,
       "glyphs": [ 2 ],
-      "color": "#7c9465"
+      "colors": [ "#7c9465" ]
     },
     {
       "id": 3,
       "name": "PalmTree",
+      "blocksview": true,
       "glyphs": [ 5 ],
-      "color": "#568749"
+      "colors": [ "#568749" ]
     },
     {
       "id": 4,
       "name": "Rock",
+      "blocksview": true,
       "glyphs": [ 3, 4 ],
-      "color": "#545454"
+      "colors": [ "#545454" ]
     },
     {
       "id": 5,
       "name": "Wave",
+      "blocksview": false,
       "glyphs": [ 6 ],
-      "color": "#0077BE"
+      "colors": [ "#0077BE" ]
+    },
+    {
+      "id": 6,
+      "name": "Grass",
+      "blocksview": false,
+      "glyphs": [ 7, 8 ],
+      "colors": [ "#00cc66" ]
+    },
+    {
+      "id": 7,
+      "name": "Flowers",
+      "blocksview": false,
+      "glyphs": [ 9, 10, 11 ],
+      "colors": [ "#ffb3ff", "#ffff80", "#4d94ff", "#b3ffff" ]
     }
   ]
 }

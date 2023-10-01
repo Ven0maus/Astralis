@@ -1,5 +1,6 @@
 ﻿using Astralis.Configuration;
 using Astralis.Configuration.Models;
+using Astralis.Extended;
 using SadRogue.Primitives;
 using Venomaus.FlowVitae.Grids;
 
@@ -46,10 +47,8 @@ namespace Astralis.GameCode.WorldGen
             var obj = chunkData.GetObject(x, y);
             if (obj != null)
             {
-                tile.WorldObject = obj;
-                tile.Random = chunkData.Random;
+                tile.Object = obj;
             }
-
             return tile;
         }
     }

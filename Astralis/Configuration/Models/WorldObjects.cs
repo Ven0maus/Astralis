@@ -48,20 +48,12 @@ namespace Astralis.Configuration.Models
 
         public string Name { get; set; }
 
+        public bool BlocksView { get; set; }
+
         [JsonConverter(typeof(IntArrayConverter))]
         public int[] Glyphs { get; set; }
 
-        [JsonConverter(typeof(ColorConverter))]
-        public Color Color { get; set; }
-
-        public ColoredGlyph ToColoredGlyph(Random random)
-        {
-            return new ColoredGlyph
-            {
-                Background = Color.Transparent,
-                Foreground = Color,
-                Glyph = Glyphs.Random(random),
-            };
-        }
+        [JsonConverter(typeof(ColorArrayConverter))]
+        public Color[] Colors { get; set; }
     }
 }

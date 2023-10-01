@@ -1,4 +1,5 @@
 ﻿using Astralis.Configuration.Models;
+using Astralis.Extended;
 using SadRogue.Primitives;
 using System;
 using System.Linq;
@@ -11,31 +12,33 @@ namespace Astralis.GameCode.WorldGen
         public int Seed { get; set; }
         public (int x, int y) ChunkCoordinate { get; set; }
         public Color[] BiomeColors { get; private set; }
-        public Random Random { get; }
+        private readonly ObjectTile[] _objects;
 
         public readonly int Width, Height;
 
-        private readonly WorldObject[] _objects;
-
-        public WorldChunk(byte[] biomes, WorldObject[] objects, int chunkWidth, int chunkHeight, Random random)
+        public WorldChunk(byte[] biomes, BiomeGeneration.BiomeObject[] objects, int chunkWidth, int chunkHeight, Random random)
         {
-            _objects = objects;
-
-            Random = random;
             Width = chunkWidth;
             Height = chunkHeight;
             BiomeColors = new Color[Width * Height];
+            _objects = new ObjectTile[Width * Height];
 
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
                     BiomeColors[y * Width + x] = CalculateBiomeColor((ChunkCoordinate.x + x, ChunkCoordinate.y + y), biomes[y * Width + x], biomes);
+
+                    var obj = objects[y * Width + x];
+                    if (obj != null)
+                    {
+                        _objects[y * Width + x] = new ObjectTile(obj, random);
+                    }
                 }
             }
         }
 
-        public WorldObject GetObject(int x, int y)
+        public ObjectTile GetObject(int x, int y)
         {
             return _objects[(y - ChunkCoordinate.y) * Width + (x - ChunkCoordinate.x)];
         }

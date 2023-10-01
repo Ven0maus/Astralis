@@ -32,7 +32,7 @@ namespace Astralis.GameCode.WorldGen
 
             // Set chunk based on provided lookup arrays
             var biomes = new byte[width * height];
-            var objects = new WorldObject[width * height];
+            var objects = new BiomeGeneration.BiomeObject[width * height];
             SetChunkValues(random, biomes, objects, width, height, elevation, moisture);
 
             return (biomes, new WorldChunk(biomes, objects, width, height, random));
@@ -56,7 +56,7 @@ namespace Astralis.GameCode.WorldGen
             }
         }
 
-        private static void SetChunkValues(Random random, byte[] biomes, WorldObject[] objects, int width, int height, float[] elevation, float[] moisture)
+        private static void SetChunkValues(Random random, byte[] biomes, BiomeGeneration.BiomeObject[] objects, int width, int height, float[] elevation, float[] moisture)
         {
             for (int y = 0; y < height; y++)
             {
@@ -79,7 +79,7 @@ namespace Astralis.GameCode.WorldGen
             CellularAutomaton.Apply(objects, biomes, width, height, 3);
         }
 
-        private static WorldObject GetRandomBiomeObject(Random random, BiomeType biomeType, bool applyRarity)
+        private static BiomeGeneration.BiomeObject GetRandomBiomeObject(Random random, BiomeType biomeType, bool applyRarity)
         {
             if (World.BiomeData.Get.Biomes.TryGetValue(biomeType, out var biome) && biome.Objects != null)
             {
@@ -88,10 +88,7 @@ namespace Astralis.GameCode.WorldGen
                     .RandomOrDefault(random);
                 if (randomObject != null)
                 {
-                    if (World.ObjectData.Get.Objects.TryGetValue(randomObject.Name, out var obj))
-                    {
-                        return obj;
-                    }
+                    return randomObject;
                 }
             }
             return null;

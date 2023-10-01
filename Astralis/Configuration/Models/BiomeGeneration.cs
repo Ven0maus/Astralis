@@ -30,6 +30,16 @@ namespace Astralis.Configuration.Models
 
             private void InitBiomesCache()
             {
+                // Set biome parent
+                foreach (var biome in _worldGeneration.Biomes)
+                {
+                    if (biome.Objects != null)
+                    {
+                        foreach (var obj in biome.Objects)
+                            obj.Biome = biome;
+                    }
+                }
+
                 var tileTypes = ((BiomeType[])Enum.GetValues(typeof(BiomeType)))
                     .ToDictionary(a => Enum.GetName(a), a => a);
                 Biomes = _worldGeneration.Biomes.Select(a =>
@@ -51,11 +61,24 @@ namespace Astralis.Configuration.Models
 
         internal class BiomeObject
         {
+            [JsonIgnore]
+            public Biome Biome { get; set; }
+
             public string Name { get; set; }
             public int SpawnChance { get; set; }
             public Rarity SpawnRarity { get; set; }
+            public bool? CopyBiomeColor { get; set; }
             public int? MinNeighborsGrowth { get; set; }
             public int? MinNeighborsSurvival { get; set; }
+
+            public WorldObject WorldObject 
+            { 
+                get 
+                { 
+                    return World.ObjectData.Get.Objects.TryGetValue(Name, out var value) ? value : 
+                        throw new Exception("Missing world object configuration for biome object: " + Name); 
+                } 
+            }
         }
 
         internal enum Rarity
