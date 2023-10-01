@@ -124,7 +124,7 @@ namespace Astralis.GameCode.WorldGen
             if (elevation > 0.7)
             {
                 if (moisture < 0.4) return BiomeType.TemperateForest;
-                if (moisture < 0.75) return BiomeType.Shrubland;
+                if (moisture < 0.75) return BiomeType.Swamp;
                 return BiomeType.Taiga;
             }
 

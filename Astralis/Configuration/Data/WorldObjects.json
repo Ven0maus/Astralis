@@ -32,7 +32,7 @@
       "id": 5,
       "name": "Wave",
       "blocksview": false,
-      "glyphs": [ 6, 16 ],
+      "glyphs": [ 6 ],
       "colors": [ "#0077BE" ]
     },
     {
@@ -76,6 +76,34 @@
       "blocksview": false,
       "glyphs": [ 16, 17 ],
       "colors": [ "#009933", "#006622" ]
+    },
+    {
+      "id": 12,
+      "name": "SandWave",
+      "blocksview": false,
+      "glyphs": [ 19 ],
+      "colors": [ "#7c9465" ]
+    },
+    {
+      "id": 13,
+      "name": "SnowHeap",
+      "blocksview": false,
+      "glyphs": [ 20 ],
+      "colors": [ "#FFFFFF" ]
+    },
+    {
+      "id": 14,
+      "name": "IceBlock",
+      "blocksview": false,
+      "glyphs": [ 21 ],
+      "colors": [ "#b9e8ea" ]
+    },
+    {
+      "id": 15,
+      "name": "SwampPuddle",
+      "blocksview": false,
+      "glyphs": [ 22 ],
+      "colors": [ "#FFFFFF" ]
     }
   ]
 }

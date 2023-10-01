@@ -19,6 +19,11 @@
           "name": "PalmTree",
           "spawnchance": 1,
           "spawnrarity": "Epic"
+        },
+        {
+          "name": "SandWave",
+          "spawnchance": 20,
+          "copybiomecolor": true
         }
       ]
     },
@@ -35,6 +40,11 @@
           "name": "DeadTree",
           "spawnchance": 1,
           "spawnrarity": "Epic"
+        },
+        {
+          "name": "IceBlock",
+          "spawnchance": 5,
+          "spawnrarity": "Rare"
         }
       ]
     },
@@ -66,8 +76,29 @@
       ]
     },
     {
-      "name": "Shrubland",
-      "color": "#A9CCB5"
+      "name": "Swamp",
+      "color": "#A9CCB5",
+      "objects": [
+        {
+          "name": "SwampTree",
+          "spawnchance": 2
+        },
+        {
+          "name": "SwampPuddle",
+          "spawnchance": 1,
+          "spawnrarity": "Epic"
+        },
+        {
+          "name": "Grass",
+          "spawnchance": 7,
+          "copybiomecolor": true
+        },
+        {
+          "name": "Flowers",
+          "spawnchance": 5,
+          "spawnrarity": "Epic"
+        }
+      ]
     },
     {
       "name": "Taiga",
@@ -79,8 +110,13 @@
       "objects": [
         {
           "name": "Cactus",
-          "spawnchance": 2,
-          "spawnrarity": "Rare"
+          "spawnchance": 1,
+          "spawnrarity": "Legendary"
+        },
+        {
+          "name": "SandWave",
+          "spawnchance": 25,
+          "copybiomecolor": true
         }
       ]
     },
@@ -90,12 +126,12 @@
       "objects": [
         {
           "name": "Cactus",
-          "spawnchance": 2,
-          "spawnrarity": "Rare"
+          "spawnchance": 1,
+          "spawnrarity": "Legendary"
         },
         {
-          "name": "Grass",
-          "spawnchance": 4,
+          "name": "SandWave",
+          "spawnchance": 25,
           "copybiomecolor": true
         }
       ]
@@ -105,9 +141,14 @@
       "color": "#9BCB7A",
       "objects": [
         {
-          "name": "SwampTree",
-          "spawnchance": 2,
-          "spawnrarity": "Rare"
+          "name": "Grass",
+          "spawnchance": 80,
+          "copybiomecolor": true
+        },
+        {
+          "name": "Flowers",
+          "spawnchance": 20,
+          "spawnrarity": "Epic"
         }
       ]
     },
@@ -222,7 +263,7 @@
     },
     {
       "name": "Snow",
-      "color": "#f7fff9",
+      "color": "#f8f8ff",
       "objects": [
         {
           "name": "Rock",
@@ -233,6 +274,17 @@
           "name": "DeadTree",
           "spawnchance": 1,
           "spawnrarity": "Epic"
+        },
+        {
+          "name": "SnowHeap",
+          "spawnchance": 5,
+          "spawnrarity": "Uncommon",
+          "copybiomecolor": true
+        },
+        {
+          "name": "IceBlock",
+          "spawnchance": 1,
+          "spawnrarity": "Legendary"
         }
       ]
     }

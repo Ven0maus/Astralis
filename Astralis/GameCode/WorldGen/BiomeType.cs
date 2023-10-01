@@ -12,7 +12,7 @@
         Bare,
         Scorched,
 
-        Shrubland,
+        Swamp,
         Taiga,
 
         TemperateDesert,
