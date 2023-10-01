@@ -45,13 +45,10 @@ namespace Astralis.Extended.Effects
         {
             foreach (var surface in _surfaces)
             {
-                if (!surface.IsVisible) continue;
                 for (int x = 0; x < surface.Width; x++)
                 {
                     for (int y = 0; y < surface.Height; y++)
                     {
-                        if (!surface.Surface[x, y].IsVisible) continue;
-
                         var foreground = surface.Surface[x, y].Foreground;
                         var background = surface.Surface[x, y].Background;
 

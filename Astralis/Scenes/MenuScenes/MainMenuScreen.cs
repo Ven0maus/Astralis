@@ -30,9 +30,6 @@ namespace Astralis.Scenes.MainMenuScene
             Children.Add(_overworldScene);
             _overworldScene.OnMainMenuVisualLoaded += DisplayGameTitle;
 
-            _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
-            _loadGameScreen = new LoadGameScreen() { IsVisible = false }; Children.Add(_loadGameScreen);
-
             _surface = new ControlSurface(Constants.ScreenWidth, Constants.ScreenHeight);
             _surface.Font = Game.Instance.Fonts[Constants.Fonts.LordNightmare];
             _controls = new ControlHost();
@@ -44,6 +41,9 @@ namespace Astralis.Scenes.MainMenuScene
             foreach (var cell in _surface.Surface)
                 cell.Background = Color.Transparent;
             _surface.Surface.IsDirty = true;
+
+            _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
+            _loadGameScreen = new LoadGameScreen() { IsVisible = false }; Children.Add(_loadGameScreen);
 
             _overworldScene.Initialize(true);
         }
@@ -167,11 +167,11 @@ namespace Astralis.Scenes.MainMenuScene
             themeColors.Lines.SetColor(Constants.GameTitleShadowColor);
             themeColors.ControlBackgroundNormal.SetColor(Color.Transparent);
             themeColors.ControlBackgroundDisabled.SetColor(Color.Transparent);
-            themeColors.ControlForegroundNormal.SetColor(Constants.GameTitleColor);
-            themeColors.ControlForegroundDisabled.SetColor(Constants.GameTitleColor);
-            themeColors.ControlForegroundFocused.SetColor(Constants.GameTitleColor);
-            themeColors.ControlForegroundMouseDown.SetColor(Constants.GameTitleColor);
-            themeColors.ControlForegroundSelected.SetColor(Constants.GameTitleColor);
+            themeColors.ControlForegroundNormal.SetColor(Constants.GameTitleShadowColor);
+            themeColors.ControlForegroundDisabled.SetColor(Constants.GameTitleShadowColor);
+            themeColors.ControlForegroundFocused.SetColor(Constants.GameTitleShadowColor);
+            themeColors.ControlForegroundMouseDown.SetColor(Constants.GameTitleShadowColor);
+            themeColors.ControlForegroundSelected.SetColor(Constants.GameTitleShadowColor);
             themeColors.RebuildAppearances();
             return themeColors;
         }
@@ -273,6 +273,8 @@ namespace Astralis.Scenes.MainMenuScene
             var screens = new ControlSurface[] { _optionsScreen, _loadGameScreen };
             foreach (var s in screens)
                 s.IsVisible = false;
+            //_mainLayer.IsVisible = false;
+            //_shadowLayer.IsVisible = false;
             screen.IsVisible = true;
         }
     }

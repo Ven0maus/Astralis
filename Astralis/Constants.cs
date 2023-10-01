@@ -4,6 +4,7 @@ namespace Astralis
 {
     public class Constants
     {
+        public static int? GameSeed = 545;
         public const bool DebugMode = false;
         public const bool FullScreen = false;
 
@@ -16,8 +17,8 @@ namespace Astralis
         public static int ScreenWidth { get { return VirtualResolution.X / FontSize.X; } }
         public static int ScreenHeight { get { return VirtualResolution.Y / FontSize.Y; } }
 
-        public static readonly Color GameTitleColor = Color.Black;
-        public static readonly Color GameTitleShadowColor = Color.Lerp(Color.Red, Color.Black, 0.75f);
+        public static readonly Color GameTitleColor = Color.Ivory;
+        public static readonly Color GameTitleShadowColor = Color.Lerp(Color.Black, Color.Gray, 0.1f);
         public const string GameTitle = "Astralis";
         public const string GameTitleFancy = @"
      _            _                   _   _       
