@@ -5,7 +5,7 @@
       "name": "OakTree",
       "blocksview": true,
       "glyphs": [ 1 ],
-      "colors": [ "#30815D" ]
+      "colors": [ "#FFFFFF" ]
     },
     {
       "id": 2,
@@ -48,6 +48,27 @@
       "blocksview": false,
       "glyphs": [ 9, 10, 11 ],
       "colors": [ "#ffb3ff", "#ffff80", "#4d94ff", "#b3ffff" ]
+    },
+    {
+      "id": 8,
+      "name": "Sticks",
+      "blocksview": false,
+      "glyphs": [ 12, 13 ],
+      "colors": [ "#4d2600", "#331a00" ]
+    },
+    {
+      "id": 9,
+      "name": "AppleTree",
+      "blocksview": true,
+      "glyphs": [ 14 ],
+      "colors": [ "#FFFFFF" ]
+    },
+    {
+      "id": 10,
+      "name": "DeadTree",
+      "blocksview": false,
+      "glyphs": [ 15 ],
+      "colors": [ "#FFFFFF" ]
     }
   ]
 }
