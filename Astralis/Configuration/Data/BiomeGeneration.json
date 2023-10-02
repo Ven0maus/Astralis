@@ -149,6 +149,12 @@
           "name": "Flowers",
           "spawnchance": 20,
           "spawnrarity": "Epic"
+        },
+        {
+          "name": "Bush",
+          "spawnchance": 10,
+          "spawnrarity": "Epic",
+          "copybiomecolor": true
         }
       ]
     },
@@ -158,7 +164,7 @@
       "objects": [
         {
           "name": "OakTree",
-          "spawnchance": 2
+          "spawnchance": 1
         },
         {
           "name": "AppleTree",
@@ -179,6 +185,12 @@
           "name": "Sticks",
           "spawnchance": 1,
           "spawnrarity": "Uncommon"
+        },
+        {
+          "name": "Bush",
+          "spawnchance": 4,
+          "spawnrarity": "Epic",
+          "copybiomecolor": true
         }
       ]
     },
@@ -188,7 +200,12 @@
       "objects": [
         {
           "name": "OakTree",
-          "spawnchance": 5
+          "spawnchance": 1
+        },
+        {
+          "name": "AppleTree",
+          "spawnchance": 1,
+          "spawnrarity": "Uncommon"
         },
         {
           "name": "Grass",
@@ -204,6 +221,12 @@
           "name": "Sticks",
           "spawnchance": 1,
           "spawnrarity": "Uncommon"
+        },
+        {
+          "name": "Bush",
+          "spawnchance": 3,
+          "spawnrarity": "Epic",
+          "copybiomecolor": true
         }
       ]
     },
@@ -211,12 +234,6 @@
       "name": "TemperateRainForest",
       "color": "#2C835F",
       "objects": [
-        {
-          "name": "OakTree",
-          "spawnchance": 15,
-          "minNeighborsGrowth": 3,
-          "minNeighborsSurvival": 2
-        },
         {
           "name": "Grass",
           "spawnchance": 20,
@@ -231,6 +248,13 @@
           "name": "Sticks",
           "spawnchance": 1,
           "spawnrarity": "Uncommon"
+        },
+        {
+          "name": "PineTree",
+          "spawnchance": 10,
+          "minNeighborsGrowth": 2,
+          "minNeighborsSurvival": 3,
+          "copybiomecolor": true
         }
       ]
     },
@@ -238,12 +262,6 @@
       "name": "TropicalRainForest",
       "color": "#30815D",
       "objects": [
-        {
-          "name": "OakTree",
-          "spawnchance": 17,
-          "minNeighborsGrowth": 2,
-          "minNeighborsSurvival": 3
-        },
         {
           "name": "Grass",
           "spawnchance": 30,
@@ -258,6 +276,13 @@
           "name": "Sticks",
           "spawnchance": 1,
           "spawnrarity": "Uncommon"
+        },
+        {
+          "name": "PineTree",
+          "spawnchance": 15,
+          "minNeighborsGrowth": 2,
+          "minNeighborsSurvival": 3,
+          "copybiomecolor": true
         }
       ]
     },
@@ -282,9 +307,10 @@
           "copybiomecolor": true
         },
         {
-          "name": "IceBlock",
-          "spawnchance": 1,
-          "spawnrarity": "Legendary"
+          "name": "PineTree",
+          "spawnchance": 5,
+          "spawnrarity": "Uncommon",
+          "copybiomecolor": true
         }
       ]
     }

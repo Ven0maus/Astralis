@@ -96,7 +96,7 @@
       "name": "IceBlock",
       "blocksview": false,
       "glyphs": [ 21 ],
-      "colors": [ "#b9e8ea" ]
+      "colors": [ "#5cceff" ]
     },
     {
       "id": 15,
@@ -104,6 +104,20 @@
       "blocksview": false,
       "glyphs": [ 22 ],
       "colors": [ "#FFFFFF" ]
+    },
+    {
+      "id": 16,
+      "name": "Bush",
+      "blocksview": false,
+      "glyphs": [ 23, 24 ],
+      "colors": [ "#7f8866" ]
+    },
+    {
+      "id": 17,
+      "name": "PineTree",
+      "blocksview": true,
+      "glyphs": [ 25 ],
+      "colors": [ "#104305" ]
     }
   ]
 }
