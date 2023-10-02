@@ -45,7 +45,7 @@ namespace Astralis
             ScreenCellsY = _height / defaultFontSizePoint.Y;
 
             SadConsole.Game.Instance.MonoGameInstance.ResizeGraphicsDeviceManager(
-                defaultFont.GetFontSize(defaultFontSize).ToMonoPoint(), ScreenCellsX, ScreenCellsY, 0, 0);
+                defaultFontSizePoint.ToMonoPoint(), ScreenCellsX, ScreenCellsY, 0, 0);
         }
 
         private static void ApplyResolutionSettings()
