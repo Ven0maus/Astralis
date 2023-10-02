@@ -28,10 +28,13 @@ namespace Astralis.Scenes.Screens
         {
             // Set Aesomatica font for the overworld
             Font = Game.Instance.Fonts[Constants.Fonts.Aesomatica];
+            var zoomFactor = Constants.WorldGeneration.WorldZoomFactor;
+            FontSize = new Point((int)(Font.GlyphWidth * zoomFactor), (int)(Font.GlyphHeight * zoomFactor));
 
             _objectsLayer = new ScreenSurface(Width, Height)
             {
                 Font = Game.Instance.Fonts[Constants.Fonts.WorldObjects],
+                FontSize = FontSize,
                 UseMouse = false,
                 UseKeyboard = false
             };

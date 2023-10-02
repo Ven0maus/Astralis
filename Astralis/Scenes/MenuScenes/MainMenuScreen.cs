@@ -78,7 +78,7 @@ namespace Astralis.Scenes.MainMenuScene
             // Add shadow layer with some offset
             _shadowLayer = new ScreenSurface(maxWidth, titleParts.Length) { UsePixelPositioning = true };
             ConfigureLayer(_shadowLayer, 1, Color.Transparent);
-            _shadowLayer.Position *= new Point(Constants.FontSize.X, Constants.FontSize.Y);
+            _shadowLayer.Position *= new Point(_surface.FontSize.X, _surface.FontSize.Y);
             _shadowLayer.Position -= new Point(3, -11);
             _shadowLayer.IsVisible = false;
 

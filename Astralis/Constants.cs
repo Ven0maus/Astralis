@@ -8,14 +8,8 @@ namespace Astralis
         public const bool DebugMode = true;
         public const bool FullScreen = false;
 
-        public static readonly Point FontSize = new(8, 16);
-
-        /// <summary>
-        /// The perceived or effective resolution of the game, which can differ from the physical or native resolution of the display device itself.
-        /// </summary>
-        public static readonly Point VirtualResolution = new(1280, 720); // new(1280, 720);
-        public static int ScreenWidth { get { return VirtualResolution.X / FontSize.X; } }
-        public static int ScreenHeight { get { return VirtualResolution.Y / FontSize.Y; } }
+        public static int ScreenWidth { get { return Resolution.ScreenCellsX; } }
+        public static int ScreenHeight { get { return Resolution.ScreenCellsY; } }
 
         public static readonly Color GameTitleColor = Color.Ivory;
         public static readonly Color GameTitleShadowColor = Color.Lerp(Color.Black, Color.Gray, 0.1f);
@@ -36,9 +30,10 @@ namespace Astralis
 
         public static class WorldGeneration
         {
+            public const float WorldZoomFactor = 1.75f;
             public const bool DrawBordersOnDebugMode = false;
             public const int ExtraChunkRadius = 2;
-            public const int ChunkSize = 50;
+            public const int ChunkSize = 32;
         }
 
         public static class Configuration

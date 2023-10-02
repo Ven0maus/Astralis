@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SadRogue.Primitives;
 
 namespace Astralis
 {
@@ -8,6 +9,9 @@ namespace Astralis
         private static GraphicsDeviceManager _Device = null;
         private static int _width, _height;
         private static bool _fullScreen = false;
+
+        public static int ScreenCellsX { get; private set; }
+        public static int ScreenCellsY { get; private set; }
 
         public static void Init(GraphicsDeviceManager device)
         {
@@ -20,6 +24,28 @@ namespace Astralis
             _height = height;
             _fullScreen = fullScreen;
             ApplyResolutionSettings();
+            AdjustScreenCellsToResolution();
+        }
+
+        public static void SetResolutionFromCurrentDisplayMonitor(bool fullScreen)
+        {
+            SetResolution(
+                GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width,
+                GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, 
+                fullScreen);
+        }
+
+        private static void AdjustScreenCellsToResolution()
+        {
+            var defaultFont = SadConsole.Game.Instance.DefaultFont;
+            var defaultFontSize = SadConsole.Game.Instance.DefaultFontSize;
+            var defaultFontSizePoint = defaultFont.GetFontSize(defaultFontSize);
+
+            ScreenCellsX = _width / defaultFontSizePoint.X;
+            ScreenCellsY = _height / defaultFontSizePoint.Y;
+
+            SadConsole.Game.Instance.MonoGameInstance.ResizeGraphicsDeviceManager(
+                defaultFont.GetFontSize(defaultFontSize).ToMonoPoint(), ScreenCellsX, ScreenCellsY, 0, 0);
         }
 
         private static void ApplyResolutionSettings()
