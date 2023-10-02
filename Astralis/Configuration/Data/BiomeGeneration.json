@@ -37,14 +37,15 @@
           "spawnrarity": "Epic"
         },
         {
-          "name": "DeadTree",
-          "spawnchance": 1,
-          "spawnrarity": "Epic"
-        },
-        {
           "name": "IceBlock",
           "spawnchance": 5,
           "spawnrarity": "Rare"
+        },
+        {
+          "name": "Pebbles",
+          "spawnchance": 2,
+          "spawnrarity": "Epic",
+          "copybiomecolor": true
         }
       ]
     },
@@ -54,8 +55,14 @@
       "objects": [
         {
           "name": "DeadTree",
-          "spawnchance": 1,
+          "spawnchance": 3,
           "spawnrarity": "Epic"
+        },
+        {
+          "name": "Pebbles",
+          "spawnchance": 10,
+          "spawnrarity": "Uncommon",
+          "copybiomecolor": true
         }
       ]
     },
@@ -65,19 +72,25 @@
       "objects": [
         {
           "name": "Rock",
-          "spawnchance": 3,
+          "spawnchance": 5,
           "spawnrarity": "Epic"
         },
         {
           "name": "DeadTree",
-          "spawnchance": 1,
-          "spawnrarity": "Epic"
+          "spawnchance": 10,
+          "spawnrarity": "Uncommon"
+        },
+        {
+          "name": "Pebbles",
+          "spawnchance": 10,
+          "spawnrarity": "Uncommon",
+          "copybiomecolor": true
         }
       ]
     },
     {
       "name": "Swamp",
-      "color": "#A9CCB5",
+      "color": "#555c45",
       "objects": [
         {
           "name": "SwampTree",
@@ -102,7 +115,27 @@
     },
     {
       "name": "Taiga",
-      "color": "#354231"
+      "color": "#354231",
+      "objects": [
+        {
+          "name": "PineTree",
+          "spawnchance": 5,
+          "minNeighborsGrowth": 2,
+          "minNeighborsSurvival": 3,
+          "copybiomecolor": true
+        },
+        {
+          "name": "Grass",
+          "spawnchance": 15,
+          "spawnrarity": "Uncommon",
+          "copybiomecolor": true
+        },
+        {
+          "name": "DeadTree",
+          "spawnchance": 5,
+          "spawnrarity": "Uncommon"
+        }
+      ]
     },
     {
       "name": "TemperateDesert",

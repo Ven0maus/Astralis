@@ -118,6 +118,13 @@
       "blocksview": true,
       "glyphs": [ 25 ],
       "colors": [ "#104305" ]
+    },
+    {
+      "id": 18,
+      "name": "Pebbles",
+      "blocksview": false,
+      "glyphs": [ 26 ],
+      "colors": [ "#808080" ]
     }
   ]
 }

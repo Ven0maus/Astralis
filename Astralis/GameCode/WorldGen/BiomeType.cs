@@ -8,15 +8,12 @@
         Ocean,
         Beach,
 
-        Tundra,
+        TemperateDesert,
+        SubtropicalDesert,
         Bare,
         Scorched,
 
         Swamp,
-        Taiga,
-
-        TemperateDesert,
-        SubtropicalDesert,
 
         Grassland,
         TemperateForest,
@@ -25,6 +22,8 @@
         TemperateRainForest,
         TropicalRainForest,
 
+        Tundra,
+        Taiga,
         Snow,
     }
 }
