@@ -99,7 +99,7 @@ namespace Astralis.Scenes.Screens
 
             if (MainMenuCamera)
             {
-                if (_timePassed >= 500)
+                if (_timePassed >= 250)
                 {
                     _timePassed = 0;
                     MoveCamera(CameraPosition, CameraPosition + Direction.Right);
