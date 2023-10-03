@@ -27,8 +27,8 @@ namespace NoiseGenerator
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    float xValue = (float)x / Width - 0.5f;
-                    float yValue = (float)y / Height - 0.5f;
+                    float xValue = x;
+                    float yValue = y;
                     float value = noise.GetNoise(xValue, yValue, args.Octaves, args.Scale, args.Persistence, args.Lacunarity);
 
                     Surface.SetBackground(x, y, Color.Lerp(Color.White, Color.Black, value));
