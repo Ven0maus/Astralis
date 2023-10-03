@@ -15,15 +15,18 @@ namespace NoiseGenerator
             Octaves,
             Scale,
             Persistence,
-            Lacunarity
+            Lacunarity,
+            OffsetX,
+            OffsetY,
         }
 
         private readonly Random _random;
         private readonly Dictionary<PropertyValue, TextBox> _values;
 
         public event EventHandler<GenerateArgs>? OnGenerate;
+        public event EventHandler? OnResetOffset;
 
-        public Panel() : base(19, 23)
+        public Panel() : base(19, 29)
         {
             Font = Game.Instance.Fonts[Constants.Fonts.LCD];
             Surface.DrawBox(new Rectangle(0, 0, Width, Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Blue, Color.Black)));
@@ -47,19 +50,28 @@ namespace NoiseGenerator
                 {
                     Position = new Point(1, currentY)
                 };
+                if (values[i].ToString().StartsWith("Offset"))
+                {
+                    textBox.IsEnabled = false;
+                    textBox.Text = "0";
+                }
                 Controls.Add(textBox);
                 _values.Add(values[i], textBox);
 
-                var rButton = new Button(3)
+                // Add R buttons for all except offsets
+                if (!values[i].ToString().StartsWith("Offset"))
                 {
-                    Text = "R",
-                    Position = new Point(textBox.Width + 2, currentY),
-                    ShowEnds = true,
-                    AutoSize = false
-                };
-                var propType = values[i];
-                rButton.Click += (sender, args) => { Randomize(propType, true); };
-                Controls.Add(rButton);
+                    var rButton = new Button(3)
+                    {
+                        Text = "R",
+                        Position = new Point(textBox.Width + 2, currentY),
+                        ShowEnds = true,
+                        AutoSize = false
+                    };
+                    var propType = values[i];
+                    rButton.Click += (sender, args) => { Randomize(propType, true); };
+                    Controls.Add(rButton);
+                }
 
                 currentY += 2;
             }
@@ -85,6 +97,17 @@ namespace NoiseGenerator
             };
             Controls.Add(randomizeButton);
 
+            currentY += 2;
+
+            var resetOffsetButton = new Button("RESET OFFSET")
+            {
+                Position = new Point(1, currentY)
+            };
+            resetOffsetButton.Click += (sender, args) =>
+            {
+                OnResetOffset?.Invoke(this, EventArgs.Empty);
+            };
+            Controls.Add(resetOffsetButton);
 
             // Start values randomized
             randomizeButton.InvokeClick();
@@ -97,6 +120,15 @@ namespace NoiseGenerator
             OnGenerate?.Invoke(this, args);
         }
 
+        public void SetOffset(Point camera)
+        {
+            _values[PropertyValue.OffsetX].Text = camera.X.ToString();
+            _values[PropertyValue.OffsetX].IsDirty = true;
+            _values[PropertyValue.OffsetY].Text = camera.Y.ToString();
+            _values[PropertyValue.OffsetY].IsDirty = true;
+            InvokeGenerate();
+        }
+
         private GenerateArgs? GetEventArgs()
         {
             var seed = (int)(GetValue(PropertyValue.Seed) ?? 1);
@@ -104,6 +136,8 @@ namespace NoiseGenerator
             var scale = GetValue(PropertyValue.Scale);
             var persistence = GetValue(PropertyValue.Persistence);
             var lacunarity = GetValue(PropertyValue.Lacunarity);
+            var offsetX = (int)(GetValue(PropertyValue.OffsetX) ?? 0);
+            var offsetY = (int)(GetValue(PropertyValue.OffsetY) ?? 0);
 
             if (scale == null || persistence == null || lacunarity == null)
             {
@@ -111,7 +145,7 @@ namespace NoiseGenerator
                 return null;
             }
 
-            return new GenerateArgs(seed, octaves, scale.Value, persistence.Value, lacunarity.Value);
+            return new GenerateArgs(seed, octaves, scale.Value, persistence.Value, lacunarity.Value, (offsetX, offsetY));
         }
 
         private float? GetValue(PropertyValue prop)
@@ -162,14 +196,16 @@ namespace NoiseGenerator
             public float Scale { get; }
             public float Persistence { get; }
             public float Lacunarity { get; }
+            public Point Offset { get; }
 
-            public GenerateArgs(int seed, int octaves, float scale, float persistence, float lacunarity)
+            public GenerateArgs(int seed, int octaves, float scale, float persistence, float lacunarity, Point offset)
             {
                 Seed = seed;
                 Octaves = octaves;
                 Scale = scale;
                 Persistence = persistence;
                 Lacunarity = lacunarity;
+                Offset = offset;
             }
         }
     }
