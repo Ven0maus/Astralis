@@ -20,7 +20,7 @@
             return GetNoise(x, y, 10, 1.70f, 0.69f, 0.39f);
         }
 
-        private float GetNoise(float x, float y, int octaves, float scale, float persistence, float lacunarity)
+        public float GetNoise(float x, float y, int octaves, float scale, float persistence, float lacunarity)
         {
             float amplitude = 1.0f;
             float frequency = 1.0f;
@@ -37,7 +37,7 @@
                 frequency *= lacunarity;
             }
 
-            return Mathf.Remap(noiseValue, -1, 1, 0, 1);
+            return Mathf.Remap(noiseValue, -1f, 1f, 0f, 1f);
         }
     }
 }

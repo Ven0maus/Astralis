@@ -26,8 +26,10 @@ namespace Astralis.Scenes.Screens
 
         public WorldScreen(World world) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
-            // Set Aesomatica font for the overworld
-            Font = Game.Instance.Fonts[Constants.Fonts.Aesomatica];
+            // Set 16x16 font for the overworld
+            Font = Game.Instance.Fonts[Constants.Fonts.LCD];
+
+            // Make world zoom in
             var zoomFactor = Constants.WorldGeneration.WorldZoomFactor;
             FontSize = new Point((int)(Font.GlyphWidth * zoomFactor), (int)(Font.GlyphHeight * zoomFactor));
 
@@ -40,6 +42,7 @@ namespace Astralis.Scenes.Screens
             };
             foreach (var cell in _objectsLayer.Surface)
                 cell.IsVisible = false;
+
             _objectsLayer.Surface.IsDirty = true;
             Children.Add(_objectsLayer);
 
@@ -49,7 +52,6 @@ namespace Astralis.Scenes.Screens
             _fontWindow.OnClick += (sender, index) => System.Console.WriteLine($"Char ({index}) '{(char)index}'");
             _fontWindow.DrawFontSurface();
             _fontWindow.IsVisible = Constants.DebugMode && !MainMenuCamera;
-
 
             // Setup world object
             _world = world;

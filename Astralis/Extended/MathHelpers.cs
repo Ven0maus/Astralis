@@ -15,9 +15,14 @@
             }
         }
 
-        public static float Remap(float value, float fromMin, float fromMax, float newMin, float newMax)
+        public static float Remap(float value, float fromSource, float toSource, float fromTarget, float toTarget)
         {
-            return (value - fromMin) / (fromMax - fromMin) * (newMax - newMin) + newMin;
+            float t = (value - fromSource) / (toSource - fromSource);
+            if (t > 1f)
+                return toTarget;
+            if (t < 0f)
+                return fromTarget;
+            return fromTarget + (toTarget - fromTarget) * t;
         }
 
         public static float Clamp01(float value)

@@ -1,5 +1,4 @@
-﻿using Astralis.Extended;
-using Astralis.Extended.Effects;
+﻿using Astralis.Extended.Effects;
 using Astralis.Extended.Effects.Core;
 using Astralis.Extended.SadConsole;
 using Astralis.Scenes.GameplayScenes;
@@ -32,6 +31,7 @@ namespace Astralis.Scenes.MainMenuScene
 
             _surface = new ControlSurface(Constants.ScreenWidth, Constants.ScreenHeight);
             _surface.Font = Game.Instance.Fonts[Constants.Fonts.LordNightmare];
+
             _controls = new ControlHost();
             _surface.SadComponents.Add(_controls);
             _surface.Surface.DefaultBackground = Color.Transparent;
