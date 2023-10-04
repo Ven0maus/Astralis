@@ -105,8 +105,11 @@ namespace NoiseGenerator
                 {
                     float xValue = x + args.Offset.X;
                     float yValue = y + args.Offset.Y;
-                    float value = noise.GetNoise(xValue, yValue, args.Octaves, args.Scale, args.Persistence, args.Lacunarity);
-
+                    float value = noise.GetNoise(xValue, yValue, args.Octaves, args.Scale, args.Persistence, args.Lacunarity, !args.SharpRidges);
+                    
+                    if (args.SharpRidges)
+                        value = Mathf.Remap(-1 * Math.Abs(value), -1f, 1f, 0f, 1f);
+                    
                     Surface.SetBackground(x, y, Color.Lerp(Color.White, Color.Black, value));
                 }
             }

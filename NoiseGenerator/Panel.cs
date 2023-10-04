@@ -25,11 +25,12 @@ namespace NoiseGenerator
         private readonly Random _random;
         private readonly Dictionary<PropertyValue, TextBox> _values;
         private readonly ComboBox? _noiseType;
+        private readonly CheckBox _ridges;
 
         public event EventHandler<GenerateArgs>? OnGenerate;
         public event EventHandler? OnResetOffset;
 
-        public Panel() : base(19, 32)
+        public Panel() : base(19, 34)
         {
             Font = Game.Instance.Fonts[Constants.Fonts.LCD];
             Surface.DrawBox(new Rectangle(0, 0, Width, Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Blue, Color.Black)));
@@ -92,6 +93,16 @@ namespace NoiseGenerator
 
                 currentY += 2;
             }
+
+            _ridges = new CheckBox("SHARP RIDGES")
+            {
+                Position = new Point(1, currentY),
+                LeftBracketGlyph = '(',
+                RightBracketGlyph = ')',
+                CheckedIconGlyph = 'X'
+            };
+            Controls.Add(_ridges);
+            currentY += 2;
 
             var generateButton = new Button("GENERATE ")
             {
@@ -164,7 +175,7 @@ namespace NoiseGenerator
 
             var noiseType = _noiseType?.SelectedItem != null ? (FastNoiseLite.NoiseType)_noiseType.SelectedItem : default;
 
-            return new GenerateArgs(seed, octaves, scale.Value, persistence.Value, lacunarity.Value, noiseType, (offsetX, offsetY));
+            return new GenerateArgs(seed, octaves, scale.Value, persistence.Value, lacunarity.Value, noiseType, (offsetX, offsetY), _ridges.IsSelected);
         }
 
         private float? GetValue(PropertyValue prop)
@@ -216,9 +227,10 @@ namespace NoiseGenerator
             public float Persistence { get; }
             public float Lacunarity { get; }
             public FastNoiseLite.NoiseType NoiseType { get; }
+            public bool SharpRidges { get; }
             public Point Offset { get; }
 
-            public GenerateArgs(int seed, int octaves, float scale, float persistence, float lacunarity, FastNoiseLite.NoiseType noiseType, Point offset)
+            public GenerateArgs(int seed, int octaves, float scale, float persistence, float lacunarity, FastNoiseLite.NoiseType noiseType, Point offset, bool sharpRidges)
             {
                 Seed = seed;
                 Octaves = octaves;
@@ -227,6 +239,7 @@ namespace NoiseGenerator
                 Lacunarity = lacunarity;
                 NoiseType = noiseType;
                 Offset = offset;
+                SharpRidges = sharpRidges;
             }
         }
     }

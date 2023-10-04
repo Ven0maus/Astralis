@@ -25,7 +25,7 @@
             _noise.SetNoiseType(noiseType);
         }
 
-        public float GetNoise(float x, float y, int octaves, float scale, float persistence, float lacunarity)
+        public float GetNoise(float x, float y, int octaves, float scale, float persistence, float lacunarity, bool reMap = true)
         {
             float amplitude = 1.0f;
             float frequency = 1.0f;
@@ -42,7 +42,7 @@
                 frequency *= lacunarity;
             }
 
-            return Mathf.Remap(noiseValue, -1f, 1f, 0f, 1f);
+            return reMap ? Mathf.Remap(noiseValue, -1f, 1f, 0f, 1f) : noiseValue;
         }
     }
 }

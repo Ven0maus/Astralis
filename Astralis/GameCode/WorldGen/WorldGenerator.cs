@@ -63,7 +63,8 @@ namespace Astralis.GameCode.WorldGen
                 for (int x = 0; x < width; x++)
                 {
                     var index = y * width + x;
-                    if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && Constants.DebugMode && Constants.WorldGeneration.DrawBordersOnDebugMode)
+                    if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && 
+                        Constants.DebugMode && Constants.WorldGeneration.DrawBordersOnDebugMode)
                     {
                         biomes[index] = (byte)BiomeType.Border;
                         continue;
