@@ -164,6 +164,8 @@ namespace Astralis.GameCode.WorldGen
                 {
                     return BiomeType.Tundra;
                 }
+                if (noise >= 0.92f)
+                    return BiomeType.Snow;
                 return BiomeType.Beach;
             }
             else if (noise < 0.225f) return BiomeType.Beach;
