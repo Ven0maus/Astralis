@@ -28,6 +28,15 @@ namespace Astralis.GameCode.WorldGen
         {
             _generator = generator;
             Seed = generator.Seed;
+
+            // Chunks are generated based on elevation, moisture, heat noise maps
+            // which are combined into one map (additive), this means all these values
+            // are no longer within 0-1 range, to remap this range we need to use
+            // globalmin/globalmax values that are dynamically updated when new chunks are loaded.
+            // The initial calculation is made during world init, which pre-load chunks.
+            // But since these were made during the computation, it could be some chunks have visual artifacts
+            // We clear the cache so the chunks are reloaded based on the new computations.
+            ClearCache();
         }
 
         protected override Tile Convert(int x, int y, byte cellType)

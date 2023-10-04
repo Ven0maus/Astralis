@@ -13,8 +13,6 @@
 
         TemperateDesert,
         SubtropicalDesert,
-        Bare,
-        Scorched,
 
         Swamp,
 

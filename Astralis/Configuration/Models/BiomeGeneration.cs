@@ -71,13 +71,13 @@ namespace Astralis.Configuration.Models
             public int? MinNeighborsGrowth { get; set; }
             public int? MinNeighborsSurvival { get; set; }
 
-            public WorldObject WorldObject 
-            { 
-                get 
-                { 
-                    return World.ObjectData.Get.Objects.TryGetValue(Name, out var value) ? value : 
-                        throw new Exception("Missing world object configuration for biome object: " + Name); 
-                } 
+            public WorldObject WorldObject
+            {
+                get
+                {
+                    return World.ObjectData.Get.Objects.TryGetValue(Name, out var value) ? value :
+                        throw new Exception("Missing world object configuration for biome object: " + Name);
+                }
             }
         }
 

@@ -50,7 +50,7 @@ namespace Astralis.GameCode.WorldGen
             CellType = worldObject.Id;
             Glyph = worldObject.Glyphs.Random(random);
             Background = Color.Transparent;
-            Foreground = obj.CopyBiomeColor != null && obj.CopyBiomeColor.Value ? obj.Biome.Color : 
+            Foreground = obj.CopyBiomeColor != null && obj.CopyBiomeColor.Value ? obj.Biome.Color :
                 worldObject.Colors.Random(random);
         }
 

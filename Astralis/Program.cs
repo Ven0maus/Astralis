@@ -18,8 +18,8 @@ namespace Astralis
                 .ConfigureFonts(f =>
                 {
                     f.AddExtraFonts(
-                        Constants.Fonts.LCD, 
-                        Constants.Fonts.WorldObjects, 
+                        Constants.Fonts.LCD,
+                        Constants.Fonts.WorldObjects,
                         Constants.Fonts.LordNightmare);
                 });
 

@@ -1,5 +1,4 @@
 ﻿using Astralis.Configuration.Models;
-using Astralis.Extended;
 using SadRogue.Primitives;
 using System;
 using System.Linq;

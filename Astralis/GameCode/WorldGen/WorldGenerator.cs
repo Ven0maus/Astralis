@@ -11,6 +11,11 @@ namespace Astralis.GameCode.WorldGen
         public int Seed { get; }
         public readonly NoiseHelper NoiseHelper;
 
+        // Global values used to approximate chunk remapping
+        // This requires beforehand a bunch of chunks to be generated,
+        // So the global values can be computed
+        public static float GlobalMin, GlobalMax;
+
         public WorldGenerator(int seed, NoiseHelper noiseHelper)
         {
             Seed = seed;
@@ -25,19 +30,50 @@ namespace Astralis.GameCode.WorldGen
             // Create elevation and moisture lookup arrays
             var elevation = new float[width * height];
             var moisture = new float[width * height];
+            var heat = new float[width * height];
             var rivers = new float[width * height];
 
             SetNoisemap(width, height, chunkCoordinate,
                 new NoiseData(elevation, NoiseHelper.GetElevation),
                 new NoiseData(moisture, NoiseHelper.GetMoisture),
+                new NoiseData(heat, NoiseHelper.GetHeat),
                 new NoiseData(rivers, NoiseHelper.GetRivers));
+
+            var combinedMap = CombineMaps(width, height, elevation, moisture, heat);
 
             // Set chunk based on provided lookup arrays
             var biomes = new byte[width * height];
             var objects = new BiomeGeneration.BiomeObject[width * height];
-            SetChunkValues(random, biomes, objects, width, height, elevation, moisture, rivers);
+            SetChunkValues(random, biomes, objects, width, height, combinedMap, rivers);
 
             return (biomes, new WorldChunk(biomes, objects, width, height, random));
+        }
+
+        private static float[] CombineMaps(int width, int height, float[] elevationMap, float[] moistureMap, float[] heatMap)
+        {
+            float[] combinedMap = new float[width * height];
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var index = y * width + x;
+                    var value = elevationMap[index] + moistureMap[index] + heatMap[index];
+                    combinedMap[index] = value;
+
+                    GlobalMin = Math.Min(GlobalMin, value);
+                    GlobalMax = Math.Max(GlobalMax, value);
+                }
+            }
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var index = y * width + x;
+                    combinedMap[index] = Mathf.Remap(combinedMap[index], GlobalMin, GlobalMax, 0f, 1f);
+                }
+            }
+            return combinedMap;
         }
 
         private static void SetNoisemap(int width, int height, (int x, int y) chunkCoordinate, params NoiseData[] noiseData)
@@ -58,22 +94,22 @@ namespace Astralis.GameCode.WorldGen
             }
         }
 
-        private static void SetChunkValues(Random random, byte[] biomes, BiomeGeneration.BiomeObject[] objects, 
-            int width, int height, float[] elevation, float[] moisture, float[] rivers)
+        private static void SetChunkValues(Random random, byte[] biomes, BiomeGeneration.BiomeObject[] objects,
+            int width, int height, float[] noise, float[] rivers)
         {
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     var index = y * width + x;
-                    if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) && 
+                    if ((x == 0 || y == 0 || x == width - 1 || y == height - 1) &&
                         Constants.DebugMode && Constants.WorldGeneration.DrawBordersOnDebugMode)
                     {
                         biomes[index] = (byte)BiomeType.Border;
                         continue;
                     }
 
-                    var biomeType = GetTileType(elevation[index], moisture[index], rivers[index]);
+                    var biomeType = GetTileType(noise[index], rivers[index]);
                     var objectType = GetRandomBiomeObject(random, biomeType, true);
                     biomes[index] = (byte)biomeType;
                     objects[index] = objectType;
@@ -112,68 +148,36 @@ namespace Astralis.GameCode.WorldGen
             return 100;
         }
 
-        public static BiomeType GetTileType(float elevation, float moisture, float rivers)
+        public static BiomeType GetTileType(float noise, float riverNoise)
         {
-            if (elevation < 0.1 && moisture > 0.1f) 
-                return BiomeType.Ocean;
-            if (rivers > 0.44f)
+            // Define biome thresholds based on the combined value
+            if (noise < 0.15f) return BiomeType.Ocean;
+            else if (riverNoise > 0.44f)
             {
-                if (rivers > 0.47f)
+                if (riverNoise > 0.47f)
                 {
-                    if (elevation > 0.9)
-                    {
-                        if (moisture >= 0.6) 
-                            return BiomeType.FrozenRiver;
-                    }
+                    if (noise >= 0.92f)
+                        return BiomeType.FrozenRiver;
                     return BiomeType.River;
                 }
-                else
+                if (noise >= 0.76f && noise < 0.92f)
                 {
-                    if (elevation > 0.9)
-                    {
-                        if (moisture < 0.1) return BiomeType.Scorched;
-                        if (moisture < 0.25) return BiomeType.Bare;
-                        if (moisture < 0.6) return BiomeType.Tundra;
-                        return BiomeType.Tundra;
-                    }
-                    else if (elevation > 0.7)
-                    {
-                        if (moisture > 0.4) return BiomeType.Tundra;
-                    }
-                    return BiomeType.Beach;
+                    return BiomeType.Tundra;
                 }
+                return BiomeType.Beach;
             }
-            if (elevation < 0.2) return BiomeType.Beach;
-
-            if (elevation > 0.9)
-            {
-                if (moisture < 0.1) return BiomeType.Scorched;
-                if (moisture < 0.25) return BiomeType.Bare;
-                if (moisture < 0.6) return BiomeType.Tundra;
-                return BiomeType.Snow;
-            }
-
-            if (elevation > 0.6)
-            {
-                if (moisture < 0.2) return BiomeType.TemperateDesert;
-                if (moisture < 0.4) return BiomeType.Grassland;
-                if (moisture < 0.5) return BiomeType.TemperateForest;
-                if (moisture < 0.8) return BiomeType.Swamp;
-                return BiomeType.Taiga;
-            }
-
-            if (elevation > 0.4)
-            {
-                if (moisture < 0.2) return BiomeType.TemperateDesert;
-                if (moisture < 0.55) return BiomeType.Grassland;
-                if (moisture < 0.8) return BiomeType.TemperateForest;
-                return BiomeType.TemperateRainForest;
-            }
-
-            if (moisture < 0.2) return BiomeType.SubtropicalDesert;
-            if (moisture < 0.4) return BiomeType.Grassland;
-            if (moisture < 0.7) return BiomeType.TropicalForest;
-            return BiomeType.TropicalRainForest;
+            else if (noise < 0.225f) return BiomeType.Beach;
+            else if (noise < 0.27f) return BiomeType.SubtropicalDesert;
+            else if (noise < 0.32f) return BiomeType.TemperateDesert;
+            else if (noise < 0.43f) return BiomeType.Grassland;
+            else if (noise < 0.51f) return BiomeType.TemperateForest;
+            else if (noise < 0.57f) return BiomeType.TropicalForest;
+            else if (noise < 0.62f) return BiomeType.TemperateRainForest;
+            else if (noise < 0.72f) return BiomeType.TropicalRainForest;
+            else if (noise < 0.76f) return BiomeType.Swamp;
+            else if (noise < 0.86f) return BiomeType.Taiga;
+            else if (noise < 0.92) return BiomeType.Tundra;
+            return BiomeType.Snow;
         }
 
         class NoiseData

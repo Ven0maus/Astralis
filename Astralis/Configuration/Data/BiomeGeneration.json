@@ -58,45 +58,6 @@
       ]
     },
     {
-      "name": "Bare",
-      "color": "#acbdad",
-      "objects": [
-        {
-          "name": "DeadTree",
-          "spawnchance": 3,
-          "spawnrarity": "Epic"
-        },
-        {
-          "name": "Pebbles",
-          "spawnchance": 10,
-          "spawnrarity": "Uncommon",
-          "copybiomecolor": true
-        }
-      ]
-    },
-    {
-      "name": "Scorched",
-      "color": "#434343",
-      "objects": [
-        {
-          "name": "Rock",
-          "spawnchance": 5,
-          "spawnrarity": "Epic"
-        },
-        {
-          "name": "DeadTree",
-          "spawnchance": 10,
-          "spawnrarity": "Uncommon"
-        },
-        {
-          "name": "Pebbles",
-          "spawnchance": 10,
-          "spawnrarity": "Uncommon",
-          "copybiomecolor": true
-        }
-      ]
-    },
-    {
       "name": "Swamp",
       "color": "#555c45",
       "objects": [

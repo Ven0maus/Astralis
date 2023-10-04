@@ -22,6 +22,12 @@ namespace Astralis.Extended
             return GetNoise(x, y, 10, 1.70f, 0.69f, 0.39f);
         }
 
+        public float GetHeat(float x, float y)
+        {
+            return GetNoise(x, y, 3, 2.4f, -1.25f, 0.84f);
+
+        }
+
         public float GetRivers(float x, float y)
         {
             var noise = GetNoise(x, y, 1, 2.0f, 0.58f, 1.5f, false);

@@ -31,7 +31,7 @@ namespace Astralis
         {
             SetResolution(
                 GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width,
-                GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, 
+                GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height,
                 fullScreen);
         }
 
