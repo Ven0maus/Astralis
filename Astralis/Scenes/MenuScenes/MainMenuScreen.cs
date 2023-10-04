@@ -143,13 +143,14 @@ namespace Astralis.Scenes.MainMenuScene
                 ButtonBox button = new(buttonWidth, buttonHeight)
                 {
                     Position = new Point(centerX - buttonWidth / 2, centerY - buttonHeight * 2 + i * buttonHeight),
-                    Text = buttonType.ToString().Replace('_', ' ')
+                    Text = buttonType.ToString().Replace('_', ' '),
+                    Name = buttonType.ToString()
                 };
 
                 themeColors ??= SetButtonBoxColorTheme(button);
 
                 button.SetThemeColors(themeColors);
-                button.Click += (sender, args) => HandleButtonClick(buttonType);
+                button.Click += HandleButtonClick;
                 button.IsEnabled = false;
                 _controls.Add(button);
 
@@ -164,6 +165,17 @@ namespace Astralis.Scenes.MainMenuScene
                 }
                 Effects.Add(flyInEffect);
             }
+        }
+
+        private void HandleButtonClick(object sender, EventArgs args)
+        {
+            var buttons = _controls.OfType<ButtonBox>();
+            foreach (var b in buttons)
+                b.Click -= HandleButtonClick;
+
+            var button = (ButtonBox)sender;
+            var type = Enum.Parse<ButtonType>(button.Name);
+            HandleButtonClick(type);
         }
 
         private static Colors SetButtonBoxColorTheme(ButtonBox button)
@@ -205,20 +217,24 @@ namespace Astralis.Scenes.MainMenuScene
             }
         }
 
+        private void Load(object sender, EventArgs e)
+        {
+            Game.Instance.Screen = new OverworldScene();
+            ((OverworldScene)Game.Instance.Screen).Initialize(false);
+            _buttonClicked = false;
+
+            _overworldScene.OnMainMenuVisualLoaded -= Load;
+
+            _overworldScene.IsFocused = false;
+            _overworldScene.Dispose();
+            _overworldScene = null;
+
+            Dispose();
+        }
+
         private void StartGame()
         {
-            _overworldScene.OnMainMenuVisualLoaded += (a, b) =>
-            {
-                Game.Instance.Screen = new OverworldScene();
-                ((OverworldScene)Game.Instance.Screen).Initialize(false);
-                _buttonClicked = false;
-
-                _overworldScene.IsFocused = false;
-                _overworldScene.Dispose();
-                _overworldScene = null;
-
-                Dispose();
-            };
+            _overworldScene.OnMainMenuVisualLoaded += Load;
 
             // Drop the buttons
             var controls = _controls.Reverse().ToArray();
