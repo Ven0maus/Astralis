@@ -25,15 +25,17 @@ namespace Astralis.GameCode.WorldGen
             // Create elevation and moisture lookup arrays
             var elevation = new float[width * height];
             var moisture = new float[width * height];
+            var rivers = new float[width * height];
 
             SetNoisemap(width, height, chunkCoordinate,
                 new NoiseData(elevation, NoiseHelper.GetElevation),
-                new NoiseData(moisture, NoiseHelper.GetMoisture));
+                new NoiseData(moisture, NoiseHelper.GetMoisture),
+                new NoiseData(rivers, NoiseHelper.GetRivers));
 
             // Set chunk based on provided lookup arrays
             var biomes = new byte[width * height];
             var objects = new BiomeGeneration.BiomeObject[width * height];
-            SetChunkValues(random, biomes, objects, width, height, elevation, moisture);
+            SetChunkValues(random, biomes, objects, width, height, elevation, moisture, rivers);
 
             return (biomes, new WorldChunk(biomes, objects, width, height, random));
         }
@@ -56,7 +58,8 @@ namespace Astralis.GameCode.WorldGen
             }
         }
 
-        private static void SetChunkValues(Random random, byte[] biomes, BiomeGeneration.BiomeObject[] objects, int width, int height, float[] elevation, float[] moisture)
+        private static void SetChunkValues(Random random, byte[] biomes, BiomeGeneration.BiomeObject[] objects, 
+            int width, int height, float[] elevation, float[] moisture, float[] rivers)
         {
             for (int y = 0; y < height; y++)
             {
@@ -70,7 +73,7 @@ namespace Astralis.GameCode.WorldGen
                         continue;
                     }
 
-                    var biomeType = GetTileType(elevation[index], moisture[index]);
+                    var biomeType = GetTileType(elevation[index], moisture[index], rivers[index]);
                     var objectType = GetRandomBiomeObject(random, biomeType, true);
                     biomes[index] = (byte)biomeType;
                     objects[index] = objectType;
@@ -109,9 +112,36 @@ namespace Astralis.GameCode.WorldGen
             return 100;
         }
 
-        public static BiomeType GetTileType(float elevation, float moisture)
+        public static BiomeType GetTileType(float elevation, float moisture, float rivers)
         {
-            if (elevation < 0.05 || moisture > 0.95 && elevation < 0.2) return BiomeType.Ocean;
+            if (elevation < 0.1 && moisture > 0.4f) return BiomeType.Ocean;
+            if (elevation >= 0.1 && moisture > 0.5f && rivers > 0.44f)
+            {
+                if (rivers > 0.47f)
+                {
+                    if (elevation > 0.9)
+                    {
+                        if (moisture >= 0.6) 
+                            return BiomeType.FrozenRiver;
+                    }
+                    return BiomeType.River;
+                }
+                else
+                {
+                    if (elevation > 0.9)
+                    {
+                        if (moisture < 0.1) return BiomeType.Scorched;
+                        if (moisture < 0.25) return BiomeType.Bare;
+                        if (moisture < 0.6) return BiomeType.Tundra;
+                        return BiomeType.Tundra;
+                    }
+                    else if (elevation > 0.7)
+                    {
+                        if (moisture > 0.4) return BiomeType.Tundra;
+                    }
+                    return BiomeType.Beach;
+                }
+            }
             if (elevation < 0.2) return BiomeType.Beach;
 
             if (elevation > 0.9)

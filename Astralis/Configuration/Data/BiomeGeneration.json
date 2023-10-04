@@ -28,6 +28,14 @@
       ]
     },
     {
+      "name": "River",
+      "color": "#0077BE"
+    },
+    {
+      "name": "FrozenRiver",
+      "color": "#b5e0ff"
+    },
+    {
       "name": "Tundra",
       "color": "#D3E0FF",
       "objects": [

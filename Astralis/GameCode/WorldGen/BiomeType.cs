@@ -8,6 +8,9 @@
         Ocean,
         Beach,
 
+        River,
+        FrozenRiver,
+
         TemperateDesert,
         SubtropicalDesert,
         Bare,

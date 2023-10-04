@@ -1,4 +1,7 @@
-﻿namespace Astralis.Extended
+﻿using Newtonsoft.Json.Linq;
+using System;
+
+namespace Astralis.Extended
 {
     public class NoiseHelper
     {
@@ -18,6 +21,12 @@
         public float GetMoisture(float x, float y)
         {
             return GetNoise(x, y, 10, 1.70f, 0.69f, 0.39f);
+        }
+
+        public float GetRivers(float x, float y)
+        {
+            var noise = GetNoise(x, y, 1, 1.5f, 0.58f, 1.5f, false);
+            return Mathf.Remap(-1 * Math.Abs(noise), -1f, 1f, 0f, 1f);
         }
 
         public void SetNoiseType(FastNoiseLite.NoiseType noiseType)
