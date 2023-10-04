@@ -74,7 +74,8 @@ namespace Astralis.GameCode.WorldGen
 
         public override int GetHashCode()
         {
-            return CellType.GetHashCode() ^ BlocksView.GetHashCode();
+            return CellType.GetHashCode() ^ BlocksView.GetHashCode() ^ 
+                Glyph.GetHashCode() ^ Background.GetHashCode() ^ Foreground.GetHashCode();
         }
     }
 }
