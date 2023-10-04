@@ -114,9 +114,9 @@ namespace Astralis.GameCode.WorldGen
 
         public static BiomeType GetTileType(float elevation, float moisture, float rivers)
         {
-            if (elevation < 0.1 && moisture > 0.7f) 
+            if (elevation < 0.1 && moisture > 0.1f) 
                 return BiomeType.Ocean;
-            if (elevation >= 0.1 && moisture > 0.5f && rivers > 0.44f)
+            if (rivers > 0.44f)
             {
                 if (rivers > 0.47f)
                 {
@@ -143,7 +143,7 @@ namespace Astralis.GameCode.WorldGen
                     return BiomeType.Beach;
                 }
             }
-            if (elevation < 0.2 && moisture > 0.55f) return BiomeType.Beach;
+            if (elevation < 0.2) return BiomeType.Beach;
 
             if (elevation > 0.9)
             {
@@ -153,10 +153,12 @@ namespace Astralis.GameCode.WorldGen
                 return BiomeType.Snow;
             }
 
-            if (elevation > 0.7)
+            if (elevation > 0.6)
             {
-                if (moisture < 0.4) return BiomeType.TemperateForest;
-                if (moisture < 0.75) return BiomeType.Swamp;
+                if (moisture < 0.2) return BiomeType.TemperateDesert;
+                if (moisture < 0.4) return BiomeType.Grassland;
+                if (moisture < 0.5) return BiomeType.TemperateForest;
+                if (moisture < 0.8) return BiomeType.Swamp;
                 return BiomeType.Taiga;
             }
 

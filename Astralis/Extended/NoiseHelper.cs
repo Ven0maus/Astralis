@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 
 namespace Astralis.Extended
 {
@@ -25,7 +24,7 @@ namespace Astralis.Extended
 
         public float GetRivers(float x, float y)
         {
-            var noise = GetNoise(x, y, 1, 1.75f, 0.58f, 1.5f, false);
+            var noise = GetNoise(x, y, 1, 2.0f, 0.58f, 1.5f, false);
             return Mathf.Remap(-1 * Math.Abs(noise), -1f, 1f, 0f, 1f);
         }
 
