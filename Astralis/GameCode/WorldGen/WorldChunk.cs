@@ -1,6 +1,7 @@
 ﻿using Astralis.Configuration.Models;
 using SadRogue.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Venomaus.FlowVitae.Chunking;
 
@@ -14,6 +15,8 @@ namespace Astralis.GameCode.WorldGen
         private readonly ObjectTile[] _objects;
 
         public readonly int Width, Height;
+
+        private static readonly Dictionary<ObjectTileKey, ObjectTile> _objectTileCache = new Dictionary<ObjectTileKey, ObjectTile>();
 
         public WorldChunk(byte[] biomes, BiomeGeneration.BiomeObject[] objects, int chunkWidth, int chunkHeight, Random random)
         {
@@ -31,10 +34,21 @@ namespace Astralis.GameCode.WorldGen
                     var obj = objects[y * Width + x];
                     if (obj != null)
                     {
-                        _objects[y * Width + x] = new ObjectTile(obj, random);
+                        _objects[y * Width + x] = GetCachedObjectTile(obj, random);
                     }
                 }
             }
+        }
+
+        private static ObjectTile GetCachedObjectTile(BiomeGeneration.BiomeObject obj, Random random)
+        {
+            var key = new ObjectTileKey(obj, random);
+            if (!_objectTileCache.TryGetValue(key, out var tile))
+            {
+                tile = new ObjectTile(key);
+                _objectTileCache[key] = tile;
+            }
+            return tile;
         }
 
         public ObjectTile GetObject(int x, int y)
