@@ -20,6 +20,11 @@
             return GetNoise(x, y, 10, 1.70f, 0.69f, 0.39f);
         }
 
+        public void SetNoiseType(FastNoiseLite.NoiseType noiseType)
+        {
+            _noise.SetNoiseType(noiseType);
+        }
+
         public float GetNoise(float x, float y, int octaves, float scale, float persistence, float lacunarity)
         {
             float amplitude = 1.0f;

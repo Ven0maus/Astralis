@@ -98,6 +98,7 @@ namespace NoiseGenerator
         private void UpdateNoise(Panel.GenerateArgs args)
         {
             NoiseHelper noise = new(args.Seed);
+            noise.SetNoiseType(args.NoiseType);
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)

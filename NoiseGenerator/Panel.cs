@@ -1,4 +1,5 @@
 ﻿using Astralis;
+using Astralis.Extended;
 using SadConsole;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
@@ -16,17 +17,19 @@ namespace NoiseGenerator
             Scale,
             Persistence,
             Lacunarity,
+            NoiseType,
             OffsetX,
             OffsetY,
         }
 
         private readonly Random _random;
         private readonly Dictionary<PropertyValue, TextBox> _values;
+        private readonly ComboBox? _noiseType;
 
         public event EventHandler<GenerateArgs>? OnGenerate;
         public event EventHandler? OnResetOffset;
 
-        public Panel() : base(19, 29)
+        public Panel() : base(19, 32)
         {
             Font = Game.Instance.Fonts[Constants.Fonts.LCD];
             Surface.DrawBox(new Rectangle(0, 0, Width, Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Blue, Color.Black)));
@@ -46,31 +49,45 @@ namespace NoiseGenerator
                 Controls.Add(label);
 
                 currentY += 1;
-                var textBox = new TextBox(13)
-                {
-                    Position = new Point(1, currentY)
-                };
-                if (values[i].ToString().StartsWith("Offset"))
-                {
-                    textBox.IsEnabled = false;
-                    textBox.Text = "0";
-                }
-                Controls.Add(textBox);
-                _values.Add(values[i], textBox);
 
-                // Add R buttons for all except offsets
-                if (!values[i].ToString().StartsWith("Offset"))
+                if (values[i] == PropertyValue.NoiseType)
                 {
-                    var rButton = new Button(3)
+                    var noiseTypes = (FastNoiseLite.NoiseType[])Enum.GetValues(typeof(FastNoiseLite.NoiseType));
+                    var maxWidth = noiseTypes.Select(a => a.ToString()).Max(a => a.Length) + 4;
+                    _noiseType = new ComboBox(maxWidth, maxWidth, noiseTypes.Length, noiseTypes.Cast<object>().ToArray())
                     {
-                        Text = "R",
-                        Position = new Point(textBox.Width + 2, currentY),
-                        ShowEnds = true,
-                        AutoSize = false
+                        Position = new Point(1, currentY),
                     };
-                    var propType = values[i];
-                    rButton.Click += (sender, args) => { Randomize(propType, true); };
-                    Controls.Add(rButton);
+                    Controls.Add(_noiseType);
+                }
+                else
+                {
+                    var textBox = new TextBox(13)
+                    {
+                        Position = new Point(1, currentY)
+                    };
+                    if (values[i].ToString().StartsWith("Offset"))
+                    {
+                        textBox.IsEnabled = false;
+                        textBox.Text = "0";
+                    }
+                    Controls.Add(textBox);
+                    _values.Add(values[i], textBox);
+
+                    // Add R buttons for all except offsets
+                    if (!values[i].ToString().StartsWith("Offset"))
+                    {
+                        var rButton = new Button(3)
+                        {
+                            Text = "R",
+                            Position = new Point(textBox.Width + 2, currentY),
+                            ShowEnds = true,
+                            AutoSize = false
+                        };
+                        var propType = values[i];
+                        rButton.Click += (sender, args) => { Randomize(propType, true); };
+                        Controls.Add(rButton);
+                    }
                 }
 
                 currentY += 2;
@@ -145,7 +162,9 @@ namespace NoiseGenerator
                 return null;
             }
 
-            return new GenerateArgs(seed, octaves, scale.Value, persistence.Value, lacunarity.Value, (offsetX, offsetY));
+            var noiseType = _noiseType?.SelectedItem != null ? (FastNoiseLite.NoiseType)_noiseType.SelectedItem : default;
+
+            return new GenerateArgs(seed, octaves, scale.Value, persistence.Value, lacunarity.Value, noiseType, (offsetX, offsetY));
         }
 
         private float? GetValue(PropertyValue prop)
@@ -196,15 +215,17 @@ namespace NoiseGenerator
             public float Scale { get; }
             public float Persistence { get; }
             public float Lacunarity { get; }
+            public FastNoiseLite.NoiseType NoiseType { get; }
             public Point Offset { get; }
 
-            public GenerateArgs(int seed, int octaves, float scale, float persistence, float lacunarity, Point offset)
+            public GenerateArgs(int seed, int octaves, float scale, float persistence, float lacunarity, FastNoiseLite.NoiseType noiseType, Point offset)
             {
                 Seed = seed;
                 Octaves = octaves;
                 Scale = scale;
                 Persistence = persistence;
                 Lacunarity = lacunarity;
+                NoiseType = noiseType;
                 Offset = offset;
             }
         }
