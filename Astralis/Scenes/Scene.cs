@@ -1,10 +1,10 @@
-﻿using Astralis.Extended;
-using Astralis.Extended.Effects.Core;
+﻿using Astralis.Extended.Effects.Core;
 using SadConsole;
+using System;
 
 namespace Astralis.Scenes
 {
-    internal abstract class Scene : ScreenObject
+    internal abstract class Scene : ScreenObject, IDisposable
     {
         public readonly int Width;
         public readonly int Height;
@@ -30,5 +30,7 @@ namespace Astralis.Scenes
             Height = Constants.ScreenHeight;
             _effectHandler = new Lazy<EffectHandler>(() => new EffectHandler());
         }
+
+        public abstract void Dispose();
     }
 }

@@ -14,12 +14,12 @@ namespace Astralis.Scenes.MainMenuScene
 {
     internal class MainMenuScreen : Scene
     {
-        private readonly ControlSurface _surface;
-        private readonly ControlHost _controls;
-        private readonly OptionsScreen _optionsScreen;
-        private readonly LoadGameScreen _loadGameScreen;
+        private ControlSurface _surface;
+        private ControlHost _controls;
+        private OptionsScreen _optionsScreen;
+        private LoadGameScreen _loadGameScreen;
 
-        private readonly OverworldScene _overworldScene;
+        private OverworldScene _overworldScene;
         private ScreenSurface _mainLayer, _shadowLayer;
         private bool _buttonClicked = false;
 
@@ -46,6 +46,11 @@ namespace Astralis.Scenes.MainMenuScene
             _loadGameScreen = new LoadGameScreen() { IsVisible = false }; Children.Add(_loadGameScreen);
 
             _overworldScene.Initialize(true);
+        }
+
+        ~MainMenuScreen()
+        {
+            Dispose();
         }
 
         private enum ButtonType
@@ -207,7 +212,13 @@ namespace Astralis.Scenes.MainMenuScene
                 var overworld = new OverworldScene();
                 Game.Instance.Screen = overworld;
                 overworld.Initialize(false);
-                _buttonClicked = false;
+                _buttonClicked = false; 
+                
+                _overworldScene.IsFocused = false;
+                _overworldScene.Dispose();
+                _overworldScene = null;
+
+                Dispose();
             };
 
             // Drop the buttons
@@ -276,6 +287,26 @@ namespace Astralis.Scenes.MainMenuScene
             //_mainLayer.IsVisible = false;
             //_shadowLayer.IsVisible = false;
             screen.IsVisible = true;
+        }
+
+        public override void Dispose()
+        {
+            Children.Clear();
+            _controls.Clear();
+
+            _surface?.Dispose();
+            _mainLayer?.Dispose();
+            _optionsScreen?.Dispose();
+            _loadGameScreen?.Dispose();
+            _shadowLayer?.Dispose();
+            _overworldScene?.Dispose();
+
+            _surface = null;
+            _mainLayer = null;
+            _optionsScreen = null;
+            _loadGameScreen = null;
+            _shadowLayer = null;
+            _overworldScene = null;
         }
     }
 }

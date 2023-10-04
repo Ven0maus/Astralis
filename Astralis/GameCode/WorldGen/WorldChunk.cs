@@ -12,18 +12,19 @@ namespace Astralis.GameCode.WorldGen
         public int Seed { get; set; }
         public (int x, int y) ChunkCoordinate { get; set; }
         public Color[] BiomeColors { get; private set; }
-        private readonly ObjectTile[] _objects;
+
+        private readonly int[] _objects;
 
         public readonly int Width, Height;
 
-        private static readonly Dictionary<ObjectTileKey, ObjectTile> _objectTileCache = new Dictionary<ObjectTileKey, ObjectTile>();
+        private static readonly Dictionary<int, ObjectTile> _objectTileCache = new Dictionary<int, ObjectTile>();
 
         public WorldChunk(byte[] biomes, BiomeGeneration.BiomeObject[] objects, int chunkWidth, int chunkHeight, Random random)
         {
             Width = chunkWidth;
             Height = chunkHeight;
             BiomeColors = new Color[Width * Height];
-            _objects = new ObjectTile[Width * Height];
+            _objects = new int[Width * Height];
 
             for (int x = 0; x < Width; x++)
             {
@@ -40,18 +41,28 @@ namespace Astralis.GameCode.WorldGen
             }
         }
 
-        private static ObjectTile GetCachedObjectTile(BiomeGeneration.BiomeObject obj, Random random)
+        public static ObjectTile GetObjectTileById(int id)
         {
-            var key = new ObjectTileKey(obj, random);
-            if (!_objectTileCache.TryGetValue(key, out var tile))
+            if (!_objectTileCache.TryGetValue(id, out var tile))
             {
-                tile = new ObjectTile(key);
-                _objectTileCache[key] = tile;
+                return null;
             }
             return tile;
         }
 
-        public ObjectTile GetObject(int x, int y)
+        private static int GetCachedObjectTile(BiomeGeneration.BiomeObject obj, Random random)
+        {
+            var key = new ObjectTileKey(obj, random);
+            var hash = key.GetHashCode();
+            if (!_objectTileCache.ContainsKey(hash))
+            {
+                var tile = new ObjectTile(key);
+                _objectTileCache[hash] = tile;
+            }
+            return hash;
+        }
+
+        public int GetObject(int x, int y)
         {
             return _objects[(y - ChunkCoordinate.y) * Width + (x - ChunkCoordinate.x)];
         }

@@ -52,7 +52,7 @@ namespace Astralis.GameCode.WorldGen
             tile.Background = chunkData.GetBiomeColor(x, y);
 
             // Set object data
-            var obj = chunkData.GetObject(x, y);
+            var obj = WorldChunk.GetObjectTileById(chunkData.GetObject(x, y));
             if (obj != null)
             {
                 tile.Object = obj;

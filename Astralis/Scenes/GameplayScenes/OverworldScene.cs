@@ -7,8 +7,8 @@ namespace Astralis.Scenes.GameplayScenes
 {
     internal class OverworldScene : Scene
     {
-        private readonly World _world;
-        private readonly WorldScreen _worldScreen;
+        private World _world;
+        private WorldScreen _worldScreen;
 
         public event EventHandler OnMainMenuVisualLoaded;
 
@@ -27,6 +27,11 @@ namespace Astralis.Scenes.GameplayScenes
             // Center the camera
             _world.Center(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
             _world.Center((Constants.ScreenWidth / 2) + 1, (Constants.ScreenHeight / 2) - 1);
+        }
+
+        ~OverworldScene()
+        {
+            Dispose();
         }
 
         public void Initialize(bool mainMenuVisuals)
@@ -63,6 +68,16 @@ namespace Astralis.Scenes.GameplayScenes
         private void GameStart()
         {
 
+        }
+
+        public override void Dispose()
+        {
+            Children.Clear();
+            
+            _world?.Dispose();
+            _world = null;
+            _worldScreen?.Dispose();
+            _worldScreen = null;
         }
     }
 }
