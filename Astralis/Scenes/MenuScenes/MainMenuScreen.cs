@@ -209,11 +209,10 @@ namespace Astralis.Scenes.MainMenuScene
         {
             _overworldScene.OnMainMenuVisualLoaded += (a, b) =>
             {
-                var overworld = new OverworldScene();
-                Game.Instance.Screen = overworld;
-                overworld.Initialize(false);
-                _buttonClicked = false; 
-                
+                Game.Instance.Screen = new OverworldScene();
+                ((OverworldScene)Game.Instance.Screen).Initialize(false);
+                _buttonClicked = false;
+
                 _overworldScene.IsFocused = false;
                 _overworldScene.Dispose();
                 _overworldScene = null;
@@ -293,6 +292,7 @@ namespace Astralis.Scenes.MainMenuScene
         {
             Children.Clear();
             _controls.Clear();
+            Effects.Clear();
 
             _surface?.Dispose();
             _mainLayer?.Dispose();

@@ -52,6 +52,11 @@ namespace Astralis.Extended.Effects.Core
             _effects.Remove(effect);
         }
 
+        public void Clear()
+        {
+            _effects.Clear();
+        }
+
         public uint SortOrder => 0;
         public bool IsUpdate => true;
         public bool IsRender => false;
