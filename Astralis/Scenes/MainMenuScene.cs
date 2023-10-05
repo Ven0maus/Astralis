@@ -1,8 +1,7 @@
-﻿using Astralis.Scenes.GameplayScenes;
-using Astralis.Scenes.Screens;
+﻿using Astralis.Scenes.Screens;
 using System;
 
-namespace Astralis.Scenes.MainMenuScene
+namespace Astralis.Scenes
 {
     internal class MainMenuScene : Scene
     {
@@ -15,8 +14,8 @@ namespace Astralis.Scenes.MainMenuScene
             _mainMenuScreen = new MainMenuScreen(_overworldScene); Children.Add(_mainMenuScreen);
 
             // Load the game in the background of the main menu
-            _overworldScene.MainMenuCallBack += InitializeMainMenu;
-            _overworldScene.FadeInMainMenu();
+            _overworldScene.OnFadeFinished += InitializeMainMenu;
+            _overworldScene.FadeIn(1);
         }
 
         ~MainMenuScene()
@@ -24,9 +23,11 @@ namespace Astralis.Scenes.MainMenuScene
             Dispose();
         }
 
-        private void InitializeMainMenu(object sender, EventArgs args)
+        private void InitializeMainMenu(object sender, WorldScreen args)
         {
-            _overworldScene.MainMenuCallBack -= InitializeMainMenu;
+            args.MainMenuCamera = true;
+
+            _overworldScene.OnFadeFinished -= InitializeMainMenu;
             _mainMenuScreen.Initialize();
         }
 

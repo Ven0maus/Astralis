@@ -1,5 +1,5 @@
-﻿using Astralis.Extended.SadConsole;
-using Astralis.Scenes.GameplayScenes;
+﻿using Astralis.Extended;
+using Astralis.Extended.SadConsole;
 using SadConsole;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
@@ -19,9 +19,10 @@ namespace Astralis.Scenes.Screens
             Exit_Game
         }
 
+        private OverworldScene _backgroundOverworldScene;
         private OptionsScreen _optionsScreen;
         private LoadGameScreen _loadGameScreen;
-        private OverworldScene _overworldScene;
+        private CharacterCreationScreen _characterCreationScreen;
 
         private const float _fontSize = 1.5f;
 
@@ -29,9 +30,16 @@ namespace Astralis.Scenes.Screens
         {
             FontSize = new Point((int)(Font.GlyphWidth * _fontSize), (int)(Font.GlyphHeight * _fontSize));
 
-            _overworldScene = overworldScene;
+            _backgroundOverworldScene = overworldScene;
             _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
             _loadGameScreen = new LoadGameScreen() { IsVisible = false }; Children.Add(_loadGameScreen);
+            _characterCreationScreen = new CharacterCreationScreen(StartGame) { IsVisible = false }; Children.Add(_characterCreationScreen);
+
+            int centerX = Width / 2;
+            int centerY = Height / 2;
+            _characterCreationScreen.Position = new Point(
+                centerX - _characterCreationScreen.Width / 2, 
+                centerY - _characterCreationScreen.Height / 2);
 
             Surface.DefaultBackground = Color.Transparent;
             Surface.Fill(background: Color.Transparent);
@@ -50,7 +58,7 @@ namespace Astralis.Scenes.Screens
 
         private void CreateMenuTitle()
         {
-
+            // TODO
         }
 
         private void CreateMenuButtons()
@@ -62,7 +70,7 @@ namespace Astralis.Scenes.Screens
             int centerX = (int)(Width / _fontSize) / 2;
             int centerY = (int)(Height / _fontSize) / 2;
             int buttonStartX = centerX - (maxButtonWidth / 2);
-            int buttonStartY = centerY - (((int)(buttons.Length * _fontSize) / 2) * (int)(buttonHeight / _fontSize));
+            int buttonStartY = centerY - ((int)(buttons.Length * _fontSize) / 2 * (int)(buttonHeight / _fontSize));
 
             int currentY = buttonStartY;
             for (int i = 0; i < buttons.Length; i++)
@@ -122,19 +130,32 @@ namespace Astralis.Scenes.Screens
             }
         }
 
-        private void InitNewGame(object sender, EventArgs args)
+        private void NewGame()
         {
-            _overworldScene.MainMenuCallBack -= InitNewGame;
-            _overworldScene = null;
+            IsFocused = false;
+
+            // Hide buttons
+            Controls.OfType<ButtonBox>().ForEach((a) => a.IsVisible = false);
+
+            // Transition to character creation screen
+            _characterCreationScreen.ShowHide();
+        }
+
+        private void StartGame(object sender, WorldScreen args)
+        {
+            if (args == null)
+            {
+                // Args is only null when manually called
+                // Then trigger a fadeout, which on finished will 
+                _backgroundOverworldScene.OnFadeFinished += StartGame;
+                _backgroundOverworldScene.FadeOut(2, (ws) => ws.MainMenuCamera = false);
+                return;
+            }
+
+            _backgroundOverworldScene.OnFadeFinished -= StartGame;
 
             Game.Instance.Screen = new OverworldScene();
             ((OverworldScene)Game.Instance.Screen).StartGame();
-        }
-
-        private void NewGame()
-        {
-            _overworldScene.MainMenuCallBack += InitNewGame;
-            _overworldScene.FadeOutMainMenu();
         }
 
         private void LoadGame()
@@ -168,6 +189,13 @@ namespace Astralis.Scenes.Screens
                 _loadGameScreen.IsFocused = false;
                 _loadGameScreen.Dispose();
                 _loadGameScreen = null;
+            }
+
+            if (_characterCreationScreen != null)
+            {
+                _characterCreationScreen.IsFocused = false;
+                _characterCreationScreen.Dispose();
+                _characterCreationScreen = null;
             }
 
             GC.SuppressFinalize(this);

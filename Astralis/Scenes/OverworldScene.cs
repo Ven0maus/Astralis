@@ -3,7 +3,7 @@ using Astralis.GameCode.WorldGen;
 using Astralis.Scenes.Screens;
 using System;
 
-namespace Astralis.Scenes.GameplayScenes
+namespace Astralis.Scenes
 {
     internal class OverworldScene : Scene
     {
@@ -13,7 +13,7 @@ namespace Astralis.Scenes.GameplayScenes
         /// <summary>
         /// Used to push information between the mainmenu if this overworld is used as a background visual for it.
         /// </summary>
-        public event EventHandler MainMenuCallBack;
+        public event EventHandler<WorldScreen> OnFadeFinished;
 
         public World World { get { return _world; } }
 
@@ -55,27 +55,27 @@ namespace Astralis.Scenes.GameplayScenes
             // TODO
         }
 
-        public void FadeInMainMenu()
+        public void FadeIn(int seconds, Action<WorldScreen> actionOnStart = null)
         {
-            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(1), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces())
+            actionOnStart?.Invoke(_worldScreen);
+            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(seconds), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces())
             {
-                OnFinished = () => 
-                { 
-                    _worldScreen.MainMenuCamera = true; 
-                    MainMenuCallBack?.Invoke(null, null); 
+                OnFinished = () =>
+                {
+                    OnFadeFinished?.Invoke(null, _worldScreen);
                 }
             };
             Effects.Add(fadeEffect);
         }
 
-        public void FadeOutMainMenu()
+        public void FadeOut(int seconds, Action<WorldScreen> actionOnStart = null)
         {
-            _worldScreen.MainMenuCamera = false;
-            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, _worldScreen.GetSurfaces())
+            actionOnStart?.Invoke(_worldScreen);
+            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(seconds), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, _worldScreen.GetSurfaces())
             {
-                OnFinished = () => 
-                { 
-                    MainMenuCallBack?.Invoke(null, null); 
+                OnFinished = () =>
+                {
+                    OnFadeFinished?.Invoke(null, _worldScreen);
                 }
             };
             Effects.Add(fadeEffect);

@@ -1,5 +1,4 @@
-﻿using Astralis.Scenes.GameplayScenes;
-using Astralis.Scenes.MainMenuScene;
+﻿using Astralis.Scenes;
 using SadConsole;
 
 namespace Astralis
