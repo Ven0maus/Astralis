@@ -17,7 +17,7 @@ namespace Astralis.Extended.Effects.Core
             {
                 _effects.ForEach(a =>
                 {
-                    a.Update();
+                    a.Update(delta);
                 });
                 if (_effects.Any(a => a.IsFinished))
                 {

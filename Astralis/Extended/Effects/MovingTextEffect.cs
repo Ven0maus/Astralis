@@ -17,7 +17,7 @@ namespace Astralis.Extended.Effects
         private readonly TimeSpan _duration;
         private readonly TimeSpan _startAfter;
 
-        private DateTime _startTime;
+        private TimeSpan _elapsedTime = TimeSpan.Zero;
         private bool _hasStarted = false;
 
         public MovingTextEffect(IEnumerable<PositionedGlyph> positionedGlyphs, ScreenSurface surface, TimeSpan duration, TimeSpan? startAfter = null)
@@ -25,25 +25,23 @@ namespace Astralis.Extended.Effects
             _positionedGlyphs = positionedGlyphs.ToArray();
             _surface = surface;
             _duration = duration;
-            _startTime = DateTime.Now;
             _startAfter = startAfter ?? TimeSpan.Zero;
         }
 
-        public void Update()
+        public void Update(TimeSpan delta)
         {
-            var elapsedTime = DateTime.Now - _startTime;
+            _elapsedTime += delta;
 
-            if (!_hasStarted && elapsedTime < _startAfter) return;
+            if (!_hasStarted && _elapsedTime < _startAfter) return;
 
             if (!_hasStarted)
             {
                 _hasStarted = true;
-                _startTime = DateTime.Now;
-                elapsedTime = DateTime.Now - _startTime;
+                _elapsedTime = TimeSpan.Zero + delta;
             }
 
             // Calculate the normalized progress (0 to 1) of the movement.
-            double normalizedProgress = Math.Clamp(elapsedTime.TotalMilliseconds / _duration.TotalMilliseconds, 0.0, 1.0);
+            double normalizedProgress = Math.Clamp(_elapsedTime.TotalMilliseconds / _duration.TotalMilliseconds, 0.0, 1.0);
 
             foreach (var positionedGlyph in _positionedGlyphs)
             {

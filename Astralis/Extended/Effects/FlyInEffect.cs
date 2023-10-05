@@ -14,7 +14,7 @@ namespace Astralis.Extended.Effects
         private readonly TimeSpan _startAfter;
         private readonly Action<Point> _callBack;
 
-        private DateTime _startTime;
+        private TimeSpan _elapsedTime = TimeSpan.Zero;
         private readonly Point _objectPosition;
         private bool _hasStarted = false;
 
@@ -35,7 +35,6 @@ namespace Astralis.Extended.Effects
             _objectPosition = start;
             _destinationPoint = destination;
             _duration = duration;
-            _startTime = DateTime.Now;
             _callBack = callBack;
         }
 
@@ -74,20 +73,19 @@ namespace Astralis.Extended.Effects
             return new FlyInEffect(start, destination, duration, (pos) => { so.Position = pos; so.IsDirty = true; }, startAfter);
         }
 
-        public void Update()
+        public void Update(TimeSpan delta)
         {
-            TimeSpan elapsedTime = DateTime.Now - _startTime;
-            if (!_hasStarted && elapsedTime < _startAfter) return;
+            _elapsedTime += delta;
+            if (!_hasStarted && _elapsedTime < _startAfter) return;
 
             if (!_hasStarted)
             {
                 _hasStarted = true;
-                _startTime = DateTime.Now;
-                elapsedTime = DateTime.Now - _startTime;
+                _elapsedTime = TimeSpan.Zero + delta;
             }
 
             // Calculate the normalized progress (0 to 1) of the movement.
-            double normalizedProgress = Math.Clamp(elapsedTime.TotalMilliseconds / _duration.TotalMilliseconds, 0.0, 1.0);
+            double normalizedProgress = Math.Clamp(_elapsedTime.TotalMilliseconds / _duration.TotalMilliseconds, 0.0, 1.0);
 
             // Interpolate between the initial and destination positions.
             Point newPosition = new Point(

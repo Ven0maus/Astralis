@@ -24,14 +24,11 @@ namespace Astralis.Scenes.GameplayScenes
             var worldGenerator = new WorldGenerator(seed, new Extended.NoiseHelper(seed));
             var chunkSize = Constants.WorldGeneration.ChunkSize;
             _world = new World(Constants.ScreenWidth, Constants.ScreenHeight, chunkSize, chunkSize, worldGenerator);
+            _world.RaiseOnlyOnCellTypeChange = false;
 
             // Create world renderer
             _worldScreen = new WorldScreen(_world);
             Children.Add(_worldScreen);
-
-            // Center the camera
-            _world.Center(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
-            _world.Center((Constants.ScreenWidth / 2) + 1, (Constants.ScreenHeight / 2) - 1);
         }
 
         ~OverworldScene()
@@ -55,7 +52,7 @@ namespace Astralis.Scenes.GameplayScenes
 
         private void GameStart()
         {
-
+            // TODO
         }
 
         public void FadeInMainMenu()
@@ -86,12 +83,12 @@ namespace Astralis.Scenes.GameplayScenes
 
         public override void Dispose()
         {
-            _world.Dispose();
-            _world = null;
-
-            _worldScreen.IsFocused = false;
-            _worldScreen.Dispose();
-            _worldScreen = null;
+            if (_worldScreen != null)
+            {
+                _worldScreen.IsFocused = false;
+                _worldScreen.Dispose();
+                _worldScreen = null;
+            }
 
             GC.SuppressFinalize(this);
         }

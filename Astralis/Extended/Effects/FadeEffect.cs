@@ -17,7 +17,7 @@ namespace Astralis.Extended.Effects
         private readonly bool _loop;
         private readonly FadeContext _fadeContext;
 
-        private DateTime _startTime;
+        private TimeSpan _elapsedTime = TimeSpan.Zero;
         private bool _fadeOut;
 
         private readonly Dictionary<ScreenSurface, Dictionary<(int x, int y), (byte foreground, byte background)>> _startAlphas;
@@ -30,7 +30,6 @@ namespace Astralis.Extended.Effects
             _fadeContext = fadeContext;
             _loop = loop;
             _fadeDuration = fadeDuration;
-            _startTime = DateTime.Now;
             _comparer = new TupleComparer<int>();
             _startAlphas = new Dictionary<ScreenSurface, Dictionary<(int x, int y), (byte foreground, byte background)>>();
 
@@ -71,13 +70,10 @@ namespace Astralis.Extended.Effects
         {
             foreach (var surface in _surfaces)
             {
-                if (!surface.IsVisible) continue;
                 for (int x = 0; x < surface.Width; x++)
                 {
                     for (int y = 0; y < surface.Height; y++)
                     {
-                        if (!surface.Surface[x, y].IsVisible) continue;
-
                         var foreground = surface.Surface[x, y].Foreground;
                         var background = surface.Surface[x, y].Background;
 
@@ -87,7 +83,6 @@ namespace Astralis.Extended.Effects
 
                         if (_fadeOut)
                         {
-                            // Fading out: Use the current alpha values as the source
                             if (clampedValue <= originalAlphas.foreground && foreground != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Foreground)
                                 surface.Surface[x, y].Foreground = foreground.SetAlpha(clampedValue);
                             if (clampedValue <= originalAlphas.background && background != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Background)
@@ -97,7 +92,6 @@ namespace Astralis.Extended.Effects
                         }
                         else
                         {
-                            // Fading in: Use 0 as the source
                             if (clampedValue <= originalAlphas.foreground && foreground != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Foreground)
                                 surface.Surface[x, y].Foreground = foreground.SetAlpha(clampedValue);
                             if (clampedValue <= originalAlphas.background && background != Color.Transparent && _fadeContext == FadeContext.Both || _fadeContext == FadeContext.Background)
@@ -155,12 +149,12 @@ namespace Astralis.Extended.Effects
             SetGlyphsAlpha(alpha);
         }
 
-        public void Update()
+        public void Update(TimeSpan delta)
         {
-            var elapsedTime = DateTime.Now - _startTime;
+            _elapsedTime += delta;
 
             // Calculate the normalized progress (0 to 1) of the movement.
-            double normalizedProgress = Math.Clamp(elapsedTime.TotalMilliseconds / _fadeDuration.TotalMilliseconds, 0.0, 1.0);
+            double normalizedProgress = Math.Clamp(_elapsedTime.TotalMilliseconds / _fadeDuration.TotalMilliseconds, 0.0, 1.0);
             if (normalizedProgress >= 1.0)
                 normalizedProgress = 1d;
 
@@ -172,7 +166,7 @@ namespace Astralis.Extended.Effects
             if (normalizedProgress >= 1.0)
             {
                 _fadeOut = !_fadeOut;
-                _startTime = DateTime.Now;
+                _elapsedTime = TimeSpan.Zero;
                 if (!_loop)
                     IsFinished = true;
             }

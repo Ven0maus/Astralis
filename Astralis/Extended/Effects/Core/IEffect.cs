@@ -6,6 +6,6 @@ namespace Astralis.Extended.Effects.Core
     {
         bool IsFinished { get; }
         Action OnFinished { get; set; }
-        void Update();
+        void Update(TimeSpan delta);
     }
 }

@@ -56,6 +56,7 @@ namespace Astralis.Scenes.Screens
             // Setup world object
             _world = world;
             _world.OnCellUpdate += OnCellUpdate;
+            _world.UpdateScreenCells();
 
             // Set screen properties
             UseMouse = true;

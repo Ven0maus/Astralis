@@ -12,7 +12,7 @@ namespace Astralis.Scenes.MainMenuScene
         public MainMenuScene()
         {
             _overworldScene = new OverworldScene(); Children.Add(_overworldScene);
-            _mainMenuScreen = new MainMenuScreen(); Children.Add(_mainMenuScreen);
+            _mainMenuScreen = new MainMenuScreen(_overworldScene); Children.Add(_mainMenuScreen);
 
             // Load the game in the background of the main menu
             _overworldScene.MainMenuCallBack += InitializeMainMenu;
@@ -33,14 +33,20 @@ namespace Astralis.Scenes.MainMenuScene
         public override void Dispose()
         {
             IsFocused = false;
-            
-            _overworldScene.IsFocused = false;
-            _overworldScene.Dispose();
-            _overworldScene = null;
 
-            _mainMenuScreen.IsFocused = false;
-            _mainMenuScreen.Dispose();
-            _mainMenuScreen = null;
+            if (_overworldScene != null)
+            {
+                _overworldScene.IsFocused = false;
+                _overworldScene.Dispose();
+                _overworldScene = null;
+            }
+
+            if (_mainMenuScreen != null)
+            {
+                _mainMenuScreen.IsFocused = false;
+                _mainMenuScreen.Dispose();
+                _mainMenuScreen = null;
+            }
 
             GC.SuppressFinalize(this);
         }
