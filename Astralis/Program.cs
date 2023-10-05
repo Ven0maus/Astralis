@@ -34,7 +34,7 @@ namespace Astralis
             Resolution.SetResolutionFromCurrentDisplayMonitor(Constants.FullScreen);
 
             if (!Constants.DebugMode)
-                return new MainMenuScreen();
+                return new MainMenuScene();
             else
                 return new OverworldScene();
         }

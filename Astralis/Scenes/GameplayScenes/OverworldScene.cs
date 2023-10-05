@@ -10,7 +10,12 @@ namespace Astralis.Scenes.GameplayScenes
         private World _world;
         private WorldScreen _worldScreen;
 
-        public event EventHandler OnMainMenuVisualLoaded;
+        /// <summary>
+        /// Used to push information between the mainmenu if this overworld is used as a background visual for it.
+        /// </summary>
+        public event EventHandler MainMenuCallBack;
+
+        public World World { get { return _world; } }
 
         public OverworldScene()
         {
@@ -34,35 +39,18 @@ namespace Astralis.Scenes.GameplayScenes
             Dispose();
         }
 
-        public void Initialize(bool mainMenuVisuals)
+        public void StartGame()
         {
-            if (mainMenuVisuals)
+            if (!Constants.DebugMode)
             {
-                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(1), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
-                fadeEffect.OnFinished += () => { _worldScreen.MainMenuCamera = mainMenuVisuals; OnMainMenuVisualLoaded?.Invoke(null, null); };
+                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
+                fadeEffect.OnFinished += GameStart;
                 Effects.Add(fadeEffect);
             }
             else
             {
-                if (!Constants.DebugMode)
-                {
-                    var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
-                    fadeEffect.OnFinished += GameStart;
-                    Effects.Add(fadeEffect);
-                }
-                else
-                {
-                    GameStart();
-                }
+                GameStart();
             }
-        }
-
-        public void DeintializeMainMenuVisuals()
-        {
-            _worldScreen.MainMenuCamera = false;
-            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, _worldScreen.GetSurfaces());
-            fadeEffect.OnFinished += () => { OnMainMenuVisualLoaded?.Invoke(null, null); };
-            Effects.Add(fadeEffect);
         }
 
         private void GameStart()
@@ -70,14 +58,42 @@ namespace Astralis.Scenes.GameplayScenes
 
         }
 
+        public void FadeInMainMenu()
+        {
+            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(1), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces())
+            {
+                OnFinished = () => 
+                { 
+                    _worldScreen.MainMenuCamera = true; 
+                    MainMenuCallBack?.Invoke(null, null); 
+                }
+            };
+            Effects.Add(fadeEffect);
+        }
+
+        public void FadeOutMainMenu()
+        {
+            _worldScreen.MainMenuCamera = false;
+            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, _worldScreen.GetSurfaces())
+            {
+                OnFinished = () => 
+                { 
+                    MainMenuCallBack?.Invoke(null, null); 
+                }
+            };
+            Effects.Add(fadeEffect);
+        }
+
         public override void Dispose()
         {
-            Children.Clear();
-            
-            _world?.Dispose();
+            _world.Dispose();
             _world = null;
-            _worldScreen?.Dispose();
+
+            _worldScreen.IsFocused = false;
+            _worldScreen.Dispose();
             _worldScreen = null;
+
+            GC.SuppressFinalize(this);
         }
     }
 }

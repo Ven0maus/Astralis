@@ -1,6 +1,6 @@
 ﻿using Astralis.Extended.SadConsole;
 
-namespace Astralis.Scenes.MainMenuScene
+namespace Astralis.Scenes.Screens
 {
     internal class OptionsScreen : ControlSurface
     {

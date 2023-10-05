@@ -48,7 +48,6 @@ namespace Astralis.GameCode.WorldGen
             var chunkData = GetChunkData(chunkCoordinate.x, chunkCoordinate.y);
 
             // Set biome color
-            //tile.Glyph = '▓';
             tile.Background = chunkData.GetBiomeColor(x, y);
 
             // Set object data
