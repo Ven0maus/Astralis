@@ -24,7 +24,7 @@ namespace Astralis.Scenes.Screens
         private LoadGameScreen _loadGameScreen;
         private CharacterCreationScreen _characterCreationScreen;
 
-        private const float _fontSize = 1.5f;
+        private const float _fontSize = 1.75f;
 
         public MainMenuScreen(OverworldScene overworldScene) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
@@ -41,8 +41,8 @@ namespace Astralis.Scenes.Screens
                 centerX - _characterCreationScreen.Width / 2, 
                 centerY - _characterCreationScreen.Height / 2);
 
-            Surface.DefaultBackground = Color.Transparent;
-            Surface.Fill(background: Color.Transparent);
+            Surface.DefaultBackground = Color.Lerp(Color.Black, Color.Transparent, 0.2f);
+            Surface.Fill(background: Surface.DefaultBackground);
         }
 
         ~MainMenuScreen()
@@ -58,7 +58,15 @@ namespace Astralis.Scenes.Screens
 
         private void CreateMenuTitle()
         {
-            // TODO
+            var titleParts = Constants.GameTitleFancy.Split("\r\n");
+            int maxLength = titleParts.Max(a => a.Length);
+            int centerX = (int)(Width / _fontSize) / 2;
+            int startY = (int)(Height / _fontSize / 100f * (int)(15 / _fontSize));
+
+            for (int i = 0; i < titleParts.Length; i++)
+            {
+                Surface.Print(centerX - (maxLength / 2), startY + i, titleParts[i], Constants.GameTitleColor, Surface.DefaultBackground);
+            }
         }
 
         private void CreateMenuButtons()
@@ -70,7 +78,7 @@ namespace Astralis.Scenes.Screens
             int centerX = (int)(Width / _fontSize) / 2;
             int centerY = (int)(Height / _fontSize) / 2;
             int buttonStartX = centerX - (maxButtonWidth / 2);
-            int buttonStartY = centerY - ((int)(buttons.Length * _fontSize) / 2 * (int)(buttonHeight / _fontSize));
+            int buttonStartY = centerY - buttons.Length / 2 * buttonHeight;
 
             int currentY = buttonStartY;
             for (int i = 0; i < buttons.Length; i++)
@@ -96,8 +104,8 @@ namespace Astralis.Scenes.Screens
             if (_buttonTheme == null)
             {
                 _buttonTheme = button.FindThemeColors().Clone();
-                _buttonTheme.Lines.SetColor(Color.Black);
-                _buttonTheme.SetForeground(Color.Black);
+                _buttonTheme.Lines.SetColor(Constants.GameTitleShadowColor);
+                _buttonTheme.SetForeground(Constants.GameTitleColor);
                 _buttonTheme.SetBackground(Color.Transparent);
                 _buttonTheme.RebuildAppearances();
             }
@@ -138,6 +146,7 @@ namespace Astralis.Scenes.Screens
             Controls.OfType<ButtonBox>().ForEach((a) => a.IsVisible = false);
 
             // Transition to character creation screen
+            Surface.Clear();
             _characterCreationScreen.ShowHide();
         }
 

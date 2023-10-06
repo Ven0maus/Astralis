@@ -12,7 +12,7 @@ namespace Astralis
         public static int ScreenHeight { get { return Resolution.ScreenCellsY; } }
 
         public static readonly Color GameTitleColor = Color.Ivory;
-        public static readonly Color GameTitleShadowColor = Color.Lerp(Color.Black, Color.Gray, 0.1f);
+        public static readonly Color GameTitleShadowColor = Color.Lerp(Color.Black, GameTitleColor, 0.35f);
         public const string GameTitle = "Astralis";
         public const string GameTitleFancy = @"
      _            _                   _   _       

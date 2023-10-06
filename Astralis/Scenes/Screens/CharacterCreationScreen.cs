@@ -14,7 +14,7 @@ namespace Astralis.Scenes.Screens
         public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : base(Constants.ScreenWidth / 2, (Constants.ScreenHeight - (int)(Constants.ScreenHeight / 100f * 25)))
         {
             _startGameMethod = startGameMethod;
-            Surface.DefaultBackground = Color.Lerp(Color.Black, Color.Transparent, 0.01f);
+            Surface.DefaultBackground = Color.Lerp(Color.Black, Color.Transparent, 0.05f);
             Surface.DrawBox(new Rectangle(0, 0, Width, Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Green, Color.Black)));
             Initialize();
         }
