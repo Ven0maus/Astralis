@@ -71,7 +71,7 @@ namespace Astralis.Scenes.Screens
 
         private void CreateControls()
         {
-            AddTextBox("Name:", new Point((int)(Width / 100f * 10), _characterView.Position.Y - 1));
+            _nameInput = AddTextBox("Name:", new Point((int)(Width / 100f * 10), _characterView.Position.Y - 1));
 
             var continueButton = new ButtonBox(_characterView.Width, 3);
             continueButton.Text = "Continue";
@@ -80,14 +80,16 @@ namespace Astralis.Scenes.Screens
             Controls.Add(continueButton);
         }
 
-        private void AddTextBox(string labelText, Point position)
+        private TextBox AddTextBox(string labelText, Point position)
         {
             var label = new Label(labelText) { Position = position + Direction.Up };
             SetLabelTheme(label);
             Controls.Add(label);
 
-            _nameInput = new TextBox(15) { Position = position };
-            Controls.Add(_nameInput);
+            var textbox = new TextBox(15) { Position = position };
+            Controls.Add(textbox);
+
+            return textbox;
         }
 
         private Colors _labelTheme;
