@@ -147,7 +147,7 @@ namespace NoiseGenerator
             InvokeGenerate();
         }
 
-        private Colors _labelTheme;
+        private Colors? _labelTheme;
         private void SetLabelTheme(Label label)
         {
             if (_labelTheme == null)

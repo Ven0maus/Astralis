@@ -1,9 +1,0 @@
-{
-  "$type": "SadConsole.SadFont, SadConsole",
-  "FilePath": "LCD_Tileset_16x16.png",
-  "GlyphHeight": 16,
-  "GlyphPadding": 0,
-  "GlyphWidth": 16,
-  "Name": "Resources/Tilesets/LCD_Tileset_16x16.font",
-  "SolidGlyphIndex": 219
-}

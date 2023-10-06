@@ -24,7 +24,6 @@ namespace Astralis
         public static class Fonts
         {
             public const string WorldObjects = "Resources/Tilesets/WorldObjects_16x16.font";
-            public const string LCD = "Resources/Tilesets/LCD_Tileset_16x16.font";
             public const string Anno = "Resources/Tilesets/Anno_16x16.font";
         }
 

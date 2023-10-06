@@ -26,8 +26,6 @@ namespace Astralis.Scenes.Screens
 
         public MainMenuScreen(OverworldScene overworldScene) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
-            Font = Game.Instance.Fonts[Constants.Fonts.Anno];
-
             _backgroundOverworldScene = overworldScene;
             _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
             _loadGameScreen = new LoadGameScreen() { IsVisible = false }; Children.Add(_loadGameScreen);
