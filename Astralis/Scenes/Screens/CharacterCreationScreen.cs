@@ -47,6 +47,12 @@ namespace Astralis.Scenes.Screens
             InitScreenVisual();
             CreateTitle();
             CreateControls();
+            DrawCharacter();
+        }
+
+        private void DrawCharacter()
+        {
+            // TODO: Draw the character based on the selected character options
         }
 
         private void InitScreenVisual()
@@ -73,11 +79,25 @@ namespace Astralis.Scenes.Screens
         {
             _nameInput = AddTextBox("Name:", new Point((int)(Width / 100f * 10), _characterView.Position.Y - 1));
 
-            var continueButton = new ButtonBox(_characterView.Width, 3);
-            continueButton.Text = "Continue";
-            continueButton.Position = new Point(_characterView.Position.X, _characterView.Position.Y + _characterView.Width + 1);
+            var continueButton = new ButtonBox(_characterView.Width, 3)
+            {
+                Text = "Continue",
+                Position = new Point(_characterView.Position.X, _characterView.Position.Y + _characterView.Width + 1)
+            };
+            continueButton.Click += ClickContinue;
             SetButtonTheme(continueButton);
             Controls.Add(continueButton);
+        }
+
+        private void ClickContinue(object sender, EventArgs e)
+        {
+            var name = _nameInput.Text;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                var message = "Please fill in a name for your new character!";
+                ScWindow.Message(message, "Understood", message.Length);
+                return;
+            }
         }
 
         private TextBox AddTextBox(string labelText, Point position)
