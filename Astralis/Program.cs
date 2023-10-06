@@ -19,7 +19,7 @@ namespace Astralis
                     f.AddExtraFonts(
                         Constants.Fonts.LCD,
                         Constants.Fonts.WorldObjects,
-                        Constants.Fonts.LordNightmare);
+                        Constants.Fonts.Anno);
                 });
 
             Game.Create(gameStartup);
@@ -29,7 +29,9 @@ namespace Astralis
 
         private static IScreenObject DefineStartupScreen(Game game)
         {
-            Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager);
+            var defaultFont = Game.Instance.Fonts[Constants.Fonts.LCD];
+
+            Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager, defaultFont);
             Resolution.SetResolutionFromCurrentDisplayMonitor(Constants.FullScreen);
 
             if (!Constants.DebugMode)

@@ -25,7 +25,7 @@ namespace Astralis
         {
             public const string WorldObjects = "Resources/Tilesets/WorldObjects_16x16.font";
             public const string LCD = "Resources/Tilesets/LCD_Tileset_16x16.font";
-            public const string LordNightmare = "Resources/Tilesets/Lord_Nightmare-Fixedsys-03_8x16.font";
+            public const string Anno = "Resources/Tilesets/Anno_16x16.font";
         }
 
         public static class WorldGeneration

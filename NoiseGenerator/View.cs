@@ -26,8 +26,6 @@ namespace NoiseGenerator
 
         public View(int width, int height) : base(width, height)
         {
-            Font = Game.Instance.Fonts[Constants.Fonts.LCD];
-
             _panel = new Panel();
             _panel.OnGenerate += (sender, args) => UpdateNoise(args);
             _panel.OnResetOffset += (sender, args) => CameraPosition = (0, 0);

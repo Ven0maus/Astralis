@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SadConsole;
 using SadRogue.Primitives;
 
 namespace Astralis
@@ -9,13 +10,15 @@ namespace Astralis
         private static GraphicsDeviceManager _Device = null;
         private static int _width, _height;
         private static bool _fullScreen = false;
+        private static IFont _defaultFont;
 
         public static int ScreenCellsX { get; private set; }
         public static int ScreenCellsY { get; private set; }
 
-        public static void Init(GraphicsDeviceManager device)
+        public static void Init(GraphicsDeviceManager device, IFont defaultFont = null)
         {
             _Device = device;
+            _defaultFont = defaultFont;
         }
 
         public static void SetResolution(int width, int height, bool fullScreen)
@@ -37,15 +40,18 @@ namespace Astralis
 
         private static void AdjustScreenCellsToResolution()
         {
-            var defaultFont = SadConsole.Game.Instance.DefaultFont;
-            var defaultFontSize = SadConsole.Game.Instance.DefaultFontSize;
-            var defaultFontSizePoint = defaultFont.GetFontSize(defaultFontSize);
+            if (_defaultFont != null)
+                SadConsole.Game.Instance.DefaultFont = _defaultFont;
 
-            ScreenCellsX = _width / defaultFontSizePoint.X;
-            ScreenCellsY = _height / defaultFontSizePoint.Y;
+            var font = SadConsole.Game.Instance.DefaultFont;
+            var fontSize = SadConsole.Game.Instance.DefaultFontSize;
+            var fontSizePoint = font.GetFontSize(fontSize);
+
+            ScreenCellsX = _width / fontSizePoint.X;
+            ScreenCellsY = _height / fontSizePoint.Y;
 
             SadConsole.Game.Instance.MonoGameInstance.ResizeGraphicsDeviceManager(
-                defaultFontSizePoint.ToMonoPoint(), ScreenCellsX, ScreenCellsY, 0, 0);
+                fontSizePoint.ToMonoPoint(), ScreenCellsX, ScreenCellsY, 0, 0);
         }
 
         private static void ApplyResolutionSettings()

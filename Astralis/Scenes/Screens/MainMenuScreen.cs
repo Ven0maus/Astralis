@@ -24,11 +24,9 @@ namespace Astralis.Scenes.Screens
         private LoadGameScreen _loadGameScreen;
         private CharacterCreationScreen _characterCreationScreen;
 
-        private const float _fontSize = 1.75f;
-
         public MainMenuScreen(OverworldScene overworldScene) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
-            FontSize = new Point((int)(Font.GlyphWidth * _fontSize), (int)(Font.GlyphHeight * _fontSize));
+            Font = Game.Instance.Fonts[Constants.Fonts.Anno];
 
             _backgroundOverworldScene = overworldScene;
             _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
@@ -60,8 +58,8 @@ namespace Astralis.Scenes.Screens
         {
             var titleParts = Constants.GameTitleFancy.Split("\r\n");
             int maxLength = titleParts.Max(a => a.Length);
-            int centerX = (int)(Width / _fontSize) / 2;
-            int startY = (int)(Height / _fontSize / 100f * (int)(15 / _fontSize));
+            int centerX = Width / 2;
+            int startY = (int)(Height / 100f * 15);
 
             for (int i = 0; i < titleParts.Length; i++)
             {
@@ -72,19 +70,20 @@ namespace Astralis.Scenes.Screens
         private void CreateMenuButtons()
         {
             var buttons = (ButtonType[])Enum.GetValues(typeof(ButtonType));
-            var maxButtonWidth = (int)(buttons.Max(a => a.ToString().Length) * _fontSize);
 
+            const int buttonWidth = 20;
             const int buttonHeight = 3;
-            int centerX = (int)(Width / _fontSize) / 2;
-            int centerY = (int)(Height / _fontSize) / 2;
-            int buttonStartX = centerX - (maxButtonWidth / 2);
+
+            int centerX = Width / 2;
+            int centerY = Height / 2;
+            int buttonStartX = centerX - (buttonWidth / 2);
             int buttonStartY = centerY - buttons.Length / 2 * buttonHeight;
 
             int currentY = buttonStartY;
             for (int i = 0; i < buttons.Length; i++)
             {
                 var value = buttons[i];
-                var button = new ButtonBox(20, 3)
+                var button = new ButtonBox(buttonWidth, 3)
                 {
                     Position = new Point(buttonStartX, currentY),
                     Text = value.ToString().Replace("_", " "),
@@ -205,6 +204,13 @@ namespace Astralis.Scenes.Screens
                 _characterCreationScreen.IsFocused = false;
                 _characterCreationScreen.Dispose();
                 _characterCreationScreen = null;
+            }
+
+            if (_backgroundOverworldScene != null)
+            {
+                _backgroundOverworldScene.IsFocused = false;
+                _backgroundOverworldScene.Dispose();
+                _backgroundOverworldScene = null;
             }
 
             GC.SuppressFinalize(this);

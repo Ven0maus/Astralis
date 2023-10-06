@@ -16,7 +16,7 @@ namespace NoiseGenerator
                 .IsStartingScreenFocused(false)
                 .ConfigureFonts(f =>
                 {
-                    f.AddExtraFonts(Constants.Fonts.LCD);
+                    f.AddExtraFonts(Constants.Fonts.Anno);
                 });
 
             Game.Create(gameStartup);
@@ -26,7 +26,9 @@ namespace NoiseGenerator
 
         private static IScreenObject DefineStartupScreen(Game game)
         {
-            Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager);
+            var defaultFont = Game.Instance.Fonts[Constants.Fonts.Anno];
+
+            Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager, defaultFont);
             Resolution.SetResolutionFromCurrentDisplayMonitor(Constants.FullScreen);
             return new View(Resolution.ScreenCellsX, Resolution.ScreenCellsY);
         }

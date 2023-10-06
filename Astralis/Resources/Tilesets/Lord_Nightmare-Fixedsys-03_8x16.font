@@ -1,9 +1,0 @@
-{
-  "$type": "SadConsole.SadFont, SadConsole",
-  "FilePath": "Lord_Nightmare-Fixedsys-03_8x16.png",
-  "GlyphHeight": 16,
-  "GlyphPadding": 0,
-  "GlyphWidth": 8,
-  "Name": "Resources/Tilesets/Lord_Nightmare-Fixedsys-03_8x16.font",
-  "SolidGlyphIndex": 219
-}

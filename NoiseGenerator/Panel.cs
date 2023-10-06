@@ -32,7 +32,6 @@ namespace NoiseGenerator
 
         public Panel() : base(19, 34)
         {
-            Font = Game.Instance.Fonts[Constants.Fonts.LCD];
             Surface.DrawBox(new Rectangle(0, 0, Width, Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Blue, Color.Black)));
 
             _random = new Random();
@@ -47,6 +46,7 @@ namespace NoiseGenerator
                 {
                     Position = new Point(1, currentY)
                 };
+                SetLabelTheme(label);
                 Controls.Add(label);
 
                 currentY += 1;
@@ -59,6 +59,7 @@ namespace NoiseGenerator
                     {
                         Position = new Point(1, currentY),
                     };
+                    _noiseType.SelectedItemChanged += OnNoiseTypeChanged;
                     Controls.Add(_noiseType);
                 }
                 else
@@ -139,6 +140,27 @@ namespace NoiseGenerator
 
             // Start values randomized
             randomizeButton.InvokeClick();
+        }
+
+        private void OnNoiseTypeChanged(object? sender, ListBox.SelectedItemEventArgs e)
+        {
+            InvokeGenerate();
+        }
+
+        private Colors _labelTheme;
+        private void SetLabelTheme(Label label)
+        {
+            if (_labelTheme == null)
+            {
+                Color color = Color.DarkGoldenrod;
+                _labelTheme = label.FindThemeColors().Clone();
+                _labelTheme.ControlForegroundNormal.SetColor(color);
+                _labelTheme.ControlForegroundSelected.SetColor(color);
+                _labelTheme.ControlForegroundMouseOver.SetColor(color);
+                _labelTheme.ControlForegroundFocused.SetColor(color);
+                _labelTheme.RebuildAppearances();
+            }
+            label.SetThemeColors(_labelTheme);
         }
 
         public void InvokeGenerate()
