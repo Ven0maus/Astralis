@@ -171,6 +171,11 @@ namespace Astralis.Scenes.Screens
             {
                 _buttonTheme = button.FindThemeColors().Clone();
                 _buttonTheme.Lines.SetColor(Color.Green);
+                _buttonTheme.ControlBackgroundNormal.SetColor(Color.Transparent);
+                _buttonTheme.ControlBackgroundSelected.SetColor(Color.Transparent);
+                _buttonTheme.ControlBackgroundMouseOver.SetColor(Color.Transparent);
+                _buttonTheme.ControlBackgroundMouseDown.SetColor(Color.Transparent);
+                _buttonTheme.ControlBackgroundFocused.SetColor(Color.Transparent);
                 _buttonTheme.RebuildAppearances();
             }
             button.SetThemeColors(_buttonTheme);
