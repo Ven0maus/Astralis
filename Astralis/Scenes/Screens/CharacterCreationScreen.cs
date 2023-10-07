@@ -58,6 +58,7 @@ namespace Astralis.Scenes.Screens
 
         private void InitScreenVisual()
         {
+            Surface.DefaultBackground = Color.Lerp(Color.Black, Color.Transparent, 0.15f);
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
@@ -65,7 +66,7 @@ namespace Astralis.Scenes.Screens
                     if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1)
                         Surface.SetBackground(x, y, Color.DarkGreen);
                     else
-                        Surface.SetBackground(x, y, Color.Lerp(Color.Black, Color.Transparent, 0.1f));
+                        Surface.SetBackground(x, y, Surface.DefaultBackground);
                 }
             }
         }
