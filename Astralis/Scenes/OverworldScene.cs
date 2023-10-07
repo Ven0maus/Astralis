@@ -89,8 +89,6 @@ namespace Astralis.Scenes
                 _worldScreen.Dispose();
                 _worldScreen = null;
             }
-
-            GC.SuppressFinalize(this);
         }
     }
 }

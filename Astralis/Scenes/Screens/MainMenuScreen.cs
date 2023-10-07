@@ -210,8 +210,6 @@ namespace Astralis.Scenes.Screens
                 _backgroundOverworldScene.Dispose();
                 _backgroundOverworldScene = null;
             }
-
-            GC.SuppressFinalize(this);
         }
     }
 }
