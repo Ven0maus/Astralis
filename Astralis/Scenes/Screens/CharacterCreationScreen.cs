@@ -17,18 +17,31 @@ namespace Astralis.Scenes.Screens
 
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
-        private ScrollBar _gender, _race, _skinColor, _hair, _shirt, _pants, _shoes;
+        private ComboBox _gender;
+        private ScrollBar _race, _skinColor, _hair, _shirt, _pants, _shoes;
 
         public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
                 (int)(Constants.ScreenHeight / 100f * 50))
         {
             _characterBorderScreen = new ScreenSurface(18, 18);
+            for (int x=0; x < _characterBorderScreen.Width; x++)
+            {
+                for (int y = 0; y < _characterBorderScreen.Height; y++)
+                {
+                    if (x == 0 || y == 0 || x == _characterBorderScreen.Width - 1 || y == _characterBorderScreen.Height - 1)
+                        continue;
+                    _characterBorderScreen.Surface[x, y].Background = Color.Lerp(Color.Black, Color.Gray, 0.1f);
+                }
+            }
             _characterBorderScreen.Surface.DrawBox(new Rectangle(0, 0, _characterBorderScreen.Width, _characterBorderScreen.Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Green, Color.Transparent)));
 
             _characterBorderScreen.Position = new Point((int)(Width / 100f * 54), (int)(Height / 100f * 33));
             Children.Add(_characterBorderScreen);
 
+            // Use 1,1 screen with font 16x16
+            // Then to render the 1,1 cell in 16x16 space
+            // We do 16font * 16cells = 256
             _characterView = new ScreenSurface(1, 1)
             {
                 Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.PlayerNpc],
@@ -37,7 +50,7 @@ namespace Astralis.Scenes.Screens
                 Position = new Point(16, 15)
             };
             _characterView.Surface.DefaultBackground = Color.Transparent;
-            _characterView.Surface[0].Glyph = 2;
+            _characterView.Surface[0].Glyph = 1;
             _characterBorderScreen.Children.Add(_characterView);
 
             _startGameMethod = startGameMethod;
@@ -94,7 +107,8 @@ namespace Astralis.Scenes.Screens
         {
             var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y -2);
             _name = AddTextBox("Name:", currentPosition);
-            _gender = AddScrollBar("Gender:", currentPosition += new Point(0, 3));
+            _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), new [] {"Male", "Female"});
+            _gender.SelectedItemChanged += ChangeGender;
             _race = AddScrollBar("Race:", currentPosition += new Point(0, 3));
             _skinColor = AddScrollBar("Skin color:", currentPosition += new Point(0, 3));
             _hair = AddScrollBar("Hair:", currentPosition += new Point(0, 3));
@@ -121,6 +135,13 @@ namespace Astralis.Scenes.Screens
             Controls.Add(continueButton);
         }
 
+        private void ChangeGender(object sender, ListBox.SelectedItemEventArgs e)
+        {
+            var item = ((string)e.Item);
+            _characterView.Surface[0].Glyph = item.Equals("Male", StringComparison.OrdinalIgnoreCase) ? 1 : 4;
+            _characterView.Surface.IsDirty = true;
+        }
+
         private void ClickContinue(object sender, EventArgs e)
         {
             var name = _name.Text;
@@ -135,6 +156,18 @@ namespace Astralis.Scenes.Screens
         private void ClickRandomize(object sender, EventArgs e)
         {
 
+        }
+
+        private ComboBox AddComboBox(string labelText, Point position, string[] values)
+        {
+            var label = new Label(labelText) { Position = position + Direction.Up };
+            SetLabelTheme(label);
+            Controls.Add(label);
+
+            var comboBox = new ComboBox(15, 15, 2, values) { Position = position };
+            Controls.Add(comboBox);
+
+            return comboBox;
         }
 
         private TextBox AddTextBox(string labelText, Point position)

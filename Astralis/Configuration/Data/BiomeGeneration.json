@@ -37,7 +37,7 @@
     },
     {
       "name": "Tundra",
-      "color": "#D3E0FF",
+      "color": "#b9e8ea",
       "objects": [
         {
           "name": "Rock",
@@ -48,6 +48,10 @@
           "name": "IceBlock",
           "spawnchance": 5,
           "spawnrarity": "Rare"
+        },
+        {
+          "name": "IcyGround",
+          "spawnchance": 20
         },
         {
           "name": "Pebbles",

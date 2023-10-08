@@ -125,6 +125,13 @@
       "blocksview": false,
       "glyphs": [ 26 ],
       "colors": [ "#808080" ]
+    },
+    {
+      "id": 19,
+      "name": "IcyGround",
+      "blocksview": false,
+      "glyphs": [ 27 ],
+      "colors": [ "#FFFFFF" ]
     }
   ]
 }
