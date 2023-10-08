@@ -2,11 +2,9 @@
 using SadConsole;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
-using SadConsole.UI.Windows;
 using SadRogue.Primitives;
 using System;
 using System.Linq;
-using static Astralis.Constants.NpcData;
 
 namespace Astralis.Scenes.Screens
 {
@@ -20,6 +18,8 @@ namespace Astralis.Scenes.Screens
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
         private ComboBox _gender, _race;
+
+        // TODO: For skin color, make a custom color selector that you can provide a set of colors to
         private ScrollBar _skinColor, _hair, _shirt, _pants, _shoes;
 
         public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : 
@@ -110,11 +110,11 @@ namespace Astralis.Scenes.Screens
             var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y -2);
             _name = AddTextBox("Name:", currentPosition);
 
-            var genders = Enum.GetValues<Gender>();
+            var genders = Enum.GetValues<Constants.NpcData.Gender>();
             _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), genders.Select(a => a.ToString()).ToArray());
             _gender.SelectedItemChanged += ChangeGender;
 
-            var races = Enum.GetValues<Race>();
+            var races = Enum.GetValues<Constants.NpcData.Race>();
             _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Select(a => a.ToString()).ToArray());
             _race.SelectedItemChanged += ChangeRace;
 
