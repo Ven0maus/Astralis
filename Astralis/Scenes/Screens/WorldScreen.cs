@@ -27,7 +27,7 @@ namespace Astralis.Scenes.Screens
         public WorldScreen(World world) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
             // Set 16x16 font for the overworld
-            Font = Game.Instance.Fonts[Constants.Fonts.Anno];
+            Font = Game.Instance.Fonts[Constants.Fonts.UserInterfaceFonts.Anno];
 
             // Make world zoom in
             var zoomFactor = Constants.WorldGeneration.WorldZoomFactor;
@@ -35,7 +35,7 @@ namespace Astralis.Scenes.Screens
 
             _objectsLayer = new ScreenSurface(Width, Height)
             {
-                Font = Game.Instance.Fonts[Constants.Fonts.WorldObjects],
+                Font = Game.Instance.Fonts[Constants.Fonts.WorldFonts.WorldObjects],
                 FontSize = FontSize,
                 UseMouse = false,
                 UseKeyboard = false

@@ -17,8 +17,9 @@ namespace Astralis
                 .ConfigureFonts(f =>
                 {
                     f.AddExtraFonts(
-                        Constants.Fonts.WorldObjects,
-                        Constants.Fonts.Anno);
+                        Constants.Fonts.WorldFonts.WorldObjects,
+                        Constants.Fonts.UserInterfaceFonts.Anno,
+                        Constants.Fonts.NpcFonts.PlayerNpc);
                 });
 
             Game.Create(gameStartup);
@@ -28,7 +29,7 @@ namespace Astralis
 
         private static IScreenObject DefineStartupScreen(Game game)
         {
-            var defaultFont = Game.Instance.Fonts[Constants.Fonts.Anno];
+            var defaultFont = Game.Instance.Fonts[Constants.Fonts.UserInterfaceFonts.Anno];
 
             Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager, defaultFont);
             Resolution.SetResolutionFromCurrentDisplayMonitor(Constants.FullScreen);

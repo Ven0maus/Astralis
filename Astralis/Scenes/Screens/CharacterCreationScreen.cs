@@ -1,5 +1,6 @@
 ﻿using Astralis.Extended.SadConsole;
 using SadConsole;
+using SadConsole.Entities;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;
@@ -14,7 +15,7 @@ namespace Astralis.Scenes.Screens
         private bool _characterDesignCompleted = false;
         private bool _characterSpecializationCompleted = false;
 
-        private ScreenSurface _characterView;
+        private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
         private ScrollBar _gender, _race, _skinColor, _hair, _shirt, _pants, _shoes;
 
@@ -22,10 +23,22 @@ namespace Astralis.Scenes.Screens
             base((int)(Constants.ScreenWidth / 100f * 35), 
                 (int)(Constants.ScreenHeight / 100f * 50))
         {
-            _characterView = new ScreenSurface(18, 18);
-            _characterView.DrawBox(new Rectangle(0, 0, _characterView.Width, _characterView.Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Green, Color.Transparent)));
-            _characterView.Position = new Point((int)(Width / 100f * 54), (int)(Height / 100f * 33));
-            Children.Add(_characterView);
+            _characterBorderScreen = new ScreenSurface(18, 18);
+            _characterBorderScreen.Surface.DrawBox(new Rectangle(0, 0, _characterBorderScreen.Width, _characterBorderScreen.Height), ShapeParameters.CreateStyledBox(ICellSurface.ConnectedLineThick, new ColoredGlyph(Color.Green, Color.Transparent)));
+
+            _characterBorderScreen.Position = new Point((int)(Width / 100f * 54), (int)(Height / 100f * 33));
+            Children.Add(_characterBorderScreen);
+
+            _characterView = new ScreenSurface(1, 1)
+            {
+                Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.PlayerNpc],
+                FontSize = new Point(256, 256),
+                UsePixelPositioning = true,
+                Position = new Point(16, 15)
+            };
+            _characterView.Surface.DefaultBackground = Color.Transparent;
+            _characterView.Surface[0].Glyph = 2;
+            _characterBorderScreen.Children.Add(_characterView);
 
             _startGameMethod = startGameMethod;
 
@@ -45,7 +58,7 @@ namespace Astralis.Scenes.Screens
 
         private void Initialize()
         {
-            InitScreenVisual();
+            InitScreenVisual(this);
             CreateTitle();
             CreateControls();
             DrawCharacter();
@@ -56,17 +69,17 @@ namespace Astralis.Scenes.Screens
             // TODO: Draw the character based on the selected character options
         }
 
-        private void InitScreenVisual()
+        private void InitScreenVisual(ScreenSurface surface)
         {
-            Surface.DefaultBackground = Color.Lerp(Color.Black, Color.Transparent, 0.15f);
-            for (int x = 0; x < Width; x++)
+            surface.Surface.DefaultBackground = Color.Lerp(Color.Black, Color.Transparent, 0.15f);
+            for (int x = 0; x < surface.Width; x++)
             {
-                for (int y = 0; y < Height; y++)
+                for (int y = 0; y < surface.Height; y++)
                 {
-                    if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1)
-                        Surface.SetBackground(x, y, Color.DarkGreen);
+                    if (x == 0 || y == 0 || x == surface.Width - 1 || y == surface.Height - 1)
+                        surface.Surface.SetBackground(x, y, Color.DarkGreen);
                     else
-                        Surface.SetBackground(x, y, Surface.DefaultBackground);
+                        surface.Surface.SetBackground(x, y, surface.Surface.DefaultBackground);
                 }
             }
         }
@@ -79,7 +92,7 @@ namespace Astralis.Scenes.Screens
 
         private void CreateControls()
         {
-            var currentPosition = new Point((int)(Width / 100f * 9), _characterView.Position.Y -2);
+            var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y -2);
             _name = AddTextBox("Name:", currentPosition);
             _gender = AddScrollBar("Gender:", currentPosition += new Point(0, 3));
             _race = AddScrollBar("Race:", currentPosition += new Point(0, 3));
@@ -89,19 +102,19 @@ namespace Astralis.Scenes.Screens
             _pants = AddScrollBar("Pants:", currentPosition += new Point(0, 3));
             _shoes = AddScrollBar("Shoes:", currentPosition += new Point(0, 3));
 
-            var randomizeButton = new ButtonBox(_characterView.Width, 3)
+            var randomizeButton = new ButtonBox(_characterBorderScreen.Width, 3)
             {
                 Text = "Randomize",
-                Position = new Point(_characterView.Position.X, _characterView.Position.Y - 3)
+                Position = new Point(_characterBorderScreen.Position.X, _characterBorderScreen.Position.Y - 3)
             };
             randomizeButton.Click += ClickRandomize;
             SetButtonTheme(randomizeButton);
             Controls.Add(randomizeButton);
 
-            var continueButton = new ButtonBox(_characterView.Width, 3)
+            var continueButton = new ButtonBox(_characterBorderScreen.Width, 3)
             {
                 Text = "Continue",
-                Position = new Point(_characterView.Position.X, _characterView.Position.Y + _characterView.Width)
+                Position = new Point(_characterBorderScreen.Position.X, _characterBorderScreen.Position.Y + _characterBorderScreen.Width)
             };
             continueButton.Click += ClickContinue;
             SetButtonTheme(continueButton);
@@ -121,7 +134,7 @@ namespace Astralis.Scenes.Screens
 
         private void ClickRandomize(object sender, EventArgs e)
         {
-            // TODO
+
         }
 
         private TextBox AddTextBox(string labelText, Point position)
@@ -142,7 +155,11 @@ namespace Astralis.Scenes.Screens
             SetLabelTheme(label);
             Controls.Add(label);
 
-            var scrollBar = new ScrollBar(Orientation.Horizontal, 15) { Position = position };
+            var scrollBar = new ScrollBar(Orientation.Horizontal, 15)
+            {
+                Position = position,
+            };
+
             Controls.Add(scrollBar);
 
             return scrollBar;
@@ -159,6 +176,10 @@ namespace Astralis.Scenes.Screens
                 _labelTheme.ControlForegroundSelected.SetColor(color);
                 _labelTheme.ControlForegroundMouseOver.SetColor(color);
                 _labelTheme.ControlForegroundFocused.SetColor(color);
+                _labelTheme.ControlBackgroundNormal.SetColor(Color.Transparent);
+                _labelTheme.ControlBackgroundSelected.SetColor(Color.Transparent);
+                _labelTheme.ControlBackgroundMouseOver.SetColor(Color.Transparent);
+                _labelTheme.ControlBackgroundFocused.SetColor(Color.Transparent);
                 _labelTheme.RebuildAppearances();
             }
             label.SetThemeColors(_labelTheme);
@@ -185,11 +206,11 @@ namespace Astralis.Scenes.Screens
         {
             base.Dispose(disposing);
 
-            if (_characterView != null)
+            if (_characterBorderScreen != null)
             {
-                _characterView.IsFocused = false;
-                _characterView.Dispose();
-                _characterView = null;
+                _characterBorderScreen.IsFocused = false;
+                _characterBorderScreen.Dispose();
+                _characterBorderScreen = null;
             }
         }
     }

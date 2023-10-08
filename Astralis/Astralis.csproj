@@ -22,6 +22,12 @@
     <None Update="Configuration\Data\WorldObjects.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Npcs\PlayerNpc_16x16.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Npcs\PlayerNpc_16x16.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Tilesets\Aesomatica_16x16.font">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
