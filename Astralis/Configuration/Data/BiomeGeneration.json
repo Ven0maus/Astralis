@@ -12,8 +12,8 @@
       ]
     },
     {
-      "name": "Beach",
       "color": "#F2E6A9",
+      "name": "Beach",
       "objects": [
         {
           "name": "PalmTree",
@@ -33,11 +33,22 @@
     },
     {
       "name": "FrozenRiver",
-      "color": "#b5e0ff"
+      "color": "#b5e0ff",
+      "objects": [
+        {
+          "name": "IcyGround",
+          "spawnchance": 20
+        },
+        {
+          "name": "IceBlock",
+          "spawnchance": 5,
+          "spawnrarity": "Rare"
+        }
+      ]
     },
     {
       "name": "Tundra",
-      "color": "#b9e8ea",
+      "color": "#b9bbdf",
       "objects": [
         {
           "name": "Rock",
@@ -45,19 +56,27 @@
           "spawnrarity": "Epic"
         },
         {
-          "name": "IceBlock",
+          "name": "Grass",
           "spawnchance": 5,
-          "spawnrarity": "Rare"
-        },
-        {
-          "name": "IcyGround",
-          "spawnchance": 20
+          "spawnrarity": "Rare",
+          "copybiomecolor": true
         },
         {
           "name": "Pebbles",
           "spawnchance": 2,
           "spawnrarity": "Epic",
           "copybiomecolor": true
+        },
+        {
+          "name": "PineTree",
+          "spawnchance": 1,
+          "spawnrarity": "Epic",
+          "copybiomecolor": true
+        },
+        {
+          "name": "DeadTree",
+          "spawnchance": 5,
+          "spawnrarity": "Uncommon"
         }
       ]
     },

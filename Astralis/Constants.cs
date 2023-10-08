@@ -47,6 +47,23 @@ namespace Astralis
             public const int ChunkSize = 32;
         }
 
+        public static class NpcData
+        {
+            public enum Gender
+            {
+                Male,
+                Female
+            }
+
+            public enum Race
+            {
+                Human,
+                Elf,
+                Orc,
+                Dwarf
+            }
+        }
+
         public static class Configuration
         {
             public const string JsonFilesPath = "Configuration/Data";

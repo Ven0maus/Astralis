@@ -1,10 +1,12 @@
 ﻿using Astralis.Extended.SadConsole;
 using SadConsole;
-using SadConsole.Entities;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
+using SadConsole.UI.Windows;
 using SadRogue.Primitives;
 using System;
+using System.Linq;
+using static Astralis.Constants.NpcData;
 
 namespace Astralis.Scenes.Screens
 {
@@ -17,8 +19,8 @@ namespace Astralis.Scenes.Screens
 
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
-        private ComboBox _gender;
-        private ScrollBar _race, _skinColor, _hair, _shirt, _pants, _shoes;
+        private ComboBox _gender, _race;
+        private ScrollBar _skinColor, _hair, _shirt, _pants, _shoes;
 
         public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
@@ -107,9 +109,15 @@ namespace Astralis.Scenes.Screens
         {
             var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y -2);
             _name = AddTextBox("Name:", currentPosition);
-            _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), new [] {"Male", "Female"});
+
+            var genders = Enum.GetValues<Gender>();
+            _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), genders.Select(a => a.ToString()).ToArray());
             _gender.SelectedItemChanged += ChangeGender;
-            _race = AddScrollBar("Race:", currentPosition += new Point(0, 3));
+
+            var races = Enum.GetValues<Race>();
+            _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Select(a => a.ToString()).ToArray());
+            _race.SelectedItemChanged += ChangeRace;
+
             _skinColor = AddScrollBar("Skin color:", currentPosition += new Point(0, 3));
             _hair = AddScrollBar("Hair:", currentPosition += new Point(0, 3));
             _shirt = AddScrollBar("Shirt:", currentPosition += new Point(0, 3));
@@ -135,6 +143,11 @@ namespace Astralis.Scenes.Screens
             Controls.Add(continueButton);
         }
 
+        private void ChangeRace(object sender, ListBox.SelectedItemEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void ChangeGender(object sender, ListBox.SelectedItemEventArgs e)
         {
             var item = ((string)e.Item);
@@ -151,6 +164,8 @@ namespace Astralis.Scenes.Screens
                 ScWindow.Message(message, "Understood", message.Length);
                 return;
             }
+
+            _startGameMethod.Invoke(null, null);
         }
 
         private void ClickRandomize(object sender, EventArgs e)
@@ -164,7 +179,11 @@ namespace Astralis.Scenes.Screens
             SetLabelTheme(label);
             Controls.Add(label);
 
-            var comboBox = new ComboBox(15, 15, 2, values) { Position = position };
+            int minSize = values.Length + 2;
+            if (minSize > 6)
+                minSize = 6;
+
+            var comboBox = new ComboBox(15, 15, minSize, values) { Position = position };
             Controls.Add(comboBox);
 
             return comboBox;
@@ -244,6 +263,13 @@ namespace Astralis.Scenes.Screens
                 _characterBorderScreen.IsFocused = false;
                 _characterBorderScreen.Dispose();
                 _characterBorderScreen = null;
+            }
+
+            if (_characterView != null)
+            {
+                _characterView.IsFocused = false;
+                _characterView.Dispose();
+                _characterView = null;
             }
         }
     }
