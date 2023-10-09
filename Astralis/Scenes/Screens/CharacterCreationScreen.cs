@@ -1,4 +1,6 @@
-﻿using Astralis.Extended.SadConsole;
+﻿using Astralis.Extended;
+using Astralis.Extended.SadConsole;
+using Astralis.Extended.SadConsole.Controls;
 using SadConsole;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
@@ -18,9 +20,11 @@ namespace Astralis.Scenes.Screens
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
         private ComboBox _gender, _race;
+        private ScColorBar _skinColor;
 
         // TODO: For skin color, make a custom color selector that you can provide a set of colors to
-        private ScrollBar _skinColor, _hair, _shirt, _pants, _shoes;
+        private ScrollBar _hair, _shirt, _pants;
+        private ColorSelectBox _hairColor, _shirtColor, _pantsColor;
 
         public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
@@ -118,11 +122,15 @@ namespace Astralis.Scenes.Screens
             _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Select(a => a.ToString()).ToArray());
             _race.SelectedItemChanged += ChangeRace;
 
-            _skinColor = AddScrollBar("Skin color:", currentPosition += new Point(0, 3));
+            _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), "#e6bc98".HexToColor(), "#3b2219".HexToColor());
             _hair = AddScrollBar("Hair:", currentPosition += new Point(0, 3));
+            _hairColor = new ColorSelectBox(Color.Red) { Position = currentPosition + new Point(15, 0) }; Controls.Add(_hairColor);
+
             _shirt = AddScrollBar("Shirt:", currentPosition += new Point(0, 3));
+            _shirtColor = new ColorSelectBox(Color.Red) { Position = currentPosition + new Point(15, 0) }; Controls.Add(_shirtColor);
+
             _pants = AddScrollBar("Pants:", currentPosition += new Point(0, 3));
-            _shoes = AddScrollBar("Shoes:", currentPosition += new Point(0, 3));
+            _pantsColor = new ColorSelectBox(Color.Red) { Position = currentPosition + new Point(15, 0) }; Controls.Add(_pantsColor);
 
             var randomizeButton = new ButtonBox(_characterBorderScreen.Width, 3)
             {
@@ -145,7 +153,7 @@ namespace Astralis.Scenes.Screens
 
         private void ChangeRace(object sender, ListBox.SelectedItemEventArgs e)
         {
-            throw new NotImplementedException();
+            // TODO
         }
 
         private void ChangeGender(object sender, ListBox.SelectedItemEventArgs e)
@@ -215,6 +223,24 @@ namespace Astralis.Scenes.Screens
             Controls.Add(scrollBar);
 
             return scrollBar;
+        }
+
+        private ScColorBar AddColorBar(string labelText, Point position, Color start, Color end)
+        {
+            var label = new Label(labelText) { Position = position + Direction.Up };
+            SetLabelTheme(label);
+            Controls.Add(label);
+
+            var colorBar = new ScColorBar(15)
+            {
+                Position = position,
+                StartingColor = start,
+                EndingColor = end
+            };
+
+            Controls.Add(colorBar);
+
+            return colorBar;
         }
 
         private Colors _labelTheme;
