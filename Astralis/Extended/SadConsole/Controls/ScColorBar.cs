@@ -36,6 +36,7 @@ public class ScColorBar : ControlBase
         {
             _startingColor = value;
             _colorSteps = StartingColor.LerpSteps(EndingColor, Width);
+            _selectedColor = _colorSteps[SelectedPosition];
             IsDirty = true;
         }
     }
@@ -50,6 +51,7 @@ public class ScColorBar : ControlBase
         {
             _endingColor = value;
             _colorSteps = StartingColor.LerpSteps(EndingColor, Width);
+            _selectedColor = _colorSteps[SelectedPosition];
             IsDirty = true;
         }
     }
@@ -105,6 +107,8 @@ public class ScColorBar : ControlBase
             throw new Exception("The predefined color array must be the same size as the control width.");
 
         _colorSteps = predefinedColors;
+        if (_colorSteps != null)
+            _selectedColor = _colorSteps[0];
     }
 
     private void SetClosestIndex(Color color)
@@ -115,10 +119,10 @@ public class ScColorBar : ControlBase
         // Create a color weight for every cell compared to the color stop
         for (int x = 0; x < Width; x++)
         {
-            ColorMine.ColorSpaces.Rgb rgbColor = new ColorMine.ColorSpaces.Rgb() { R = Surface[x, 0].Foreground.R, G = Surface[x, 0].Foreground.G, B = Surface[x, 0].Foreground.B };
+            ColorMine.ColorSpaces.Rgb rgbColor = new ColorMine.ColorSpaces.Rgb() { R = Surface[x, 0].Background.R, G = Surface[x, 0].Background.G, B = Surface[x, 0].Background.B };
             ColorMine.ColorSpaces.Cmy cmyColor = rgbColor.To<ColorMine.ColorSpaces.Cmy>();
 
-            colorWeights[x] = new Tuple<Color, double, int>(Surface[x, 0].Foreground, rgbColorStop.Compare(cmyColor, new ColorMine.ColorSpaces.Comparisons.Cie1976Comparison()), x);
+            colorWeights[x] = new Tuple<Color, double, int>(Surface[x, 0].Background, rgbColorStop.Compare(cmyColor, new ColorMine.ColorSpaces.Comparisons.Cie1976Comparison()), x);
         }
 
         Tuple<Color, double, int> foundColor = colorWeights.OrderBy(t => t.Item2).First();
@@ -138,7 +142,7 @@ public class ScColorBar : ControlBase
                 Point location = info.MousePosition;
 
                 SelectedPosition = location.X;
-                SelectedColorSafe = Surface[SelectedPosition, 0].Foreground;
+                SelectedColorSafe = Surface[SelectedPosition, 0].Background;
                 IsDirty = true;
 
                 Parent.Host.CaptureControl(this);
@@ -159,10 +163,10 @@ public class ScColorBar : ControlBase
                 Point location = newState.MousePosition;
 
                 //if (info.ConsolePosition.X >= Position.X && info.ConsolePosition.X < Position.X + Width)
-                if (location.X >= 0 && location.X <= base.Width - 1 && location.Y > -4 && location.Y < Height + 3)
+                if (location.X >= 0 && location.X <= Width - 1 && location.Y > -4 && location.Y < Height + 3)
                 {
                     SelectedPosition = location.X;
-                    SelectedColorSafe = Surface[SelectedPosition, 0].Foreground;
+                    SelectedColorSafe = Surface[SelectedPosition, 0].Background;
                 }
 
                 IsDirty = true;
