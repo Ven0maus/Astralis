@@ -154,7 +154,7 @@ namespace Astralis.Scenes.Screens
                 // Args is only null when manually called
                 // Then trigger a fadeout, which on finished will 
                 _backgroundOverworldScene.OnFadeFinished += StartGame;
-                _backgroundOverworldScene.FadeOut(2, (ws) => ws.MainMenuCamera = false);
+                _backgroundOverworldScene.FadeOut(1, (ws) => ws.MainMenuCamera = false);
                 return;
             }
 
