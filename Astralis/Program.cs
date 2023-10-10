@@ -1,5 +1,6 @@
 ﻿using Astralis.Scenes;
 using SadConsole;
+using System;
 
 namespace Astralis
 {
@@ -33,6 +34,9 @@ namespace Astralis
 
             Resolution.Init(SadConsole.Host.Global.GraphicsDeviceManager, defaultFont);
             Resolution.SetResolutionFromCurrentDisplayMonitor(Constants.FullScreen);
+
+            Constants.GameSeed = Constants.DebugMode ? Constants.GameSeed : new Random().Next(-1000000, 1000000);
+            Constants.Random = new Random(Constants.GameSeed);
 
             if (!Constants.DebugMode)
                 return new MainMenuScene();

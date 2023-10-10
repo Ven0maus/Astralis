@@ -111,6 +111,13 @@ public class ScColorBar : ControlBase
             _selectedColor = _colorSteps[0];
     }
 
+    public void SetRandomColor()
+    {
+        SelectedPosition = Constants.Random.Next(_colorSteps.Length);
+        SelectedColorSafe = _colorSteps[SelectedPosition];
+        IsDirty = true;
+    }
+
     private void SetClosestIndex(Color color)
     {
         ColorMine.ColorSpaces.Rgb rgbColorStop = new ColorMine.ColorSpaces.Rgb() { R = color.R, G = color.G, B = color.B };

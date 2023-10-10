@@ -246,7 +246,10 @@ namespace Astralis.Scenes.Screens
 
         private void ClickRandomize(object sender, EventArgs e)
         {
-
+            _hairColor.SetRandomColor();
+            _shirtColor.SetRandomColor();
+            _pantsColor.SetRandomColor();
+            _skinColor.SetRandomColor();
         }
 
         private ComboBox AddComboBox(string labelText, Point position, object[] values)

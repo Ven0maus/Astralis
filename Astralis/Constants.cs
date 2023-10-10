@@ -1,12 +1,15 @@
 ﻿using SadRogue.Primitives;
+using System;
 
 namespace Astralis
 {
     public class Constants
     {
-        public const int GameSeed = 601;
+        public static int GameSeed = 601;
         public const bool DebugMode = false;
         public const bool FullScreen = false;
+
+        public static Random Random;
 
         public static int ScreenWidth { get { return Resolution.ScreenCellsX; } }
         public static int ScreenHeight { get { return Resolution.ScreenCellsY; } }

@@ -19,7 +19,7 @@ namespace Astralis.Extended.Effects
 
         private void Scatter()
         {
-            var random = new Random();
+            var random = Constants.Random;
 
             foreach (var scatterGlyph in _positionedGlyphs)
             {

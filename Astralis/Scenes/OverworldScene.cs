@@ -20,8 +20,7 @@ namespace Astralis.Scenes
         public OverworldScene()
         {
             // Generate world
-            var seed = Constants.DebugMode ? Constants.GameSeed : new Random().Next(-1000000, 1000000);
-            var worldGenerator = new WorldGenerator(seed, new Extended.NoiseHelper(seed));
+            var worldGenerator = new WorldGenerator(Constants.GameSeed, new Extended.NoiseHelper(Constants.GameSeed));
             var chunkSize = Constants.WorldGeneration.ChunkSize;
             _world = new World(Constants.ScreenWidth, Constants.ScreenHeight, chunkSize, chunkSize, worldGenerator);
             _world.RaiseOnlyOnCellTypeChange = false;
