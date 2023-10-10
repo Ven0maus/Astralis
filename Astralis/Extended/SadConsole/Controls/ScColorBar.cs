@@ -20,12 +20,7 @@ public class ScColorBar : ControlBase
     /// <summary>
     /// Internal use by theme.
     /// </summary>
-    public int _positions;
-
-    /// <summary>
-    /// Internal use by theme.
-    /// </summary>
-    public Color[] _colorSteps;
+    private Color[] _colorSteps;
 
     private Color _selectedColor;
     private Color _startingColor;
@@ -39,8 +34,8 @@ public class ScColorBar : ControlBase
         get => _startingColor;
         set
         {
-            // TODO: Starting/Ending/Width should rebuild the barcolorsteps and it should be removed from the theme: bar._colorSteps = bar.StartingColor.LerpSteps(bar.EndingColor, control.Width);
             _startingColor = value;
+            _colorSteps = StartingColor.LerpSteps(EndingColor, Width);
             IsDirty = true;
         }
     }
@@ -54,6 +49,7 @@ public class ScColorBar : ControlBase
         set
         {
             _endingColor = value;
+            _colorSteps = StartingColor.LerpSteps(EndingColor, Width);
             IsDirty = true;
         }
     }
@@ -99,11 +95,16 @@ public class ScColorBar : ControlBase
     /// Creates a new color bar with the specified width.
     /// </summary>
     /// <param name="width">The width of the bar.</param>
-    public ScColorBar(int width) : base(width, 1)
+    public ScColorBar(int width, Color[] predefinedColors = null) : base(width, 1)
     {
         StartingColor = Color.White;
         EndingColor = Color.Black;
         CanFocus = false;
+
+        if (predefinedColors != null && predefinedColors.Length != width)
+            throw new Exception("The predefined color array must be the same size as the control width.");
+
+        _colorSteps = predefinedColors;
     }
 
     private void SetClosestIndex(Color color)
@@ -178,9 +179,6 @@ public class ScColorBar : ControlBase
 
         Surface.Fill(Color.White, Color.Black, 0, null);
 
-        _positions = Width;
-        _colorSteps = StartingColor.LerpSteps(EndingColor, Width);
-
         for (int x = 0; x < Width; x++)
         {
             Surface[x, 0].Foreground = Color.Crimson;
@@ -188,7 +186,6 @@ public class ScColorBar : ControlBase
         }
 
         Surface[SelectedPosition, 0].Glyph = 4;
-
         IsDirty = false;
     }
 }

@@ -20,11 +20,7 @@ namespace Astralis.Scenes.Screens
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
         private ComboBox _gender, _race;
-        private ScColorBar _skinColor;
-
-        // TODO: For skin color, make a custom color selector that you can provide a set of colors to
-        private ScrollBar _hair, _shirt, _pants;
-        private ColorSelectBox _hairColor, _shirtColor, _pantsColor;
+        private ScColorBar _skinColor, _hairColor, _shirtColor, _pantsColor;
 
         public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
@@ -115,22 +111,18 @@ namespace Astralis.Scenes.Screens
             _name = AddTextBox("Name:", currentPosition);
 
             var genders = Enum.GetValues<Constants.NpcData.Gender>();
-            _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), genders.Select(a => a.ToString()).ToArray());
+            _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), genders.Cast<object>().ToArray());
             _gender.SelectedItemChanged += ChangeGender;
 
-            var races = Enum.GetValues<Constants.NpcData.Race>();
-            _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Select(a => a.ToString()).ToArray());
+            var races = Enum.GetValues<Constants.NpcData.Race>().OrderBy(a => a);
+            _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Cast<object>().ToArray());
             _race.SelectedItemChanged += ChangeRace;
 
-            _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), "#e6bc98".HexToColor(), "#3b2219".HexToColor());
-            _hair = AddScrollBar("Hair:", currentPosition += new Point(0, 3));
-            _hairColor = new ColorSelectBox(Color.Red) { Position = currentPosition + new Point(15, 0) }; Controls.Add(_hairColor);
-
-            _shirt = AddScrollBar("Shirt:", currentPosition += new Point(0, 3));
-            _shirtColor = new ColorSelectBox(Color.Red) { Position = currentPosition + new Point(15, 0) }; Controls.Add(_shirtColor);
-
-            _pants = AddScrollBar("Pants:", currentPosition += new Point(0, 3));
-            _pantsColor = new ColorSelectBox(Color.Red) { Position = currentPosition + new Point(15, 0) }; Controls.Add(_pantsColor);
+            var skinColors = GetSkinColors((Constants.NpcData.Race)_race.SelectedItem);
+            _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), skinColors[0], skinColors[1]);
+            _hairColor = AddColorBar("Hair color:", currentPosition += new Point(0, 3));
+            _shirtColor = AddColorBar("Shirt color:", currentPosition += new Point(0, 3));
+            _pantsColor = AddColorBar("Pants color:", currentPosition += new Point(0, 3));
 
             var randomizeButton = new ButtonBox(_characterBorderScreen.Width, 3)
             {
@@ -151,15 +143,32 @@ namespace Astralis.Scenes.Screens
             Controls.Add(continueButton);
         }
 
+        private static Color[] GetSkinColors(Constants.NpcData.Race race)
+        {
+            switch (race)
+            {
+                case Constants.NpcData.Race.Orc:
+                    return new[] { "#4D2600".HexToColor(), "#006600".HexToColor() };
+                case Constants.NpcData.Race.Human:
+                case Constants.NpcData.Race.Elf:
+                case Constants.NpcData.Race.Dwarf:
+                    return new[] { "#e6bc98".HexToColor(), "#3b2219".HexToColor() };
+                default:
+                    throw new NotImplementedException($"Skin color for race '{race}' not implemented.");
+            }
+        }
+
         private void ChangeRace(object sender, ListBox.SelectedItemEventArgs e)
         {
-            // TODO
+            var skinColors = GetSkinColors((Constants.NpcData.Race)e.Item);
+            _skinColor.StartingColor = skinColors[0];
+            _skinColor.EndingColor = skinColors[1];
         }
 
         private void ChangeGender(object sender, ListBox.SelectedItemEventArgs e)
         {
-            var item = ((string)e.Item);
-            _characterView.Surface[0].Glyph = item.Equals("Male", StringComparison.OrdinalIgnoreCase) ? 1 : 4;
+            var item = (Constants.NpcData.Gender)e.Item;
+            _characterView.Surface[0].Glyph = item == Constants.NpcData.Gender.Male ? 1 : 4;
             _characterView.Surface.IsDirty = true;
         }
 
@@ -181,7 +190,7 @@ namespace Astralis.Scenes.Screens
 
         }
 
-        private ComboBox AddComboBox(string labelText, Point position, string[] values)
+        private ComboBox AddComboBox(string labelText, Point position, object[] values)
         {
             var label = new Label(labelText) { Position = position + Direction.Up };
             SetLabelTheme(label);
@@ -209,22 +218,6 @@ namespace Astralis.Scenes.Screens
             return textbox;
         }
 
-        private ScrollBar AddScrollBar(string labelText, Point position)
-        {
-            var label = new Label(labelText) { Position = position + Direction.Up };
-            SetLabelTheme(label);
-            Controls.Add(label);
-
-            var scrollBar = new ScrollBar(Orientation.Horizontal, 15)
-            {
-                Position = position,
-            };
-
-            Controls.Add(scrollBar);
-
-            return scrollBar;
-        }
-
         private ScColorBar AddColorBar(string labelText, Point position, Color start, Color end)
         {
             var label = new Label(labelText) { Position = position + Direction.Up };
@@ -236,6 +229,42 @@ namespace Astralis.Scenes.Screens
                 Position = position,
                 StartingColor = start,
                 EndingColor = end
+            };
+
+            Controls.Add(colorBar);
+
+            return colorBar;
+        }
+
+        private ScColorBar AddColorBar(string labelText, Point position)
+        {
+            var label = new Label(labelText) { Position = position + Direction.Up };
+            SetLabelTheme(label);
+            Controls.Add(label);
+
+            // Array must be same width (15)
+            Color[] colors = new Color[]
+            {
+                Color.Coral,
+                Color.Green,
+                Color.Blue,
+                Color.DarkOrange,
+                Color.OliveDrab,
+                Color.AnsiYellowBright,
+                Color.Cyan,
+                Color.Magenta,
+                Color.Brown,
+                Color.Teal,
+                Color.Gray,
+                Color.Lime,
+                Color.Thistle,
+                Color.DarkRed,
+                Color.Indigo
+            };
+
+            var colorBar = new ScColorBar(15, colors)
+            {
+                Position = position,
             };
 
             Controls.Add(colorBar);
