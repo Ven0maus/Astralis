@@ -13,15 +13,20 @@ namespace Astralis.Scenes.Screens
 {
     internal class CharacterCreationScreen : ControlSurface
     {
-        private readonly Action<object, WorldScreen> _startGameMethod;
+        private enum Phase
+        {
+            Design,
+            TraitSelection
+        }
 
-        private Phase _currentPhase = Phase.Design;
+        private readonly Action<object, WorldScreen> _startGameMethod;
 
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
         private ComboBox _gender, _race, _class;
         private ScColorBar _skinColor, _hairColor, _shirtColor, _pantsColor;
         private Facing _characterFacing = Facing.Forward;
+        private Phase _currentPhase = Phase.Design;
 
         public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
@@ -77,59 +82,6 @@ namespace Astralis.Scenes.Screens
             CreateTitle();
             CreateControls();
             DrawCharacter(null, null);
-        }
-
-        private void DrawCharacter(object sender, EventArgs args)
-        {
-            // Last is facing (direction)
-            var npcConfig = Enum.GetValues<NpcConfiguration>()
-                .GroupBy(a => a.ToString().Split('_').Last());
-
-            var facing = _characterFacing.ToString();
-            if (facing == Facing.Left.ToString() || facing == Facing.Right.ToString())
-                facing = "Sideways";
-
-            var npcGroupGenderConfig = npcConfig.First(a => a.Key == facing)
-                .Where(a => a.ToString().Split('_')[0].Equals(_gender.SelectedItem.ToString()))
-                .ToArray();
-
-            // Second is type (hair, shirt, etc), unless there are only 2 values it is the main
-            var main = npcGroupGenderConfig.First(a => a.ToString().Split('_').Length == 2);
-            var hair = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Hair"));
-            var shirt = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Shirt"));
-            var pants = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Pants"));
-
-            var mirror = !facing.Equals("Sideways") ? Mirror.None :
-                _characterFacing == Facing.Right ? Mirror.Horizontal : Mirror.None;
-
-            _characterView.Surface[0].Glyph = (int)main;
-            _characterView.Surface[0].Foreground = _skinColor.SelectedColor;
-            _characterView.Surface[0].Mirror = mirror;
-            _characterView.Surface[0].Decorators = new[]
-            {
-                new CellDecorator(_hairColor.SelectedColor, (int)hair, mirror),
-                new CellDecorator(_shirtColor.SelectedColor, (int)shirt, mirror),
-                new CellDecorator(_pantsColor.SelectedColor, (int)pants, mirror)
-            };
-            _characterView.IsDirty = true;
-        }
-
-        private void RotateCharacter(object sender, EventArgs e)
-        {
-            var values = Enum.GetValues<Facing>();
-            var value = (int)_characterFacing;
-            if (value == values.Length - 1)
-                value = 0;
-            else
-                value++;
-            _characterFacing = (Facing)value;
-            DrawCharacter(sender, e);
-        }
-
-        private enum Phase
-        {
-            Design,
-            TraitSelection
         }
 
         private static void InitScreenVisual(ScreenSurface surface)
@@ -207,6 +159,41 @@ namespace Astralis.Scenes.Screens
             Controls.Add(continueButton);
         }
 
+        private void DrawCharacter(object sender, EventArgs args)
+        {
+            // Last is facing (direction)
+            var npcConfig = Enum.GetValues<NpcConfiguration>()
+                .GroupBy(a => a.ToString().Split('_').Last());
+
+            var facing = _characterFacing.ToString();
+            if (facing == Facing.Left.ToString() || facing == Facing.Right.ToString())
+                facing = "Sideways";
+
+            var npcGroupGenderConfig = npcConfig.First(a => a.Key == facing)
+                .Where(a => a.ToString().Split('_')[0].Equals(_gender.SelectedItem.ToString()))
+                .ToArray();
+
+            // Second is type (hair, shirt, etc), unless there are only 2 values it is the main
+            var main = npcGroupGenderConfig.First(a => a.ToString().Split('_').Length == 2);
+            var hair = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Hair"));
+            var shirt = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Shirt"));
+            var pants = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Pants"));
+
+            var mirror = !facing.Equals("Sideways") ? Mirror.None :
+                _characterFacing == Facing.Right ? Mirror.Horizontal : Mirror.None;
+
+            _characterView.Surface[0].Glyph = (int)main;
+            _characterView.Surface[0].Foreground = _skinColor.SelectedColor;
+            _characterView.Surface[0].Mirror = mirror;
+            _characterView.Surface[0].Decorators = new[]
+            {
+                new CellDecorator(_hairColor.SelectedColor, (int)hair, mirror),
+                new CellDecorator(_shirtColor.SelectedColor, (int)shirt, mirror),
+                new CellDecorator(_pantsColor.SelectedColor, (int)pants, mirror)
+            };
+            _characterView.IsDirty = true;
+        }
+
         private static Color[] GetSkinColors(Race race)
         {
             switch (race)
@@ -248,6 +235,26 @@ namespace Astralis.Scenes.Screens
             }
         }
 
+        private void ClickRandomize(object sender, EventArgs e)
+        {
+            _hairColor.SetRandomColor();
+            _shirtColor.SetRandomColor();
+            _pantsColor.SetRandomColor();
+            _skinColor.SetRandomColor();
+        }
+
+        private void RotateCharacter(object sender, EventArgs e)
+        {
+            var values = Enum.GetValues<Facing>();
+            var value = (int)_characterFacing;
+            if (value == values.Length - 1)
+                value = 0;
+            else
+                value++;
+            _characterFacing = (Facing)value;
+            DrawCharacter(sender, e);
+        }
+
         private void TransitionTo(Phase phase)
         {
             _currentPhase = phase;
@@ -264,14 +271,6 @@ namespace Astralis.Scenes.Screens
                 ScWindow.Message(message, " Ok ", message.Length);
                 return;
             }
-        }
-
-        private void ClickRandomize(object sender, EventArgs e)
-        {
-            _hairColor.SetRandomColor();
-            _shirtColor.SetRandomColor();
-            _pantsColor.SetRandomColor();
-            _skinColor.SetRandomColor();
         }
 
         private ComboBox AddComboBox(string labelText, Point position, object[] values)
