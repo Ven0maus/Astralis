@@ -1,4 +1,5 @@
 ﻿using Astralis.Extended;
+using Astralis.Extended.Effects;
 using Astralis.Extended.SadConsole;
 using Astralis.Extended.SadConsole.Controls;
 using Astralis.GameCode.Npcs;
@@ -74,6 +75,11 @@ namespace Astralis.Scenes.Screens
         {
             IsVisible = !IsVisible;
             IsFocused = IsVisible;
+        }
+
+        public ScreenSurface[] GetSurfaces()
+        {
+            return new[] { this, _characterBorderScreen, _characterView };
         }
 
         private void Initialize()
@@ -225,9 +231,15 @@ namespace Astralis.Scenes.Screens
                 case Phase.Design:
                     ValidateDesignPhase();
                     TransitionTo(Phase.TraitSelection);
+                    // TODO: Remove this when 2nd phase is implemented
+                    ClickContinue(sender, e);
                     break;
                 case Phase.TraitSelection:
-                    // TODO: Add transition fade out
+                    foreach (var control in Controls)
+                        control.IsVisible = false;
+                    var effect = new FadeEffect(TimeSpan.FromSeconds(1), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, GetSurfaces());
+                    var currentScene = (Scene)Game.Instance.Screen;
+                    currentScene.Effects.Add(effect);
                     _startGameMethod.Invoke(null, null);
                     break;
                 default:
