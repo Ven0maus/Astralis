@@ -1,7 +1,7 @@
-﻿namespace Astralis.GameCode
+﻿namespace Astralis.GameCode.Npcs
 {
     /* TODO: Adjust to only 1 character setup, auto calculated per row. So we can have diverse characters */
-    internal enum PlayerNpcConfig
+    internal enum NpcConfiguration
     {
         /* Male SPRITE SETUP */
         Male_Forward = 1,
@@ -36,5 +36,39 @@
         Female_Hair_Forward = 26,
         Female_Hair_Sideways = 27,
         Female_Hair_Backwards = 28,
+    }
+
+    internal enum Facing
+    {
+        Forward,
+        Left,
+        Backwards,
+        Right,
+    }
+
+    internal enum Gender
+    {
+        Male,
+        Female
+    }
+
+    internal enum Race
+    {
+        Human,
+        Elf,
+        Orc,
+        Dwarf
+    }
+
+    internal enum Class
+    {
+        Warrior,
+        Ranger,
+        Wizard,
+        Cleric,
+        Rogue,
+        Necromancer,
+        Alchemist,
+        Shapeshifter
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Astralis.Extended;
 using Astralis.Extended.SadConsole;
 using Astralis.Extended.SadConsole.Controls;
-using Astralis.GameCode;
+using Astralis.GameCode.Npcs;
 using SadConsole;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
@@ -15,12 +15,11 @@ namespace Astralis.Scenes.Screens
     {
         private readonly Action<object, WorldScreen> _startGameMethod;
 
-        private bool _characterDesignCompleted = false;
-        private bool _characterSpecializationCompleted = false;
+        private Phase _currentPhase = Phase.Design;
 
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
-        private ComboBox _gender, _race;
+        private ComboBox _gender, _race, _class;
         private ScColorBar _skinColor, _hairColor, _shirtColor, _pantsColor;
         private Facing _characterFacing = Facing.Forward;
 
@@ -83,7 +82,7 @@ namespace Astralis.Scenes.Screens
         private void DrawCharacter(object sender, EventArgs args)
         {
             // Last is facing (direction)
-            var npcConfig = Enum.GetValues<PlayerNpcConfig>()
+            var npcConfig = Enum.GetValues<NpcConfiguration>()
                 .GroupBy(a => a.ToString().Split('_').Last());
 
             var facing = _characterFacing.ToString();
@@ -127,12 +126,10 @@ namespace Astralis.Scenes.Screens
             DrawCharacter(sender, e);
         }
 
-        private enum Facing
+        private enum Phase
         {
-            Forward,
-            Left,
-            Backwards,
-            Right,
+            Design,
+            TraitSelection
         }
 
         private static void InitScreenVisual(ScreenSurface surface)
@@ -161,15 +158,18 @@ namespace Astralis.Scenes.Screens
             var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y -2);
             _name = AddTextBox("Name:", currentPosition);
 
-            var genders = Enum.GetValues<Constants.NpcData.Gender>();
+            var genders = Enum.GetValues<Gender>();
             _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), genders.Cast<object>().ToArray());
             _gender.SelectedItemChanged += DrawCharacter;
 
-            var races = Enum.GetValues<Constants.NpcData.Race>().OrderBy(a => a);
+            var races = Enum.GetValues<Race>().OrderBy(a => a);
             _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Cast<object>().ToArray());
             _race.SelectedItemChanged += ChangeRace;
 
-            var skinColors = GetSkinColors((Constants.NpcData.Race)_race.SelectedItem);
+            var classes = Enum.GetValues<Class>().OrderBy(a => a);
+            _class = AddComboBox("Class:", currentPosition += new Point(0, 3), classes.Cast<object>().ToArray());
+
+            var skinColors = GetSkinColors((Race)_race.SelectedItem);
             _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), skinColors[0], skinColors[1]);
             _skinColor.ColorChanged += DrawCharacter;
             _hairColor = AddColorBar("Hair color:", currentPosition += new Point(0, 3));
@@ -207,15 +207,15 @@ namespace Astralis.Scenes.Screens
             Controls.Add(continueButton);
         }
 
-        private static Color[] GetSkinColors(Constants.NpcData.Race race)
+        private static Color[] GetSkinColors(Race race)
         {
             switch (race)
             {
-                case Constants.NpcData.Race.Orc:
+                case Race.Orc:
                     return new[] { "#4D2600".HexToColor(), "#006600".HexToColor() };
-                case Constants.NpcData.Race.Human:
-                case Constants.NpcData.Race.Elf:
-                case Constants.NpcData.Race.Dwarf:
+                case Race.Human:
+                case Race.Elf:
+                case Race.Dwarf:
                     return new[] { "#e6bc98".HexToColor(), "#3b2219".HexToColor() };
                 default:
                     throw new NotImplementedException($"Skin color for race '{race}' not implemented.");
@@ -224,7 +224,7 @@ namespace Astralis.Scenes.Screens
 
         private void ChangeRace(object sender, ListBox.SelectedItemEventArgs e)
         {
-            var skinColors = GetSkinColors((Constants.NpcData.Race)e.Item);
+            var skinColors = GetSkinColors((Race)e.Item);
             _skinColor.StartingColor = skinColors[0];
             _skinColor.EndingColor = skinColors[1];
 
@@ -233,15 +233,37 @@ namespace Astralis.Scenes.Screens
 
         private void ClickContinue(object sender, EventArgs e)
         {
+            switch (_currentPhase)
+            {
+                case Phase.Design:
+                    ValidateDesignPhase();
+                    TransitionTo(Phase.TraitSelection);
+                    break;
+                case Phase.TraitSelection:
+                    // TODO: Add transition fade out
+                    _startGameMethod.Invoke(null, null);
+                    break;
+                default:
+                    throw new NotImplementedException($"Phase '{_currentPhase}' is not implemented.");
+            }
+        }
+
+        private void TransitionTo(Phase phase)
+        {
+            _currentPhase = phase;
+
+            // TODO: Adjust screen components to new phase
+        }
+
+        private void ValidateDesignPhase()
+        {
             var name = _name.Text;
             if (string.IsNullOrWhiteSpace(name))
             {
                 var message = "Please fill in a name for your new character!";
-                ScWindow.Message(message, "Understood", message.Length);
+                ScWindow.Message(message, " Ok ", message.Length);
                 return;
             }
-
-            _startGameMethod.Invoke(null, null);
         }
 
         private void ClickRandomize(object sender, EventArgs e)
@@ -258,11 +280,11 @@ namespace Astralis.Scenes.Screens
             SetLabelTheme(label);
             Controls.Add(label);
 
-            int minSize = values.Length + 2;
-            if (minSize > 6)
-                minSize = 6;
+            int dropdownSize = values.Length + 2;
+            if (dropdownSize > 10)
+                dropdownSize = 10;
 
-            var comboBox = new ComboBox(15, 15, minSize, values) { Position = position };
+            var comboBox = new ComboBox(15, 15, dropdownSize, values) { Position = position };
             Controls.Add(comboBox);
 
             return comboBox;
