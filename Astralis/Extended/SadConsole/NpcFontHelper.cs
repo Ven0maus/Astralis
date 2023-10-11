@@ -110,15 +110,18 @@ namespace Astralis.Extended.SadConsoleExt
             if (availableIndex == font.TotalGlyphs)
                 font.Edit_AddRows(1);
 
-            // Add the custom glyph to the first glyph of the new row
-            font.Edit_SetGlyph_Pixel(availableIndex, pixels, true, ref cachedPixelsUnused!);
-            SaveAsPng(font.Image, _npcFontCache[font].ImageFilePath);
+            // Add the custom glyph to the available index in the font
+            font.Edit_SetGlyph_Pixel(availableIndex, pixels, true, ref cachedPixelsUnused);
 
+            // Reset fontsize to original
             surfaceObject.FontSize = originalFontSize;
         }
 
-        private static void SaveAsPng(ITexture texture, string filename)
+        public static void SaveFont(SadFont font)
         {
+            if (!_npcFontCache.ContainsKey(font)) return;
+
+            var texture = font.Image;
             Texture2D newTexture = new Texture2D(Resolution.Device.GraphicsDevice, texture.Width, texture.Height);
             newTexture.SetData(texture.GetPixels());
 
@@ -126,7 +129,7 @@ namespace Astralis.Extended.SadConsoleExt
             {
                 newTexture.SaveAsPng(ms, texture.Width, texture.Height);
                 ms.Seek(0, SeekOrigin.Begin);
-                File.WriteAllBytes(filename, ms.ToArray());
+                File.WriteAllBytes(_npcFontCache[font].ImageFilePath, ms.ToArray());
             }
         }
     }

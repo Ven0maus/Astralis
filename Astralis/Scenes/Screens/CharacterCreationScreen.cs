@@ -279,6 +279,7 @@ namespace Astralis.Scenes.Screens
             _characterFacing = Facing.Backwards;
             DrawCharacter(null, null);
             NpcFontHelper.AddGlyphToFont(_characterView, sadFont);
+            NpcFontHelper.SaveFont(sadFont);
 
             // Reset visual
             _characterFacing = Facing.Forward;
