@@ -1,5 +1,6 @@
 ﻿using Astralis;
 using SadConsole;
+using SadConsole.Configuration;
 
 namespace NoiseGenerator
 {
@@ -11,10 +12,10 @@ namespace NoiseGenerator
             Settings.ResizeMode = Settings.WindowResizeOptions.None;
             Settings.AllowWindowResize = true;
 
-            Game.Configuration gameStartup = new Game.Configuration()
+            Builder gameStartup = new Builder()
                 .SetStartingScreen(DefineStartupScreen)
                 .IsStartingScreenFocused(false)
-                .ConfigureFonts(f =>
+                .ConfigureFonts((f, Game) =>
                 {
                     f.AddExtraFonts(Constants.Fonts.UserInterfaceFonts.Anno);
                 });

@@ -8,6 +8,7 @@ using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Astralis.Scenes.Screens
@@ -59,6 +60,7 @@ namespace Astralis.Scenes.Screens
                 Position = new Point(16, 15)
             };
             _characterView.Surface.DefaultBackground = Color.Transparent;
+            _characterView.Surface[0].Decorators = new List<CellDecorator>();
             _characterBorderScreen.Children.Add(_characterView);
 
             _startGameMethod = startGameMethod;
@@ -191,12 +193,13 @@ namespace Astralis.Scenes.Screens
             _characterView.Surface[0].Glyph = (int)main;
             _characterView.Surface[0].Foreground = _skinColor.SelectedColor;
             _characterView.Surface[0].Mirror = mirror;
-            _characterView.Surface[0].Decorators = new[]
+            _characterView.Surface[0].Decorators.Clear();
+            _characterView.Surface[0].Decorators.AddRange(new[]
             {
                 new CellDecorator(_hairColor.SelectedColor, (int)hair, mirror),
                 new CellDecorator(_shirtColor.SelectedColor, (int)shirt, mirror),
                 new CellDecorator(_pantsColor.SelectedColor, (int)pants, mirror)
-            };
+            });
             _characterView.IsDirty = true;
         }
 

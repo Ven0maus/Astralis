@@ -1,5 +1,6 @@
 ﻿using Astralis.Scenes;
 using SadConsole;
+using SadConsole.Configuration;
 using System;
 
 namespace Astralis
@@ -12,12 +13,12 @@ namespace Astralis
             Settings.ResizeMode = Settings.WindowResizeOptions.None;
             Settings.AllowWindowResize = true;
 
-            Game.Configuration gameStartup = new Game.Configuration()
+            Builder gameStartup = new Builder()
                 .SetStartingScreen(DefineStartupScreen)
                 .IsStartingScreenFocused(false)
-                .ConfigureFonts(f =>
+                .ConfigureFonts((fontConfig, game) =>
                 {
-                    f.AddExtraFonts(
+                    fontConfig.AddExtraFonts(
                         Constants.Fonts.WorldFonts.WorldObjects,
                         Constants.Fonts.UserInterfaceFonts.Anno,
                         Constants.Fonts.NpcFonts.PlayerNpc);

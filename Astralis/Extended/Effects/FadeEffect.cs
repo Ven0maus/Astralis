@@ -128,11 +128,11 @@ namespace Astralis.Extended.Effects
             return clampedValue;
         }
 
-        private static CellDecorator[] AdjustDecoratorsColor(CellDecorator[] decorators, byte alpha)
+        private static List<CellDecorator> AdjustDecoratorsColor(List<CellDecorator> decorators, byte alpha)
         {
-            if (decorators == null || decorators.Length == 0) return decorators;
-            CellDecorator[] newDecorators = new CellDecorator[decorators.Length];
-            for (int i = 0; i < decorators.Length; i++)
+            if (decorators == null || decorators.Count == 0) return decorators;
+            var newDecorators = new List<CellDecorator>(decorators.Count);
+            for (int i = 0; i < decorators.Count; i++)
             {
                 var dec = decorators[i];
                 if (dec.Color == Color.Transparent) continue;
