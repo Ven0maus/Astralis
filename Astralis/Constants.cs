@@ -26,6 +26,8 @@ namespace Astralis
 
         public static class Fonts
         {
+            public const string SavedataFontsPath = "Savedata/Fonts";
+
             public static class UserInterfaceFonts
             {
                 public const string Anno = "Resources/Tilesets/Anno_16x16.font";
@@ -38,13 +40,15 @@ namespace Astralis
 
             public static class NpcFonts
             {
-                public const string PlayerNpc = "Resources/Npcs/PlayerNpc_16x16.font";
+                public const string TemplateNpcFont = "Resources/Npcs/TemplateNpc_16x16.font";
+                public const string BaseNpc = "Resources/Npcs/BaseNpc_16x16.font";
+                public const string ProceduralNpcsFont = $"{SavedataFontsPath}/ProceduralNpcs_16x16.font";
             }
         }
 
         public static class WorldGeneration
         {
-            public const float WorldZoomFactor = 1.75f;
+            public const float WorldZoomFentity = 1.75f;
             public const bool DrawBordersOnDebugMode = false;
             public const int ExtraChunkRadius = 2;
             public const int ChunkSize = 32;

@@ -7,7 +7,7 @@ namespace Astralis
 {
     public static class Resolution
     {
-        private static GraphicsDeviceManager _Device = null;
+        public static GraphicsDeviceManager Device = null;
         private static int _width, _height;
         private static bool _fullScreen = false;
         private static IFont _defaultFont;
@@ -17,7 +17,7 @@ namespace Astralis
 
         public static void Init(GraphicsDeviceManager device, IFont defaultFont = null)
         {
-            _Device = device;
+            Device = device;
             _defaultFont = defaultFont;
         }
 
@@ -63,10 +63,10 @@ namespace Astralis
                 if (_width <= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width &&
                     _height <= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height)
                 {
-                    _Device.PreferredBackBufferWidth = _width;
-                    _Device.PreferredBackBufferHeight = _height;
-                    _Device.IsFullScreen = _fullScreen;
-                    _Device.ApplyChanges();
+                    Device.PreferredBackBufferWidth = _width;
+                    Device.PreferredBackBufferHeight = _height;
+                    Device.IsFullScreen = _fullScreen;
+                    Device.ApplyChanges();
                 }
             }
             else
@@ -81,17 +81,17 @@ namespace Astralis
                     if (dm.Width == _width && dm.Height == _height)
                     {
                         // The mode is supported, so set the buffer formats, apply changes and return
-                        _Device.PreferredBackBufferWidth = _width;
-                        _Device.PreferredBackBufferHeight = _height;
-                        _Device.IsFullScreen = _fullScreen;
-                        _Device.ApplyChanges();
+                        Device.PreferredBackBufferWidth = _width;
+                        Device.PreferredBackBufferHeight = _height;
+                        Device.IsFullScreen = _fullScreen;
+                        Device.ApplyChanges();
                         break;
                     }
                 }
             }
 
-            _width = _Device.PreferredBackBufferWidth;
-            _height = _Device.PreferredBackBufferHeight;
+            _width = Device.PreferredBackBufferWidth;
+            _height = Device.PreferredBackBufferHeight;
         }
     }
 }

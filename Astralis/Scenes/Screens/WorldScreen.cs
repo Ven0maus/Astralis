@@ -30,8 +30,8 @@ namespace Astralis.Scenes.Screens
             Font = Game.Instance.Fonts[Constants.Fonts.UserInterfaceFonts.Anno];
 
             // Make world zoom in
-            var zoomFactor = Constants.WorldGeneration.WorldZoomFactor;
-            FontSize = new Point((int)(Font.GlyphWidth * zoomFactor), (int)(Font.GlyphHeight * zoomFactor));
+            var zoomFentity = Constants.WorldGeneration.WorldZoomFentity;
+            FontSize = new Point((int)(Font.GlyphWidth * zoomFentity), (int)(Font.GlyphHeight * zoomFentity));
 
             _objectsLayer = new ScreenSurface(Width, Height)
             {
@@ -166,7 +166,7 @@ namespace Astralis.Scenes.Screens
             int deltaX = startPosition.X - targetPosition.X;
             int deltaY = startPosition.Y - targetPosition.Y;
 
-            // Apply a scaling factor to control camera speed
+            // Apply a scaling fentity to control camera speed
             deltaX = -1 * deltaX;
             deltaY = -1 * deltaY;
 

@@ -23,7 +23,7 @@ namespace Astralis.Extended.SadConsole
 
             var window = new Window(width, height + closeButton.Height)
             {
-                Font = Game.Instance.Fonts["IBM_16x8"]
+                Font = Game.Instance.Fonts["IBM_8x16"]
             };
 
             if (colors != null) window.Controls.ThemeColors = colors;

@@ -82,7 +82,7 @@ namespace NoiseGenerator
             int deltaX = startPosition.X - targetPosition.X;
             int deltaY = startPosition.Y - targetPosition.Y;
 
-            // Apply a scaling factor to control camera speed
+            // Apply a scaling fentity to control camera speed
             deltaX = -1 * deltaX;
             deltaY = -1 * deltaY;
 

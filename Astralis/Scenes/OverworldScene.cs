@@ -1,6 +1,10 @@
 ﻿using Astralis.Extended.Effects;
+using Astralis.GameCode.Npcs;
+using Astralis.GameCode.Npcs.Managers;
 using Astralis.GameCode.WorldGen;
 using Astralis.Scenes.Screens;
+using SadConsole;
+using SadRogue.Primitives;
 using System;
 
 namespace Astralis.Scenes
@@ -16,18 +20,29 @@ namespace Astralis.Scenes
         public event EventHandler<WorldScreen> OnFadeFinished;
 
         public World World { get { return _world; } }
+        public ConcurrentEntityManager EntityManager { get; private set; }
 
         public OverworldScene()
         {
+            EntityManager = new ConcurrentEntityManager();
+            EntityManager.GenerateProceduralNpcsFont();
+
             // Generate world
             var worldGenerator = new WorldGenerator(Constants.GameSeed, new Extended.NoiseHelper(Constants.GameSeed));
             var chunkSize = Constants.WorldGeneration.ChunkSize;
-            _world = new World(Constants.ScreenWidth, Constants.ScreenHeight, chunkSize, chunkSize, worldGenerator);
-            _world.RaiseOnlyOnCellTypeChange = false;
+            _world = new World(Constants.ScreenWidth, Constants.ScreenHeight, chunkSize, chunkSize, worldGenerator)
+            {
+                RaiseOnlyOnCellTypeChange = false
+            };
 
             // Create world renderer
             _worldScreen = new WorldScreen(_world);
+            _worldScreen.SadComponents.Add(EntityManager.EntityComponent);
             Children.Add(_worldScreen);
+
+            // TODO: Remove later after testing
+            if (Game.Instance.Fonts.ContainsKey(Constants.Fonts.NpcFonts.ProceduralNpcsFont))
+                EntityManager.SpawnAt(new Point(_world.Width / 4, _world.Height / 4), new Actor(new ColoredGlyph(Color.White, Color.Transparent, 2), 1));
         }
 
         ~OverworldScene()

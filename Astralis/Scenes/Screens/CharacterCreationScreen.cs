@@ -2,12 +2,14 @@
 using Astralis.Extended.Effects;
 using Astralis.Extended.SadConsole;
 using Astralis.Extended.SadConsole.Controls;
+using Astralis.Extended.SadConsoleExt;
 using Astralis.GameCode.Npcs;
 using SadConsole;
 using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Astralis.Scenes.Screens
@@ -53,7 +55,7 @@ namespace Astralis.Scenes.Screens
             // We do 16font * 16cells = 256
             _characterView = new ScreenSurface(1, 1)
             {
-                Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.PlayerNpc],
+                Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.BaseNpc],
                 FontSize = new Point(256, 256),
                 UsePixelPositioning = true,
                 Position = new Point(16, 15)
@@ -231,12 +233,16 @@ namespace Astralis.Scenes.Screens
             switch (_currentPhase)
             {
                 case Phase.Design:
-                    ValidateDesignPhase();
+                    if (!ValidateDesignPhase())
+                        return;
                     TransitionTo(Phase.TraitSelection);
                     // TODO: Remove this when 2nd phase is implemented
                     ClickContinue(sender, e);
                     break;
                 case Phase.TraitSelection:
+                    // Adds the glyph and its decorators to the font
+                    AddCharacterToNpcFont();
+
                     foreach (var control in Controls)
                         control.IsVisible = false;
                     var effect = new FadeEffect(TimeSpan.FromSeconds(1), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, GetSurfaces());
@@ -247,6 +253,36 @@ namespace Astralis.Scenes.Screens
                 default:
                     throw new NotImplementedException($"Phase '{_currentPhase}' is not implemented.");
             }
+        }
+
+        private void AddCharacterToNpcFont()
+        {
+            var directory = Path.GetDirectoryName(Constants.Fonts.NpcFonts.ProceduralNpcsFont);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            SadFont sadFont;
+            if (!File.Exists(Constants.Fonts.NpcFonts.ProceduralNpcsFont))
+                sadFont = NpcFontHelper.CreateNewNpcFont(Constants.Fonts.NpcFonts.ProceduralNpcsFont);
+            else if (!NpcFontHelper.IsLoaded(Constants.Fonts.NpcFonts.ProceduralNpcsFont))
+                sadFont = NpcFontHelper.ReadExistingNpcFont(Constants.Fonts.NpcFonts.ProceduralNpcsFont);
+            else
+                sadFont = (SadFont)Game.Instance.Fonts[Constants.Fonts.NpcFonts.ProceduralNpcsFont];
+
+            // Add glyphs to font file for each direction
+            _characterFacing = Facing.Forward;
+            DrawCharacter(null, null);
+            NpcFontHelper.AddGlyphToFont(_characterView, sadFont);
+            _characterFacing = Facing.Left;
+            DrawCharacter(null, null);
+            NpcFontHelper.AddGlyphToFont(_characterView, sadFont);
+            _characterFacing = Facing.Backwards;
+            DrawCharacter(null, null);
+            NpcFontHelper.AddGlyphToFont(_characterView, sadFont);
+
+            // Reset visual
+            _characterFacing = Facing.Forward;
+            DrawCharacter(null, null);
         }
 
         private void ClickRandomize(object sender, EventArgs e)
@@ -276,15 +312,16 @@ namespace Astralis.Scenes.Screens
             // TODO: Adjust screen components to new phase
         }
 
-        private void ValidateDesignPhase()
+        private bool ValidateDesignPhase()
         {
             var name = _name.Text;
             if (string.IsNullOrWhiteSpace(name))
             {
                 var message = "Please fill in a name for your new character!";
                 ScWindow.Message(message, " Ok ", message.Length);
-                return;
+                return false;
             }
+            return true;
         }
 
         private ComboBox AddComboBox(string labelText, Point position, object[] values)
