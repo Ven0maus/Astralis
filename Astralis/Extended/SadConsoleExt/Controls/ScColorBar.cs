@@ -5,7 +5,7 @@ using SadRogue.Primitives;
 using System;
 using System.Linq;
 
-namespace Astralis.Extended.SadConsole.Controls;
+namespace Astralis.Extended.SadConsoleExt.Controls;
 
 /// <summary>
 /// A color bar control.

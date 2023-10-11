@@ -5,7 +5,7 @@ using SadConsole.UI.Windows;
 using SadRogue.Primitives;
 using System;
 
-namespace Astralis.Extended.SadConsole.Controls
+namespace Astralis.Extended.SadConsoleExt.Controls
 {
     /// <summary>
     /// A 1x1 box, when clicking shows a popup to select a color.

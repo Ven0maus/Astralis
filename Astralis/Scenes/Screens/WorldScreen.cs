@@ -1,4 +1,4 @@
-﻿using Astralis.Extended.SadConsole;
+﻿using Astralis.Extended.SadConsoleExt;
 using Astralis.GameCode.WorldGen;
 using SadConsole;
 using SadConsole.Input;

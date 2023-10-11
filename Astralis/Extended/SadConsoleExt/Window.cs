@@ -4,7 +4,7 @@ using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
 
-namespace Astralis.Extended.SadConsole
+namespace Astralis.Extended.SadConsoleExt
 {
     internal static class ScWindow
     {

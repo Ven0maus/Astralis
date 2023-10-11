@@ -1,4 +1,4 @@
-﻿using Astralis.Extended.SadConsole;
+﻿using Astralis.Extended.SadConsoleExt;
 
 namespace Astralis.Scenes.Screens
 {

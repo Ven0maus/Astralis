@@ -1,5 +1,5 @@
 ﻿using Astralis.Extended;
-using Astralis.Extended.SadConsole;
+using Astralis.Extended.SadConsoleExt;
 using SadConsole;
 using SadConsole.UI;
 using SadConsole.UI.Controls;

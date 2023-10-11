@@ -120,17 +120,7 @@ namespace Astralis.Extended.SadConsoleExt
         public static void SaveFont(SadFont font)
         {
             if (!_npcFontCache.ContainsKey(font)) return;
-
-            var texture = font.Image;
-            Texture2D newTexture = new Texture2D(Resolution.Device.GraphicsDevice, texture.Width, texture.Height);
-            newTexture.SetData(texture.GetPixels());
-
-            using (var ms = new MemoryStream())
-            {
-                newTexture.SaveAsPng(ms, texture.Width, texture.Height);
-                ms.Seek(0, SeekOrigin.Begin);
-                File.WriteAllBytes(_npcFontCache[font].ImageFilePath, ms.ToArray());
-            }
+            ((SadConsole.Host.GameTexture)font.Image).Texture.Save(_npcFontCache[font].ImageFilePath);
         }
     }
 }

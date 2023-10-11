@@ -1,7 +1,7 @@
 ﻿using SadConsole;
 using SadConsole.UI;
 
-namespace Astralis.Extended.SadConsole
+namespace Astralis.Extended.SadConsoleExt
 {
     /// <summary>
     /// A surface that supports controls, but has no mouse.

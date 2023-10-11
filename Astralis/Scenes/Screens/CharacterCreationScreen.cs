@@ -1,8 +1,7 @@
 ﻿using Astralis.Extended;
 using Astralis.Extended.Effects;
-using Astralis.Extended.SadConsole;
-using Astralis.Extended.SadConsole.Controls;
 using Astralis.Extended.SadConsoleExt;
+using Astralis.Extended.SadConsoleExt.Controls;
 using Astralis.GameCode.Npcs;
 using SadConsole;
 using SadConsole.UI;

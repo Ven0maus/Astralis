@@ -4,7 +4,7 @@ using SadConsole.UI;
 using SadRogue.Primitives;
 using System;
 
-namespace Astralis.Extended.SadConsole
+namespace Astralis.Extended.SadConsoleExt
 {
     /// <summary>
     /// Shows all the characters of a font, clicking on a character raises an event with the glyph index.

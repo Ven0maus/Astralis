@@ -1,7 +1,7 @@
 ﻿using SadConsole.UI;
 using SadRogue.Primitives;
 
-namespace Astralis.Extended.SadConsole
+namespace Astralis.Extended.SadConsoleExt
 {
     internal static class ColorsExtensions
     {
