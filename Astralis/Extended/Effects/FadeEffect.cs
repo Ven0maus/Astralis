@@ -131,14 +131,13 @@ namespace Astralis.Extended.Effects
         private static List<CellDecorator> AdjustDecoratorsColor(List<CellDecorator> decorators, byte alpha)
         {
             if (decorators == null || decorators.Count == 0) return decorators;
-            var newDecorators = new List<CellDecorator>(decorators.Count);
             for (int i = 0; i < decorators.Count; i++)
             {
                 var dec = decorators[i];
                 if (dec.Color == Color.Transparent) continue;
-                newDecorators[i] = new CellDecorator(dec.Color.SetAlpha(alpha), dec.Glyph, dec.Mirror);
+                decorators[i] = new CellDecorator(dec.Color.SetAlpha(alpha), dec.Glyph, dec.Mirror);
             }
-            return newDecorators;
+            return decorators;
         }
 
         private void FadeOut(double alpha)

@@ -8,7 +8,6 @@ using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Astralis.Scenes.Screens
@@ -60,8 +59,10 @@ namespace Astralis.Scenes.Screens
                 Position = new Point(16, 15)
             };
             _characterView.Surface.DefaultBackground = Color.Transparent;
+            // Setup the main decorator indexes
+            _characterView.Surface[0].Decorators = CellDecoratorHelpers.Pool.Rent();
+            _characterView.Surface[0].Decorators.AddRange(new CellDecorator[] { default, default, default });
             _characterBorderScreen.Children.Add(_characterView);
-
             _startGameMethod = startGameMethod;
 
             Initialize();
@@ -193,15 +194,10 @@ namespace Astralis.Scenes.Screens
             _characterView.Surface[0].Foreground = _skinColor.SelectedColor;
             _characterView.Surface[0].Mirror = mirror;
 
-            var coloredGlyph = _characterView.Surface[0];
-
-            // Clear previous decorators
-            coloredGlyph.ClearDecorators();
-
-            // Add new decorators
-            CellDecoratorHelpers.AddDecorator(new CellDecorator(_hairColor.SelectedColor, (int)hair, mirror), coloredGlyph);
-            CellDecoratorHelpers.AddDecorator(new CellDecorator(_shirtColor.SelectedColor, (int)shirt, mirror), coloredGlyph);
-            CellDecoratorHelpers.AddDecorator(new CellDecorator(_pantsColor.SelectedColor, (int)pants, mirror), coloredGlyph);
+            // Adjust indexes with new decorators
+            _characterView.Surface[0].Decorators[0] = new CellDecorator(_hairColor.SelectedColor, (int)hair, mirror);
+            _characterView.Surface[0].Decorators[1] = new CellDecorator(_shirtColor.SelectedColor, (int)shirt, mirror);
+            _characterView.Surface[0].Decorators[2] = new CellDecorator(_pantsColor.SelectedColor, (int)pants, mirror);
 
             _characterView.IsDirty = true;
         }
