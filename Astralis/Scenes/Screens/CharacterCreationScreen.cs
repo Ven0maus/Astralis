@@ -196,12 +196,7 @@ namespace Astralis.Scenes.Screens
             var coloredGlyph = _characterView.Surface[0];
 
             // Clear previous decorators
-            if (coloredGlyph.Decorators != null)
-            {
-                coloredGlyph.Decorators.Clear();
-                CellDecoratorHelpers.Pool.Return(coloredGlyph.Decorators);
-                coloredGlyph.Decorators = null;
-            }
+            coloredGlyph.ClearDecorators();
 
             // Add new decorators
             CellDecoratorHelpers.AddDecorator(new CellDecorator(_hairColor.SelectedColor, (int)hair, mirror), coloredGlyph);

@@ -1,4 +1,5 @@
-﻿using SadRogue.Primitives;
+﻿using SadConsole;
+using SadRogue.Primitives;
 using System;
 using System.Collections.Generic;
 
@@ -96,6 +97,16 @@ namespace Astralis.Extended
         public static string ToHex(this Color color)
         {
             return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+        }
+
+        public static void ClearDecorators(this ColoredGlyphBase coloredGlyphBase)
+        {
+            if (coloredGlyphBase.Decorators != null)
+            {
+                coloredGlyphBase.Decorators.Clear();
+                CellDecoratorHelpers.Pool.Return(coloredGlyphBase.Decorators);
+                coloredGlyphBase.Decorators = null;
+            }
         }
     }
 }
