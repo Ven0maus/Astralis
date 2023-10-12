@@ -101,7 +101,6 @@ namespace Astralis.Extended.SadConsoleExt
 
             // Get the pixel data from the custom glyph after your surface was rendered. This is where it was rendered to.
             Color[] pixels = ((ScreenSurfaceRenderer)surfaceObject.Renderer).Output.GetPixels();
-            Color[] cachedPixelsUnused = null;
 
             var availableIndex = _npcFontCache[font].NextAvailableIndex;
             _npcFontCache[font].NextAvailableIndex = availableIndex+1;
@@ -111,10 +110,32 @@ namespace Astralis.Extended.SadConsoleExt
                 font.Edit_AddRows(1);
 
             // Add the custom glyph to the available index in the font
-            font.Edit_SetGlyph_Pixel(availableIndex, pixels, true, ref cachedPixelsUnused);
+            Edit_SetGlyph_Pixel(font, availableIndex, pixels);
 
             // Reset fontsize to original
             surfaceObject.FontSize = originalFontSize;
+        }
+
+        public static void Edit_SetGlyph_Pixel(this IFont font, int glyphIndex, Color[] pixels)
+        {
+            if (pixels.Length != font.GlyphWidth * font.GlyphHeight) 
+                throw new ArgumentOutOfRangeException(nameof(pixels), $"Amount of pixels must match font glyph width * height: {font.GlyphWidth * font.GlyphHeight}.");
+
+            var cachedFontTexturePixels = font.Image.GetPixels();
+
+            Rectangle rect = font.GetGlyphSourceRectangle(glyphIndex);
+
+            int indexCounter = 0;
+            for (int y = rect.Position.Y; y < rect.Position.Y + rect.Height; y++)
+            {
+                for (int x = rect.Position.X; x < rect.Position.X + rect.Width; x++)
+                {
+                    cachedFontTexturePixels[y * font.Image.Width + x] = pixels[indexCounter];
+                    indexCounter++;
+                }
+            }
+
+            font.Image.SetPixels(cachedFontTexturePixels);
         }
 
         public static void SaveFont(SadFont font)

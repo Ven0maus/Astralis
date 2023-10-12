@@ -22,7 +22,11 @@ namespace Astralis.GameCode.Npcs.Managers
         public void GenerateProceduralNpcsFont()
         {
             // TODO: Generate procedural npcs
-
+            for (int i=0; i < 100; i++)
+            {
+                // Generate 50 male / 50 female glyphs
+                // Make sure they are all unique combinations
+            }
 
             // TODO: Remove the check after generation
             // Set font as entity manager's font
