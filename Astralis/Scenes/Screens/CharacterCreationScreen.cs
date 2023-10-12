@@ -25,13 +25,17 @@ namespace Astralis.Scenes.Screens
         private readonly Action<object, WorldScreen> _startGameMethod;
 
         private readonly MainMenuScreen _mainMenuScreen;
+        private Phase _currentPhase = Phase.Design;
+
+        // PHASE DESIGN
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
         private ComboBox _gender, _race, _class;
         private ScColorBar _skinColor, _hairColor, _shirtColor, _pantsColor;
         private Facing _characterFacing = Facing.Forward;
-        private Phase _currentPhase = Phase.Design;
 
+        // PHASE TRAIT SELECTION
+        private ListBox _availableTraits, _selectedTraits;
 
         // Original values
         private Color _origSkinColor, _origHairColor, _origShirtColor, _origPantsColor;
@@ -90,7 +94,7 @@ namespace Astralis.Scenes.Screens
             _currentPhase = Phase.Design;
             _characterBorderScreen.IsVisible = true;
             _characterView.IsVisible = true;
-            Controls.Where(control => control.Name.Equals(Phase.Design.ToString()))
+            Controls.Where(control => control.Name == null || control.Name.Equals(Phase.Design.ToString()) || control.Name == "Continue" || control.Name == "Cancel")
                 .ForEach(a => a.IsVisible = true);
         }
 
@@ -201,7 +205,8 @@ namespace Astralis.Scenes.Screens
 
         private void CreateControlsTraitSelectionPhase()
         {
-
+            _selectedTraits = AddListBox("Selected:", new Point(6, 8), new[] { "Test3" }, Phase.TraitSelection);
+            _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), new[] { "Test", "Test2" }, Phase.TraitSelection);
         }
 
         private void ClickCancel(object sender, EventArgs e)
@@ -218,10 +223,13 @@ namespace Astralis.Scenes.Screens
             _pantsColor.SelectedColor = _origPantsColor;
             _characterFacing = Facing.Forward;
 
-            foreach (var control in Controls)
-                control.IsDirty = true;
-
             DrawCharacter(null, null);
+
+            foreach (var control in Controls)
+            {
+                control.IsVisible = false;
+                control.IsDirty = true;
+            }
 
             _mainMenuScreen.TransitionFromCharacterCreationScreen();
         }
@@ -355,6 +363,20 @@ namespace Astralis.Scenes.Screens
             Controls.Add(comboBox);
 
             return comboBox;
+        }
+
+        private ListBox AddListBox(string labelText, Point position, object[] values, Phase phase)
+        {
+            var label = new Label(labelText) { Name = phase.ToString(), Position = position + Direction.Up };
+            SetLabelTheme(label);
+            Controls.Add(label);
+
+            var listBox = new ListBox(14, 8) { Name = phase.ToString(), Position = position };
+            foreach (var value in values)
+                listBox.Items.Add(value);
+            Controls.Add(listBox);
+
+            return listBox;
         }
 
         private TextBox AddTextBox(string labelText, Point position, Phase phase)
