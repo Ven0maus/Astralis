@@ -29,7 +29,7 @@ namespace Astralis.Scenes.Screens
             _backgroundOverworldScene = overworldScene;
             _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
             _loadGameScreen = new LoadGameScreen() { IsVisible = false }; Children.Add(_loadGameScreen);
-            _characterCreationScreen = new CharacterCreationScreen(StartGame) { IsVisible = false }; Children.Add(_characterCreationScreen);
+            _characterCreationScreen = new CharacterCreationScreen(this, StartGame) { IsVisible = false }; Children.Add(_characterCreationScreen);
 
             int centerX = Width / 2;
             int centerY = Height / 2;
@@ -133,6 +133,15 @@ namespace Astralis.Scenes.Screens
                     ExitGame();
                     break;
             }
+        }
+
+        public void TransitionFromCharacterCreationScreen()
+        {
+            IsFocused = true;
+            CreateMenuTitle();
+            Controls.OfType<ButtonBox>().ForEach((a) => a.IsVisible = true);
+            _buttonClicked = false;
+            _characterCreationScreen.ShowHide();
         }
 
         private void NewGame()

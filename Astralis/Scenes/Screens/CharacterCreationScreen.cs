@@ -23,6 +23,7 @@ namespace Astralis.Scenes.Screens
 
         private readonly Action<object, WorldScreen> _startGameMethod;
 
+        private readonly MainMenuScreen _mainMenuScreen;
         private ScreenSurface _characterBorderScreen, _characterView;
         private TextBox _name;
         private ComboBox _gender, _race, _class;
@@ -30,10 +31,15 @@ namespace Astralis.Scenes.Screens
         private Facing _characterFacing = Facing.Forward;
         private Phase _currentPhase = Phase.Design;
 
-        public CharacterCreationScreen(Action<object, WorldScreen> startGameMethod) : 
+
+        // Original values
+        private Color _origSkinColor, _origHairColor, _origShirtColor, _origPantsColor;
+
+        public CharacterCreationScreen(MainMenuScreen mainMenuScreen, Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
                 (int)(Constants.ScreenHeight / 100f * 50))
         {
+            _mainMenuScreen = mainMenuScreen;
             _characterBorderScreen = new ScreenSurface(18, 18);
             for (int x=0; x < _characterBorderScreen.Width; x++)
             {
@@ -132,12 +138,16 @@ namespace Astralis.Scenes.Screens
 
             var skinColors = Constants.Fonts.NpcFonts.GetSkinColors((Race)_race.SelectedItem);
             _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), skinColors[0], skinColors[1]);
+            _origSkinColor = _skinColor.SelectedColor;
             _skinColor.ColorChanged += DrawCharacter;
             _hairColor = AddColorBar("Hair color:", currentPosition += new Point(0, 3));
+            _origHairColor = _hairColor.SelectedColor;
             _hairColor.ColorChanged += DrawCharacter;
             _shirtColor = AddColorBar("Shirt color:", currentPosition += new Point(0, 3));
+            _origShirtColor = _shirtColor.SelectedColor;
             _shirtColor.ColorChanged += DrawCharacter;
             _pantsColor = AddColorBar("Pants color:", currentPosition += new Point(0, 3));
+            _origPantsColor = _pantsColor.SelectedColor;
             _pantsColor.ColorChanged += DrawCharacter;
 
             var randomizeButton = new ButtonBox(_characterBorderScreen.Width - 3, 3)
@@ -166,6 +176,37 @@ namespace Astralis.Scenes.Screens
             continueButton.Click += ClickContinue;
             SetButtonTheme(continueButton);
             Controls.Add(continueButton);
+
+            var cancelButton = new ButtonBox(8, 3)
+            {
+                Text = "Cancel",
+                Position = new Point(Width - 10, 2)
+            };
+            cancelButton.Click += ClickCancel;
+            SetButtonTheme(cancelButton);
+            Controls.Add(cancelButton);
+        }
+
+        private void ClickCancel(object sender, EventArgs e)
+        {
+            // Reset all fields to original
+            _name.Text = "";
+            _name.CaretPosition = 0;
+            _race.SelectedIndex = 0;
+            _gender.SelectedIndex = 0;
+            _class.SelectedIndex = 0;
+            _skinColor.SelectedColor = _origSkinColor;
+            _hairColor.SelectedColor = _origHairColor;
+            _shirtColor.SelectedColor = _origShirtColor;
+            _pantsColor.SelectedColor = _origPantsColor;
+            _characterFacing = Facing.Forward;
+
+            foreach (var control in Controls)
+                control.IsDirty = true;
+
+            DrawCharacter(null, null);
+
+            _mainMenuScreen.TransitionFromCharacterCreationScreen();
         }
 
         private void DrawCharacter(object sender, EventArgs args)
