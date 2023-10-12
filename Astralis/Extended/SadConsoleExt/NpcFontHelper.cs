@@ -18,7 +18,7 @@ namespace Astralis.Extended.SadConsoleExt
     internal static class NpcFontHelper
     {
         private static readonly Dictionary<SadFont, SadFontInfo> _npcFontCache = new();
-        private static Dictionary<Facing, NpcConfiguration[]> _npcConfig;
+        private static Dictionary<string, NpcConfiguration[]> _npcConfig;
 
         private class SadFontInfo
         {
@@ -147,17 +147,17 @@ namespace Astralis.Extended.SadConsoleExt
                 surface.Surface[0].Decorators.AddRange(new CellDecorator[] { default, default, default });
             }
 
-            var npcGroupGenderConfig = GetGenderConfiguration(facing, gender);
+            var facingValue = facing.ToString();
+            if (facingValue == Facing.Left.ToString() || facingValue == Facing.Right.ToString())
+                facingValue = "Sideways";
+
+            var npcGroupGenderConfig = GetGenderConfiguration(facingValue, gender);
             var main = npcGroupGenderConfig.First(a => a.ToString().Split('_').Length == 2);
             var hair = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Hair"));
             var shirt = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Shirt"));
             var pants = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Pants"));
 
-            var facingValue = facing.ToString();
-            if (facingValue == Facing.Left.ToString() || facingValue == Facing.Right.ToString())
-                facingValue = "Sideways";
-
-            var mirror = !facing.Equals("Sideways") ? Mirror.None :
+            var mirror = !facingValue.Equals("Sideways") ? Mirror.None :
                 facing == Facing.Right ? Mirror.Horizontal : Mirror.None;
 
             surface.Surface[0].Glyph = (int)main;
@@ -185,14 +185,11 @@ namespace Astralis.Extended.SadConsoleExt
             return index;
         }
 
-        private static NpcConfiguration[] GetGenderConfiguration(Facing facing, Gender gender)
+        private static NpcConfiguration[] GetGenderConfiguration(string facing, Gender gender)
         {
-            if (_npcConfig == null)
-            {
-                _npcConfig = Enum.GetValues<NpcConfiguration>()
+            _npcConfig ??= Enum.GetValues<NpcConfiguration>()
                     .GroupBy(a => a.ToString().Split('_').Last())
-                    .ToDictionary(a => (Facing)Enum.Parse(typeof(Facing), a.Key == "Sideways" ? "Left" : a.Key), a => a.ToArray());
-            }
+                    .ToDictionary(a => a.Key, a => a.ToArray());
 
             return _npcConfig[facing]
                     .GroupBy(a => a.ToString().Split('_')[0])
