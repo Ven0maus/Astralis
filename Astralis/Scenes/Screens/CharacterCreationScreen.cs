@@ -8,6 +8,7 @@ using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -84,6 +85,13 @@ namespace Astralis.Scenes.Screens
         {
             IsVisible = !IsVisible;
             IsFocused = IsVisible;
+
+            // Make views visible again
+            _currentPhase = Phase.Design;
+            _characterBorderScreen.IsVisible = true;
+            _characterView.IsVisible = true;
+            Controls.Where(control => control.Name.Equals(Phase.Design.ToString()))
+                .ForEach(a => a.IsVisible = true);
         }
 
         public ScreenSurface[] GetSurfaces()
@@ -95,7 +103,7 @@ namespace Astralis.Scenes.Screens
         {
             InitScreenVisual(this);
             CreateTitle();
-            CreateControls();
+            CreateControlsDesignPhase();
             DrawCharacter(null, null);
         }
 
@@ -120,39 +128,40 @@ namespace Astralis.Scenes.Screens
             Surface.Print(Width / 2 - title.Length / 2, 3, title);
         }
 
-        private void CreateControls()
+        private void CreateControlsDesignPhase()
         {
             var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y -2);
-            _name = AddTextBox("Name:", currentPosition);
+            _name = AddTextBox("Name:", currentPosition, Phase.Design);
 
             var genders = Enum.GetValues<Gender>();
-            _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), genders.Cast<object>().ToArray());
+            _gender = AddComboBox("Gender:", currentPosition += new Point(0, 3), genders.Cast<object>().ToArray(), Phase.Design);
             _gender.SelectedItemChanged += DrawCharacter;
 
             var races = Enum.GetValues<Race>().OrderBy(a => a);
-            _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Cast<object>().ToArray());
+            _race = AddComboBox("Race:", currentPosition += new Point(0, 3), races.Cast<object>().ToArray(), Phase.Design);
             _race.SelectedItemChanged += ChangeRace;
 
             var classes = Enum.GetValues<Class>().OrderBy(a => a);
-            _class = AddComboBox("Class:", currentPosition += new Point(0, 3), classes.Cast<object>().ToArray());
+            _class = AddComboBox("Class:", currentPosition += new Point(0, 3), classes.Cast<object>().ToArray(), Phase.Design);
 
             var skinColors = Constants.Fonts.NpcFonts.GetSkinColors((Race)_race.SelectedItem);
-            _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), skinColors[0], skinColors[1]);
+            _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), skinColors[0], skinColors[1], Phase.Design);
             _origSkinColor = _skinColor.SelectedColor;
             _skinColor.ColorChanged += DrawCharacter;
-            _hairColor = AddColorBar("Hair color:", currentPosition += new Point(0, 3));
+            _hairColor = AddColorBar("Hair color:", currentPosition += new Point(0, 3), Phase.Design);
             _origHairColor = _hairColor.SelectedColor;
             _hairColor.ColorChanged += DrawCharacter;
-            _shirtColor = AddColorBar("Shirt color:", currentPosition += new Point(0, 3));
+            _shirtColor = AddColorBar("Shirt color:", currentPosition += new Point(0, 3), Phase.Design);
             _origShirtColor = _shirtColor.SelectedColor;
             _shirtColor.ColorChanged += DrawCharacter;
-            _pantsColor = AddColorBar("Pants color:", currentPosition += new Point(0, 3));
+            _pantsColor = AddColorBar("Pants color:", currentPosition += new Point(0, 3), Phase.Design);
             _origPantsColor = _pantsColor.SelectedColor;
             _pantsColor.ColorChanged += DrawCharacter;
 
             var randomizeButton = new ButtonBox(_characterBorderScreen.Width - 3, 3)
             {
                 Text = "Randomize",
+                Name = Phase.Design.ToString(),
                 Position = new Point(_characterBorderScreen.Position.X, _characterBorderScreen.Position.Y - 3)
             };
             randomizeButton.Click += ClickRandomize;
@@ -162,6 +171,7 @@ namespace Astralis.Scenes.Screens
             var rotateButton = new ButtonBox(3, 3)
             {
                 Text = ((char)15).ToString(),
+                Name = Phase.Design.ToString(),
                 Position = new Point(_characterBorderScreen.Position.X + randomizeButton.Width, _characterBorderScreen.Position.Y - 3)
             };
             rotateButton.Click += RotateCharacter;
@@ -171,6 +181,7 @@ namespace Astralis.Scenes.Screens
             var continueButton = new ButtonBox(_characterBorderScreen.Width, 3)
             {
                 Text = "Continue",
+                Name = "Continue",
                 Position = new Point(_characterBorderScreen.Position.X, _characterBorderScreen.Position.Y + _characterBorderScreen.Width)
             };
             continueButton.Click += ClickContinue;
@@ -180,11 +191,17 @@ namespace Astralis.Scenes.Screens
             var cancelButton = new ButtonBox(8, 3)
             {
                 Text = "Cancel",
+                Name = "Cancel",
                 Position = new Point(Width - 10, 2)
             };
             cancelButton.Click += ClickCancel;
             SetButtonTheme(cancelButton);
             Controls.Add(cancelButton);
+        }
+
+        private void CreateControlsTraitSelectionPhase()
+        {
+
         }
 
         private void ClickCancel(object sender, EventArgs e)
@@ -240,8 +257,6 @@ namespace Astralis.Scenes.Screens
                     if (!ValidateDesignPhase())
                         return;
                     TransitionTo(Phase.TraitSelection);
-                    // TODO: Remove this when 2nd phase is implemented
-                    ClickContinue(sender, e);
                     break;
                 case Phase.TraitSelection:
                     // Adds the glyph and its decorators to the font
@@ -302,7 +317,16 @@ namespace Astralis.Scenes.Screens
         {
             _currentPhase = phase;
 
-            // TODO: Adjust screen components to new phase
+            // Adjust screen components to new phase
+            _characterView.IsVisible = false;
+            _characterBorderScreen.IsVisible = false;
+
+            // Hide current controls
+            Controls.Where(control => control.Name.Equals(Phase.Design.ToString()))
+                .ForEach(a => a.IsVisible = false);
+
+            // Add new controls
+            CreateControlsTraitSelectionPhase();
         }
 
         private bool ValidateDesignPhase()
@@ -317,9 +341,9 @@ namespace Astralis.Scenes.Screens
             return true;
         }
 
-        private ComboBox AddComboBox(string labelText, Point position, object[] values)
+        private ComboBox AddComboBox(string labelText, Point position, object[] values, Phase phase)
         {
-            var label = new Label(labelText) { Position = position + Direction.Up };
+            var label = new Label(labelText) { Name = phase.ToString(), Position = position + Direction.Up };
             SetLabelTheme(label);
             Controls.Add(label);
 
@@ -327,32 +351,33 @@ namespace Astralis.Scenes.Screens
             if (dropdownSize > 10)
                 dropdownSize = 10;
 
-            var comboBox = new ComboBox(15, 15, dropdownSize, values) { Position = position };
+            var comboBox = new ComboBox(15, 15, dropdownSize, values) { Name = phase.ToString(), Position = position };
             Controls.Add(comboBox);
 
             return comboBox;
         }
 
-        private TextBox AddTextBox(string labelText, Point position)
+        private TextBox AddTextBox(string labelText, Point position, Phase phase)
         {
-            var label = new Label(labelText) { Position = position + Direction.Up };
+            var label = new Label(labelText) { Name = phase.ToString(), Position = position + Direction.Up };
             SetLabelTheme(label);
             Controls.Add(label);
 
-            var textbox = new TextBox(15) { Position = position };
+            var textbox = new TextBox(15) { Name = phase.ToString(), Position = position };
             Controls.Add(textbox);
 
             return textbox;
         }
 
-        private ScColorBar AddColorBar(string labelText, Point position, Color start, Color end)
+        private ScColorBar AddColorBar(string labelText, Point position, Color start, Color end, Phase phase)
         {
-            var label = new Label(labelText) { Position = position + Direction.Up };
+            var label = new Label(labelText) { Name = phase.ToString(), Position = position + Direction.Up };
             SetLabelTheme(label);
             Controls.Add(label);
 
             var colorBar = new ScColorBar(15)
             {
+                Name = phase.ToString(),
                 Position = position,
                 StartingColor = start,
                 EndingColor = end
@@ -363,15 +388,16 @@ namespace Astralis.Scenes.Screens
             return colorBar;
         }
 
-        private ScColorBar AddColorBar(string labelText, Point position)
+        private ScColorBar AddColorBar(string labelText, Point position, Phase phase)
         {
-            var label = new Label(labelText) { Position = position + Direction.Up };
+            var label = new Label(labelText) { Name = phase.ToString(), Position = position + Direction.Up };
             SetLabelTheme(label);
             Controls.Add(label);
 
             // Array must be same width (15)
             var colorBar = new ScColorBar(15, Constants.Fonts.NpcFonts.PredefinedColors)
             {
+                Name = phase.ToString(),
                 Position = position,
             };
 
