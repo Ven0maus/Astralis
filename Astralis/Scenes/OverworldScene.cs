@@ -7,6 +7,7 @@ using Astralis.Scenes.Screens;
 using SadConsole;
 using SadRogue.Primitives;
 using System;
+using System.Collections.Generic;
 
 namespace Astralis.Scenes
 {
@@ -24,12 +25,14 @@ namespace Astralis.Scenes
         public ConcurrentEntityManager EntityManager { get; private set; }
 
         private readonly bool _isMainMenu;
+        private readonly Dictionary<int, (int left, int backwards)> _npcGlyphs;
 
-        public OverworldScene(bool mainMenu)
+        public OverworldScene(bool mainMenu, string savePath = null)
         {
             _isMainMenu = mainMenu;
 
-            NpcFontHelper.GenerateRandomNpcGlyphs();
+            // Generates procedural npc glyphs that can be used
+            _npcGlyphs = NpcFontHelper.GenerateRandomNpcGlyphs(savePath);
 
             EntityManager = new ConcurrentEntityManager();
             EntityManager.EntityComponent.AlternativeFont = Game.Instance.Fonts[Constants.Fonts.NpcFonts.ProceduralNpcsFont];
