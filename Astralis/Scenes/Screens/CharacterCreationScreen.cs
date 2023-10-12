@@ -169,7 +169,7 @@ namespace Astralis.Scenes.Screens
                 Position = new Point(_characterBorderScreen.Position.X, _characterBorderScreen.Position.Y - 3)
             };
             randomizeButton.Click += ClickRandomize;
-            SetButtonTheme(randomizeButton);
+            SetControlTheme(randomizeButton);
             Controls.Add(randomizeButton);
 
             var rotateButton = new ButtonBox(3, 3)
@@ -179,7 +179,7 @@ namespace Astralis.Scenes.Screens
                 Position = new Point(_characterBorderScreen.Position.X + randomizeButton.Width, _characterBorderScreen.Position.Y - 3)
             };
             rotateButton.Click += RotateCharacter;
-            SetButtonTheme(rotateButton);
+            SetControlTheme(rotateButton);
             Controls.Add(rotateButton);
 
             var continueButton = new ButtonBox(_characterBorderScreen.Width, 3)
@@ -189,7 +189,7 @@ namespace Astralis.Scenes.Screens
                 Position = new Point(_characterBorderScreen.Position.X, _characterBorderScreen.Position.Y + _characterBorderScreen.Width)
             };
             continueButton.Click += ClickContinue;
-            SetButtonTheme(continueButton);
+            SetControlTheme(continueButton);
             Controls.Add(continueButton);
 
             var cancelButton = new ButtonBox(8, 3)
@@ -199,14 +199,16 @@ namespace Astralis.Scenes.Screens
                 Position = new Point(Width - 10, 2)
             };
             cancelButton.Click += ClickCancel;
-            SetButtonTheme(cancelButton);
+            SetControlTheme(cancelButton);
             Controls.Add(cancelButton);
         }
 
         private void CreateControlsTraitSelectionPhase()
         {
             _selectedTraits = AddListBox("Selected:", new Point(6, 8), new[] { "Test3" }, Phase.TraitSelection);
+            _selectedTraits.Surface.DefaultBackground = Color.Black;
             _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), new[] { "Test", "Test2" }, Phase.TraitSelection);
+            _availableTraits.Surface.DefaultBackground = Color.Black;
         }
 
         private void ClickCancel(object sender, EventArgs e)
@@ -367,11 +369,13 @@ namespace Astralis.Scenes.Screens
 
         private ListBox AddListBox(string labelText, Point position, object[] values, Phase phase)
         {
-            var label = new Label(labelText) { Name = phase.ToString(), Position = position + Direction.Up };
+            var label = new Label(labelText) { Name = phase.ToString(), Position = position + Direction.Up + Direction.Right };
             SetLabelTheme(label);
             Controls.Add(label);
 
             var listBox = new ListBox(14, 8) { Name = phase.ToString(), Position = position };
+            listBox.DrawBorder = true;
+            SetControlTheme(listBox);
             foreach (var value in values)
                 listBox.Items.Add(value);
             Controls.Add(listBox);
@@ -449,11 +453,11 @@ namespace Astralis.Scenes.Screens
         }
 
         private Colors _buttonTheme;
-        private void SetButtonTheme(ButtonBox button)
+        private void SetControlTheme(ControlBase control)
         {
             if (_buttonTheme == null)
             {
-                _buttonTheme = button.FindThemeColors().Clone();
+                _buttonTheme = control.FindThemeColors().Clone();
                 _buttonTheme.Lines.SetColor(Color.Green);
                 _buttonTheme.ControlBackgroundNormal.SetColor(Color.Transparent);
                 _buttonTheme.ControlBackgroundSelected.SetColor(Color.Transparent);
@@ -462,7 +466,7 @@ namespace Astralis.Scenes.Screens
                 _buttonTheme.ControlBackgroundFocused.SetColor(Color.Transparent);
                 _buttonTheme.RebuildAppearances();
             }
-            button.SetThemeColors(_buttonTheme);
+            control.SetThemeColors(_buttonTheme);
         }
 
         protected override void Dispose(bool disposing)
