@@ -182,8 +182,6 @@ namespace Astralis.Scenes.Screens
             _characterView.IsDirty = true;
         }
 
-
-
         private void ChangeRace(object sender, ListBox.SelectedItemEventArgs e)
         {
             var skinColors = Constants.Fonts.NpcFonts.GetSkinColors((Race)e.Item);

@@ -249,7 +249,7 @@ namespace Astralis.Extended.SadConsoleExt
         {
             var jsonData = JObject.Parse(File.ReadAllText(fontConfigFilePath));
             var font = (SadFont)Game.Instance.LoadFont(fontConfigFilePath);
-            var imageFilePath = Path.Combine(Constants.Fonts.SavedataFontsPath, jsonData["FilePath"].Value<string>());
+            var imageFilePath = Path.Combine(Constants.Fonts.DynamicFontsPath, jsonData["FilePath"].Value<string>());
 
             // Add to cache
             _npcFontCache[font] = new SadFontInfo(fontConfigFilePath, imageFilePath, jsonData["NextAvailableIndex"].Value<int>());

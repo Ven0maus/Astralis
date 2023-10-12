@@ -28,7 +28,10 @@ namespace Astralis
 
         public static class Fonts
         {
-            public const string SavedataFontsPath = "Savedata/Fonts";
+            /// <summary>
+            /// Fonts that are created and used during gameplay are stored here.
+            /// </summary>
+            public const string DynamicFontsPath = $"{Configuration.GamedataPath}/Fonts";
 
             public static class UserInterfaceFonts
             {
@@ -44,8 +47,7 @@ namespace Astralis
             {
                 public const string TemplateNpcFont = "Resources/Npcs/TemplateNpc_16x16.font";
                 public const string BaseNpc = "Resources/Npcs/BaseNpc_16x16.font";
-                public const string ProceduralNpcsFont = $"{SavedataFontsPath}/ProceduralNpcs_16x16.font";
-                public const string MainMenuPrebuildFont = $"Resources/Npcs/MainMenuPrebuild_16x16.font";
+                public const string ProceduralNpcsFont = $"{DynamicFontsPath}/ProceduralNpcs_16x16.font";
 
                 internal static Color[] PredefinedColors = new Color[]
                 {
@@ -94,6 +96,7 @@ namespace Astralis
         public static class Configuration
         {
             public const string JsonFilesPath = "Configuration/Data";
+            public const string GamedataPath = "Gamedata";
         }
     }
 }
