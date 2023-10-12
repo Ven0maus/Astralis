@@ -10,7 +10,7 @@ namespace Astralis.Scenes
 
         public MainMenuScene()
         {
-            _overworldScene = new OverworldScene(); Children.Add(_overworldScene);
+            _overworldScene = new OverworldScene(true); Children.Add(_overworldScene);
             _mainMenuScreen = new MainMenuScreen(_overworldScene); Children.Add(_mainMenuScreen);
 
             // Load the game in the background of the main menu

@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
+using Astralis.GameCode.Npcs;
 
 namespace Astralis.Extended.SadConsoleExt
 {
@@ -17,6 +18,7 @@ namespace Astralis.Extended.SadConsoleExt
     internal static class NpcFontHelper
     {
         private static readonly Dictionary<SadFont, SadFontInfo> _npcFontCache = new();
+        private static Dictionary<Facing, NpcConfiguration[]> _npcConfig;
 
         private class SadFontInfo
         {
@@ -30,6 +32,194 @@ namespace Astralis.Extended.SadConsoleExt
                 NextAvailableIndex = availableIndex;
                 ImageFilePath = imageFilePath;
             }
+        }
+
+        readonly struct NpcCombination : IEquatable<NpcCombination>
+        {
+            public readonly Color SkinColor;
+            public readonly Color HairColor;
+            public readonly Color ShirtColor;
+            public readonly Color PantsColor;
+            public readonly Gender Gender;
+
+            public NpcCombination(Gender gender, Color skinColor, Color hairColor, Color shirtColor, Color pantsColor)
+            {
+                SkinColor = skinColor;
+                HairColor = hairColor;
+                ShirtColor = shirtColor;
+                PantsColor = pantsColor;
+                Gender = gender;
+            }
+
+            public bool Equals(NpcCombination other)
+            {
+                return SkinColor.Equals(other.SkinColor) &&
+                    HairColor.Equals(other.HairColor) &&
+                    ShirtColor.Equals(other.ShirtColor) &&
+                    PantsColor.Equals(other.PantsColor) &&
+                    Gender.Equals(other.Gender);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is NpcCombination && Equals((NpcCombination)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(SkinColor, HairColor, ShirtColor, PantsColor, Gender);
+            }
+        }
+
+        private static Color GetRandomColor()
+        {
+            return Constants.Fonts.NpcFonts.PredefinedColors[Constants.Random.Next(0, Constants.Fonts.NpcFonts.PredefinedColors.Length)];
+        }
+
+        public static Dictionary<int, (int left, int backwards)> GenerateRandomNpcGlyphs(string savePath = null)
+        {
+            var skinColorStartEnd = Constants.Fonts.NpcFonts.GetSkinColors(Race.Human);
+            var skinColors = skinColorStartEnd[0].LerpSteps(skinColorStartEnd[1], 15);
+
+            var facings = new[] { Facing.Forward, Facing.Left, Facing.Backwards };
+            var uniqueCombinations = new HashSet<NpcCombination>();
+            var npcGlyphs = new Dictionary<int, (int left, int backwards)>();
+            const int total = 76;
+            int half = total / 2;
+            // Generate glyphs
+            for (int i = 0; i < total; i++)
+            {
+                var skinColor = skinColors[Constants.Random.Next(0, skinColors.Length)];
+                var hairColor = GetRandomColor();
+                var shirtColor = GetRandomColor();
+                var pantsColor = GetRandomColor();
+                var gender = i < half ? Gender.Male : Gender.Female;
+
+                // Make sure they are all unique combinations
+                var combination = new NpcCombination(gender, skinColor, hairColor, shirtColor, pantsColor);
+                while (uniqueCombinations.Contains(combination))
+                {
+                    skinColor = skinColors[Constants.Random.Next(0, skinColors.Length)];
+                    hairColor = GetRandomColor();
+                    shirtColor = GetRandomColor();
+                    pantsColor = GetRandomColor();
+                    gender = i < half ? Gender.Male : Gender.Female;
+
+                    combination = new NpcCombination(gender, skinColor, hairColor, shirtColor, pantsColor);
+                }
+
+                uniqueCombinations.Add(combination);
+
+                var indexes = new List<int>();
+                foreach (var facing in facings)
+                {
+                    var index = CreateNpcGlyph(facing, gender, skinColor, hairColor, shirtColor, pantsColor, true);
+                    indexes.Add(index);
+                }
+                npcGlyphs.Add(indexes[0], (indexes[1], indexes[2]));
+            }
+            SaveFont(GetProceduralNpcFont(savePath));
+            SaveNpcFonts();
+
+            return npcGlyphs;
+        }
+
+        public static int CreateNpcGlyph(
+            Facing facing,
+            Gender gender,
+            Color skinColor,
+            Color hairColor,
+            Color shirtColor,
+            Color pantsColor,
+            bool addGlyphToFont,
+            ScreenSurface surface = null)
+        {
+            bool wasNull = surface == null;
+            if (surface == null)
+            {
+                surface = new ScreenSurface(1, 1)
+                {
+                    Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.BaseNpc],
+                    FontSize = new Point(16, 16),
+                };
+                surface.Surface.DefaultBackground = Color.Transparent;
+                surface.Surface[0].Decorators = CellDecoratorHelpers.Pool.Rent();
+                surface.Surface[0].Decorators.AddRange(new CellDecorator[] { default, default, default });
+            }
+
+            var npcGroupGenderConfig = GetGenderConfiguration(facing, gender);
+            var main = npcGroupGenderConfig.First(a => a.ToString().Split('_').Length == 2);
+            var hair = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Hair"));
+            var shirt = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Shirt"));
+            var pants = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Pants"));
+
+            var facingValue = facing.ToString();
+            if (facingValue == Facing.Left.ToString() || facingValue == Facing.Right.ToString())
+                facingValue = "Sideways";
+
+            var mirror = !facing.Equals("Sideways") ? Mirror.None :
+                facing == Facing.Right ? Mirror.Horizontal : Mirror.None;
+
+            surface.Surface[0].Glyph = (int)main;
+            surface.Surface[0].Foreground = skinColor;
+            surface.Surface[0].Mirror = mirror;
+
+            // Adjust indexes with new decorators
+            surface.Surface[0].Decorators[0] = new CellDecorator(hairColor, (int)hair, mirror);
+            surface.Surface[0].Decorators[1] = new CellDecorator(shirtColor, (int)shirt, mirror);
+            surface.Surface[0].Decorators[2] = new CellDecorator(pantsColor, (int)pants, mirror);
+
+            // Add glyph to font
+            int index = -1;
+            if (addGlyphToFont)
+            {
+                index = AddGlyphToFont(surface, GetProceduralNpcFont());
+            }
+
+            if (wasNull)
+            {
+                CellDecoratorHelpers.Pool.Return(surface.Surface[0].Decorators);
+                surface.Dispose();
+            }
+
+            return index;
+        }
+
+        private static NpcConfiguration[] GetGenderConfiguration(Facing facing, Gender gender)
+        {
+            if (_npcConfig == null)
+            {
+                _npcConfig = Enum.GetValues<NpcConfiguration>()
+                    .GroupBy(a => a.ToString().Split('_').Last())
+                    .ToDictionary(a => (Facing)Enum.Parse(typeof(Facing), a.Key == "Sideways" ? "Left" : a.Key), a => a.ToArray());
+            }
+
+            return _npcConfig[facing]
+                    .GroupBy(a => a.ToString().Split('_')[0])
+                    .First(a => a.Key.Equals(gender.ToString()))
+                    .ToArray();
+        }
+
+        private static SadFont _proceduralNpcFont;
+        public static SadFont GetProceduralNpcFont(string savePath = null)
+        {
+            if (_proceduralNpcFont != null) return _proceduralNpcFont;
+
+            var path = savePath ?? Constants.Fonts.NpcFonts.ProceduralNpcsFont;
+
+            var directory = Path.GetDirectoryName(path);
+            if (Directory.Exists(directory))
+                Directory.Delete(directory, true);
+            Directory.CreateDirectory(directory);
+
+            SadFont sadFont;
+            if (!File.Exists(path))
+                sadFont = CreateNewNpcFont(path);
+            else if (!IsLoaded(path))
+                sadFont = ReadExistingNpcFont(path);
+            else
+                sadFont = (SadFont)Game.Instance.Fonts[path];
+            return _proceduralNpcFont = sadFont;
         }
 
         public static SadFont CreateNewNpcFont(string fontConfigFile)
@@ -89,7 +279,7 @@ namespace Astralis.Extended.SadConsoleExt
         /// <param name="surfaceObject"></param>
         /// <param name="font"></param>
         /// <exception cref="Exception"></exception>
-        public static void AddGlyphToFont(ScreenSurface surfaceObject, SadFont font)
+        public static int AddGlyphToFont(ScreenSurface surfaceObject, SadFont font)
         {
             if (surfaceObject.Width != 1 && surfaceObject.Height != 1)
                 throw new Exception("This screen surface is not compatible. Must be 1x1");
@@ -114,6 +304,8 @@ namespace Astralis.Extended.SadConsoleExt
 
             // Reset fontsize to original
             surfaceObject.FontSize = originalFontSize;
+
+            return availableIndex;
         }
 
         public static void Edit_SetGlyph_Pixel(this IFont font, int glyphIndex, Color[] pixels)

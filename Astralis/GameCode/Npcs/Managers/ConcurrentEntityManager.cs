@@ -1,4 +1,5 @@
-﻿using SadConsole;
+﻿using Astralis.Extended.SadConsoleExt;
+using SadConsole;
 using SadRogue.Primitives;
 using System;
 using System.Collections.Concurrent;
@@ -15,24 +16,6 @@ namespace Astralis.GameCode.Npcs.Managers
     {
         private readonly ConcurrentDictionary<Point, HashSet<Actor>> _entities = new();
         private readonly ConcurrentDictionary<Point, object> _lockObjects = new();
-
-        /// <summary>
-        /// Generates all kind of unique npc variations in the font, and sets that font as the manager's entity font.
-        /// </summary>
-        public void GenerateProceduralNpcsFont()
-        {
-            // TODO: Generate procedural npcs
-            for (int i=0; i < 100; i++)
-            {
-                // Generate 50 male / 50 female glyphs
-                // Make sure they are all unique combinations
-            }
-
-            // TODO: Remove the check after generation
-            // Set font as entity manager's font
-            if (Game.Instance.Fonts.ContainsKey(Constants.Fonts.NpcFonts.ProceduralNpcsFont))
-                EntityComponent.AlternativeFont = Game.Instance.Fonts[Constants.Fonts.NpcFonts.ProceduralNpcsFont];
-        }
 
         /// <summary>
         /// Helper method to lock the hashset collection within.

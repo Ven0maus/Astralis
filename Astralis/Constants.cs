@@ -1,4 +1,6 @@
-﻿using SadRogue.Primitives;
+﻿using Astralis.Extended;
+using Astralis.GameCode.Npcs;
+using SadRogue.Primitives;
 using System;
 
 namespace Astralis
@@ -43,6 +45,41 @@ namespace Astralis
                 public const string TemplateNpcFont = "Resources/Npcs/TemplateNpc_16x16.font";
                 public const string BaseNpc = "Resources/Npcs/BaseNpc_16x16.font";
                 public const string ProceduralNpcsFont = $"{SavedataFontsPath}/ProceduralNpcs_16x16.font";
+                public const string MainMenuPrebuildFont = $"Resources/Npcs/MainMenuPrebuild_16x16.font";
+
+                internal static Color[] PredefinedColors = new Color[]
+                {
+                    Color.Coral,
+                    Color.Green,
+                    Color.Blue,
+                    Color.DarkOrange,
+                    Color.OliveDrab,
+                    Color.AnsiYellowBright,
+                    Color.Cyan,
+                    Color.Magenta,
+                    Color.Brown,
+                    Color.Teal,
+                    Color.Gray,
+                    Color.Lime,
+                    Color.Thistle,
+                    Color.DarkRed,
+                    Color.Indigo
+                };
+
+                internal static Color[] GetSkinColors(Race race)
+                {
+                    switch (race)
+                    {
+                        case Race.Orc:
+                            return new[] { "#4D2600".HexToColor(), "#006600".HexToColor() };
+                        case Race.Human:
+                        case Race.Elf:
+                        case Race.Dwarf:
+                            return new[] { "#e6bc98".HexToColor(), "#3b2219".HexToColor() };
+                        default:
+                            throw new NotImplementedException($"Skin color for race '{race}' not implemented.");
+                    }
+                }
             }
         }
 

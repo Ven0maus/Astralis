@@ -130,7 +130,7 @@ namespace Astralis.Scenes.Screens
             var classes = Enum.GetValues<Class>().OrderBy(a => a);
             _class = AddComboBox("Class:", currentPosition += new Point(0, 3), classes.Cast<object>().ToArray());
 
-            var skinColors = GetSkinColors((Race)_race.SelectedItem);
+            var skinColors = Constants.Fonts.NpcFonts.GetSkinColors((Race)_race.SelectedItem);
             _skinColor = AddColorBar("Skin color:", currentPosition += new Point(0, 3), skinColors[0], skinColors[1]);
             _skinColor.ColorChanged += DrawCharacter;
             _hairColor = AddColorBar("Hair color:", currentPosition += new Point(0, 3));
@@ -170,57 +170,23 @@ namespace Astralis.Scenes.Screens
 
         private void DrawCharacter(object sender, EventArgs args)
         {
-            // Last is facing (direction)
-            var npcConfig = Enum.GetValues<NpcConfiguration>()
-                .GroupBy(a => a.ToString().Split('_').Last());
-
-            var facing = _characterFacing.ToString();
-            if (facing == Facing.Left.ToString() || facing == Facing.Right.ToString())
-                facing = "Sideways";
-
-            var npcGroupGenderConfig = npcConfig.First(a => a.Key == facing)
-                .Where(a => a.ToString().Split('_')[0].Equals(_gender.SelectedItem.ToString()))
-                .ToArray();
-
-            // Second is type (hair, shirt, etc), unless there are only 2 values it is the main
-            var main = npcGroupGenderConfig.First(a => a.ToString().Split('_').Length == 2);
-            var hair = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Hair"));
-            var shirt = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Shirt"));
-            var pants = npcGroupGenderConfig.First(a => a.ToString().Split('_')[1].Equals("Pants"));
-
-            var mirror = !facing.Equals("Sideways") ? Mirror.None :
-                _characterFacing == Facing.Right ? Mirror.Horizontal : Mirror.None;
-
-            _characterView.Surface[0].Glyph = (int)main;
-            _characterView.Surface[0].Foreground = _skinColor.SelectedColor;
-            _characterView.Surface[0].Mirror = mirror;
-
-            // Adjust indexes with new decorators
-            _characterView.Surface[0].Decorators[0] = new CellDecorator(_hairColor.SelectedColor, (int)hair, mirror);
-            _characterView.Surface[0].Decorators[1] = new CellDecorator(_shirtColor.SelectedColor, (int)shirt, mirror);
-            _characterView.Surface[0].Decorators[2] = new CellDecorator(_pantsColor.SelectedColor, (int)pants, mirror);
+            _ = NpcFontHelper.CreateNpcGlyph(_characterFacing,
+                (Gender)_gender.SelectedItem,
+                _skinColor.SelectedColor,
+                _hairColor.SelectedColor,
+                _shirtColor.SelectedColor,
+                _pantsColor.SelectedColor,
+                false,
+                _characterView);
 
             _characterView.IsDirty = true;
         }
 
-        private static Color[] GetSkinColors(Race race)
-        {
-            switch (race)
-            {
-                case Race.Orc:
-                    return new[] { "#4D2600".HexToColor(), "#006600".HexToColor() };
-                case Race.Human:
-                case Race.Elf:
-                case Race.Dwarf:
-                    return new[] { "#e6bc98".HexToColor(), "#3b2219".HexToColor() };
-                default:
-                    throw new NotImplementedException($"Skin color for race '{race}' not implemented.");
-            }
-        }
+
 
         private void ChangeRace(object sender, ListBox.SelectedItemEventArgs e)
         {
-            var skinColors = GetSkinColors((Race)e.Item);
+            var skinColors = Constants.Fonts.NpcFonts.GetSkinColors((Race)e.Item);
             _skinColor.StartingColor = skinColors[0];
             _skinColor.EndingColor = skinColors[1];
 
@@ -256,33 +222,21 @@ namespace Astralis.Scenes.Screens
 
         private void AddCharacterToNpcFont()
         {
-            var directory = Path.GetDirectoryName(Constants.Fonts.NpcFonts.ProceduralNpcsFont);
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            SadFont sadFont = NpcFontHelper.GetProceduralNpcFont();
 
-            SadFont sadFont;
-            if (!File.Exists(Constants.Fonts.NpcFonts.ProceduralNpcsFont))
-                sadFont = NpcFontHelper.CreateNewNpcFont(Constants.Fonts.NpcFonts.ProceduralNpcsFont);
-            else if (!NpcFontHelper.IsLoaded(Constants.Fonts.NpcFonts.ProceduralNpcsFont))
-                sadFont = NpcFontHelper.ReadExistingNpcFont(Constants.Fonts.NpcFonts.ProceduralNpcsFont);
-            else
-                sadFont = (SadFont)Game.Instance.Fonts[Constants.Fonts.NpcFonts.ProceduralNpcsFont];
+            var facings = new[] { Facing.Forward, Facing.Left, Facing.Backwards };
+            foreach (var facing in facings)
+            {
+                _ = NpcFontHelper.CreateNpcGlyph(facing,
+                    (Gender)_gender.SelectedItem,
+                    _skinColor.SelectedColor,
+                    _hairColor.SelectedColor,
+                    _shirtColor.SelectedColor,
+                    _pantsColor.SelectedColor,
+                    true);
+            }
 
-            // Add glyphs to font file for each direction
-            _characterFacing = Facing.Forward;
-            DrawCharacter(null, null);
-            NpcFontHelper.AddGlyphToFont(_characterView, sadFont);
-            _characterFacing = Facing.Left;
-            DrawCharacter(null, null);
-            NpcFontHelper.AddGlyphToFont(_characterView, sadFont);
-            _characterFacing = Facing.Backwards;
-            DrawCharacter(null, null);
-            NpcFontHelper.AddGlyphToFont(_characterView, sadFont);
             NpcFontHelper.SaveFont(sadFont);
-
-            // Reset visual
-            _characterFacing = Facing.Forward;
-            DrawCharacter(null, null);
         }
 
         private void ClickRandomize(object sender, EventArgs e)
@@ -377,26 +331,7 @@ namespace Astralis.Scenes.Screens
             Controls.Add(label);
 
             // Array must be same width (15)
-            Color[] colors = new Color[]
-            {
-                Color.Coral,
-                Color.Green,
-                Color.Blue,
-                Color.DarkOrange,
-                Color.OliveDrab,
-                Color.AnsiYellowBright,
-                Color.Cyan,
-                Color.Magenta,
-                Color.Brown,
-                Color.Teal,
-                Color.Gray,
-                Color.Lime,
-                Color.Thistle,
-                Color.DarkRed,
-                Color.Indigo
-            };
-
-            var colorBar = new ScColorBar(15, colors)
+            var colorBar = new ScColorBar(15, Constants.Fonts.NpcFonts.PredefinedColors)
             {
                 Position = position,
             };

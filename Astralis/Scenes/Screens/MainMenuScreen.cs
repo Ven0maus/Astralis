@@ -160,7 +160,7 @@ namespace Astralis.Scenes.Screens
 
             _backgroundOverworldScene.OnFadeFinished -= StartGame;
 
-            Game.Instance.Screen = new OverworldScene();
+            Game.Instance.Screen = new OverworldScene(false);
             ((OverworldScene)Game.Instance.Screen).StartGame();
         }
 

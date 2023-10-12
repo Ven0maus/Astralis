@@ -1,4 +1,5 @@
 ﻿using Astralis.Extended.Effects;
+using Astralis.Extended.SadConsoleExt;
 using Astralis.GameCode.Npcs;
 using Astralis.GameCode.Npcs.Managers;
 using Astralis.GameCode.WorldGen;
@@ -22,10 +23,16 @@ namespace Astralis.Scenes
         public World World { get { return _world; } }
         public ConcurrentEntityManager EntityManager { get; private set; }
 
-        public OverworldScene()
+        private readonly bool _isMainMenu;
+
+        public OverworldScene(bool mainMenu)
         {
+            _isMainMenu = mainMenu;
+
+            NpcFontHelper.GenerateRandomNpcGlyphs();
+
             EntityManager = new ConcurrentEntityManager();
-            EntityManager.GenerateProceduralNpcsFont();
+            EntityManager.EntityComponent.AlternativeFont = Game.Instance.Fonts[Constants.Fonts.NpcFonts.ProceduralNpcsFont];
 
             // Generate world
             var worldGenerator = new WorldGenerator(Constants.GameSeed, new Extended.NoiseHelper(Constants.GameSeed));
@@ -39,10 +46,6 @@ namespace Astralis.Scenes
             _worldScreen = new WorldScreen(_world);
             _worldScreen.SadComponents.Add(EntityManager.EntityComponent);
             Children.Add(_worldScreen);
-
-            // TODO: Remove later after testing
-            if (Game.Instance.Fonts.ContainsKey(Constants.Fonts.NpcFonts.ProceduralNpcsFont))
-                EntityManager.SpawnAt(new Point(_world.Width / 4, _world.Height / 4), new Actor(new ColoredGlyph(Color.White, Color.Transparent, 2), 1));
         }
 
         ~OverworldScene()
