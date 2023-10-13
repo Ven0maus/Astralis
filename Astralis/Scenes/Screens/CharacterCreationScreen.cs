@@ -8,8 +8,6 @@ using SadConsole.UI;
 using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Astralis.Scenes.Screens
@@ -36,6 +34,7 @@ namespace Astralis.Scenes.Screens
 
         // PHASE TRAIT SELECTION
         private ListBox _availableTraits, _selectedTraits;
+        private ComboBox _traitPresets;
 
         // Original values
         private Color _origSkinColor, _origHairColor, _origShirtColor, _origPantsColor;
@@ -205,7 +204,8 @@ namespace Astralis.Scenes.Screens
 
         private void CreateControlsTraitSelectionPhase()
         {
-            _selectedTraits = AddListBox("Selected:", new Point(6, 8), new[] { "Test3" }, Phase.TraitSelection);
+            _traitPresets = AddComboBox("Presets:", new Point(5, 7), new[] { "No preset", "Forester", "Cannibal" }, Phase.TraitSelection);
+            _selectedTraits = AddListBox("Selected:", new Point(5, 10), new[] { "Test3" }, Phase.TraitSelection);
             _selectedTraits.Surface.DefaultBackground = Color.Black;
             _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), new[] { "Test", "Test2" }, Phase.TraitSelection);
             _availableTraits.Surface.DefaultBackground = Color.Black;
@@ -373,7 +373,7 @@ namespace Astralis.Scenes.Screens
             SetLabelTheme(label);
             Controls.Add(label);
 
-            var listBox = new ListBox(14, 8) { Name = phase.ToString(), Position = position };
+            var listBox = new ListBox(15, 12) { Name = phase.ToString(), Position = position };
             listBox.DrawBorder = true;
             SetControlTheme(listBox);
             foreach (var value in values)
