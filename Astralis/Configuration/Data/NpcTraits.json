@@ -1,0 +1,243 @@
+{
+  "traits": [
+    {
+      "name": "Companionship",
+      "description": "Can tame and command certain animals and monsters.",
+      "points": 5
+    },
+    {
+      "name": "Instinctual",
+      "description": "Can sense traps nearby, traps are highlighted.",
+      "points": 4
+    },
+    {
+      "name": "Steelmind",
+      "description": "Unaffected by illusions or fear.",
+      "points": 4
+    },
+    {
+      "name": "Shadowstalker",
+      "description": "Summons a stalker minion to protect its owner during the night.",
+      "points": 5
+    },
+    {
+      "name": "Lucky",
+      "description": "Gets an extra dice roll for loot drops, taking the better roll of the two.",
+      "points": 4,
+      "counters": [ "Unlucky" ]
+    },
+    {
+      "name": "Supportive",
+      "description": "Applies all character buffs to other players nearby.",
+      "points": 5
+    },
+    {
+      "name": "Stealthy",
+      "description": "Stealth skill is 10% more effective.",
+      "points": 1
+    },
+    {
+      "name": "Resourceful",
+      "description": "25% chance to not deplete a resource when depletion check happens.",
+      "points": 2
+    },
+    {
+      "name": "Craftmanship",
+      "description": "Builds and repairs objects 25% faster",
+      "points": 2
+    },
+    {
+      "name": "Quick Reflexes",
+      "description": "15% chance to dodge incoming melee hits.",
+      "points": 5
+    },
+    {
+      "name": "Hardy",
+      "description": "10% reduced damage from incoming melee hits.",
+      "points": 6
+    },
+    {
+      "name": "Intuitive",
+      "description": "Magical skills are 10% more effective.",
+      "points": 1
+    },
+    {
+      "name": "Marksman",
+      "description": "Non-magic projectiles have 25% less chance to break on impact, and 10% less chance to miss.",
+      "points": 2
+    },
+    {
+      "name": "Herbal Life",
+      "description": "Can tell which plants are edible and which are poisonous.",
+      "points": 3
+    },
+    {
+      "name": "Eagle Eyed",
+      "description": "Has a 25% larger vision range during the day.",
+      "points": 3
+    },
+    {
+      "name": "Toxicologist",
+      "description": "Can create poisons from herbs that can be applied to weaponry and munitions.",
+      "points": 3
+    },
+    {
+      "name": "Quick Learner",
+      "description": "Learns skills 25% faster than others.",
+      "points": 5
+    },
+    {
+      "name": "Night Owl",
+      "description": "Has a 25% larger vision range when in the dark, npcs highlighted at night.",
+      "points": 4
+    },
+    {
+      "name": "Fast Healer",
+      "description": "Recovers health and broken limbs 25% faster.",
+      "points": 2,
+      "counters": [ "Slow Healer" ]
+    },
+    {
+      "name": "Vampiric",
+      "description": "When killing a bleeding enemy, 25% chance to recover 5-10% of current missing health. 25% of all damage is dealt as unholy damage.",
+      "points": 4,
+      "counters": [ "Werewolf Curse", "Divine" ]
+    },
+    {
+      "name": "Scammer",
+      "description": "Will receive 10% more currency when selling to traders.",
+      "points": 1,
+      "counters": [ "Misanthrope" ]
+    },
+    {
+      "name": "Polyglot",
+      "description": "Social skill is 10% more effective.",
+      "points": 2
+    },
+    {
+      "name": "Divine",
+      "description": "Silver weaponry is 20% more effective against vampires and werewolves, you take 10% more unholy damage. 25% of all damage is dealt as radiant damage.",
+      "points": 2,
+      "counters": [ "Vampiric", "Unholy", "Werewolf Curse" ]
+    },
+    {
+      "name": "Pious",
+      "description": "A deeply held devotion to a divine entity or higher power. You have 5% chance to smite undead at 30% of their health.",
+      "points": 2,
+      "counters": [ "Vampiric", "Unholy", "Werewolf Curse" ]
+    },
+    {
+      "name": "Werewolf Curse",
+      "description": "Turns into a werewolf during a full-moon. Increased melee damage by 50% in werewolf form, all npcs except wolves become hostile to the werewolf. 25% of all damage is dealt as unholy damage.",
+      "points": -5,
+      "counters": [ "Divine", "Vampiric" ]
+    },
+    {
+      "name": "Unlucky",
+      "description": "Gets an extra dice roll for loot drops, taking the worst roll of the two.",
+      "points": -2,
+      "counters": [ "Lucky" ]
+    },
+    {
+      "name": "Ethnic Kinship",
+      "description": "Cannot directly harm others of the same race, unless through indirect harm (traps, companions, non-targeted skills).",
+      "points": -4
+    },
+    {
+      "name": "Unfriendly",
+      "description": "Social skill is 10% less effective.",
+      "points": -1,
+      "counters": [ "Polyglot" ]
+    },
+    {
+      "name": "Psychotic",
+      "description": "Will inflict cuts on himself occassionaly, applying a bleed debuff on itself.",
+      "points": -4
+    },
+    {
+      "name": "Noctophobia",
+      "description": "Reduced effectiveness of combat skills by 25% at night.",
+      "points": -2,
+      "counters": [ "Unholy" ]
+    },
+    {
+      "name": "Frail Bones",
+      "description": "Has a 10% higher chance to break a limb when hit by a strong attack.",
+      "points": -1
+    },
+    {
+      "name": "Hemophobia",
+      "description": "Has a 10% reduced effectiveness of combat skills when bleeding.",
+      "points": -1
+    },
+    {
+      "name": "Nomads Curse",
+      "description": "Has a 25% reduced effectiveness of all skills when in the same area for more than 2 days.",
+      "points": -1
+    },
+    {
+      "name": "Slow Healer",
+      "description": "Recovers health and broken limbs 25% slower.",
+      "points": -1
+    },
+    {
+      "name": "Undead",
+      "description": "Everything is hostile to you except undead or creatures of the night.",
+      "points": -4
+    },
+    {
+      "name": "Misanthrope",
+      "description": "Has 20% increased prices when buying from traders.",
+      "points": -2,
+      "counters": [ "Scammer" ]
+    },
+    {
+      "name": "Ailment Magnet",
+      "description": "Has 10% more chance to contract an illness or debuff.",
+      "points": -1
+    },
+    {
+      "name": "Unholy",
+      "description": "You take 10% increased damage from radiant attacks, you deal 20% more unholy damage.",
+      "points": -3,
+      "counters": [ "Divine" ]
+    },
+    {
+      "name": "Sleepy",
+      "description": "Becomes tired 10% faster.",
+      "points": -1
+    }
+  ],
+  "traitpresets": [
+    {
+      "Name": "Vampire",
+      "Description": "Undead beings that sustain themselves by consuming the blood of the living.",
+      "Traits": [ "Unholy", "Undead", "Vampiric", "Fast Healer", "Night Owl" ]
+    },
+    {
+      "Name": "Werewolf",
+      "Description": "Cursed beings that that turn into a vile bloodthirsty creature at full-moon.",
+      "Traits": [ "Unholy", "Werewolf Curse", "Hardy", "Night Owl" ]
+    },
+    {
+      "Name": "Priest",
+      "Description": "Enlightened beings guided by divinity.",
+      "Traits": [ "Hemophobia", "Frail Bones", "Ethnic Kinship", "Divine", "Polyglot", "Pious" ]
+    },
+    {
+      "Name": "Construction Worker",
+      "Description": "Worked all his life in construction, is an expert craftsman.",
+      "Traits": [ "Hardy", "Resourceful", "Craftmanship", "Sleepy", "Misanthrope", "Unlucky", "Ailment Magnet" ]
+    },
+    {
+      "Name": "Herbalist",
+      "Description": "Specializes in the identification, gathering, and use of various herbs, plants, and natural ingredients for a variety of purposes.",
+      "Traits": [ "Ailment Magnet", "Noctophobia", "Hemophobia", "Herbal Life", "Toxicologist", "Resourceful" ]
+    },
+    {
+      "Name": "Traveler",
+      "Description": "Cannot stay in one place for very long, has a constant urge to explore new areas.",
+      "Traits": [ "Nomads Curse", "Noctophobia", "Sleepy", "Lucky", "Eagle Eyed" ]
+    }
+  ]
+}

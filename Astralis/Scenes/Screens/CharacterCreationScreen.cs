@@ -1,4 +1,6 @@
-﻿using Astralis.Extended;
+﻿using Astralis.Configuration;
+using Astralis.Configuration.Models;
+using Astralis.Extended;
 using Astralis.Extended.Effects;
 using Astralis.Extended.SadConsoleExt;
 using Astralis.Extended.SadConsoleExt.Controls;
@@ -38,6 +40,8 @@ namespace Astralis.Scenes.Screens
 
         // Original values
         private Color _origSkinColor, _origHairColor, _origShirtColor, _origPantsColor;
+
+        private readonly NpcTraits NpcTraits = GameConfiguration.Load<NpcTraits>();
 
         public CharacterCreationScreen(MainMenuScreen mainMenuScreen, Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
@@ -204,10 +208,12 @@ namespace Astralis.Scenes.Screens
 
         private void CreateControlsTraitSelectionPhase()
         {
-            _traitPresets = AddComboBox("Presets:", new Point(5, 7), new[] { "No preset", "Forester", "Cannibal" }, Phase.TraitSelection);
-            _selectedTraits = AddListBox("Selected:", new Point(5, 10), new[] { "Test3" }, Phase.TraitSelection);
+            var traitPresets = NpcTraits.Get.NpcTraitPresets.Select(a => a.Key).ToArray();
+            var traits = NpcTraits.Get.NpcTraits.Select(a => a.Key).ToArray();
+            _traitPresets = AddComboBox("Presets:", new Point(15, 7), traitPresets, Phase.TraitSelection);
+            _selectedTraits = AddListBox("Selected:", new Point(3, 10), Array.Empty<object>(), Phase.TraitSelection);
             _selectedTraits.Surface.DefaultBackground = Color.Black;
-            _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), new[] { "Test", "Test2" }, Phase.TraitSelection);
+            _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), traits, Phase.TraitSelection);
             _availableTraits.Surface.DefaultBackground = Color.Black;
         }
 
@@ -373,7 +379,7 @@ namespace Astralis.Scenes.Screens
             SetLabelTheme(label);
             Controls.Add(label);
 
-            var listBox = new ListBox(15, 12) { Name = phase.ToString(), Position = position };
+            var listBox = new ListBox(labelText == "Traits:" ? 17 : 16, 12) { Name = phase.ToString(), Position = position };
             listBox.DrawBorder = true;
             SetControlTheme(listBox);
             foreach (var value in values)
