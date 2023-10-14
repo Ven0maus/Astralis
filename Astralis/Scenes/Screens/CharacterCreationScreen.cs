@@ -214,12 +214,15 @@ namespace Astralis.Scenes.Screens
                 .OrderByDescending(a => a.Value.Points)
                 .Select(a => new ColoredString(a.Key, a.Value.Points >= 0 ? Color.Green : Color.Red, Color.Transparent))
                 .ToArray();
-            _traitPresets = AddComboBox("Presets:", new Point(15, 7), traitPresetsList.ToArray(), Phase.TraitSelection);
-            _traitPresets.SelectedItemChanged += SelectPreset;
-            _selectedTraits = AddListBox("Selected:", new Point(3, 10), Array.Empty<object>(), Phase.TraitSelection);
+
+            _selectedTraits = AddListBox("Selected:", new Point(3, 8), Array.Empty<object>(), Phase.TraitSelection);
             _selectedTraits.Surface.DefaultBackground = Color.Black;
             _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), traits, Phase.TraitSelection);
             _availableTraits.Surface.DefaultBackground = Color.Black;
+
+            _traitPresets = AddComboBox("Presets:", new Point(_selectedTraits.Position.X + 1, _selectedTraits.Position.Y + _selectedTraits.Height + 1), traitPresetsList.ToArray(), Phase.TraitSelection);
+            _traitPresets.SelectedItemChanged += SelectPreset;
+
             UpdatePoints();
         }
 
@@ -239,6 +242,7 @@ namespace Astralis.Scenes.Screens
             _selectedTraits.Items.Remove(args.Item);
             _availableTraits.Items.Add(args.Item);
             UpdatePoints();
+            OrderAvailableTraits();
         }
 
         private void AddSelectedTrait(object sender, ListBox.SelectedItemEventArgs args)
@@ -255,6 +259,7 @@ namespace Astralis.Scenes.Screens
             _selectedTraits.Items.Add(args.Item);
             _availableTraits.Items.Remove(args.Item);
             UpdatePoints();
+            OrderAvailableTraits();
         }
 
         private int GetRequiredPoints(string trait)
@@ -262,10 +267,19 @@ namespace Astralis.Scenes.Screens
             return NpcTraits.Get.NpcTraits[trait].Points;
         }
 
+        private void OrderAvailableTraits()
+        {
+            var traits = _availableTraits.Items.OrderByDescending(a => NpcTraits.Get.NpcTraits[((ColoredString)a).String].Points).ToArray();
+            foreach (var trait in traits)
+                _availableTraits.Items.Remove(trait);
+            foreach (var trait in traits)
+                _availableTraits.Items.Add(trait);
+        }
+
         private void UpdatePoints()
         {
             // Clear line on row 5
-            Surface.Clear(0, 5, Width);
+            Surface.Clear(1, 5, Width - 2);
             var text = $"Available points: {_availablePoints}";
             Surface.Print(Width / 2 - text.Length / 2, 5, text);
         }
