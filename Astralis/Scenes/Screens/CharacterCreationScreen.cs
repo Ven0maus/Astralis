@@ -223,6 +223,8 @@ namespace Astralis.Scenes.Screens
             _traitPresets = AddComboBox("Presets:", new Point(_selectedTraits.Position.X + 1, _selectedTraits.Position.Y + _selectedTraits.Height + 1), traitPresetsList.ToArray(), Phase.TraitSelection);
             _traitPresets.SelectedItemChanged += SelectPreset;
 
+            // TODO: Add hover surface when hovering over any of the traits to see point cost and their description.
+
             UpdatePoints();
         }
 
