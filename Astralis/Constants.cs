@@ -97,22 +97,7 @@ namespace Astralis
         {
             public const string JsonFilesPath = "Configuration/Data";
             public const string GamedataPath = "Gamedata";
-
-            // Give each trait points (+1, -1) etc
-            // The player starts with a specific amount of points they can use
-            // In the end the player should be at 0 or positive points to start the game
-            // TODO: Move traits and their points into JSON config
-            // Define also a few presets that have some traits selected (positive and negative)
-            // When displaying the traits, make sure the color is green or red based on positive/negative
-            // Display points that the player has available
-            // When selecting negative traits, the points should be added to the player available points
-            // Also deducted when selecting a positive trait or removing a negative trait from selected traits
-
-            public enum TraitPresets
-            {
-                None,
-                Forester,
-            }
+            public const int NpcTraitsStartingPoints = 4;
         }
     }
 }

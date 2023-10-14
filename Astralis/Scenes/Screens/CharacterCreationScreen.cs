@@ -208,13 +208,83 @@ namespace Astralis.Scenes.Screens
 
         private void CreateControlsTraitSelectionPhase()
         {
-            var traitPresets = NpcTraits.Get.NpcTraitPresets.Select(a => a.Key).ToArray();
-            var traits = NpcTraits.Get.NpcTraits.Select(a => a.Key).ToArray();
-            _traitPresets = AddComboBox("Presets:", new Point(15, 7), traitPresets, Phase.TraitSelection);
+            var traitPresetsList = NpcTraits.Get.NpcTraitPresets.Select(a => a.Key).ToList();
+            traitPresetsList.Insert(0, string.Empty);
+            var traits = NpcTraits.Get.NpcTraits
+                .OrderByDescending(a => a.Value.Points)
+                .Select(a => new ColoredString(a.Key, a.Value.Points >= 0 ? Color.Green : Color.Red, Color.Transparent))
+                .ToArray();
+            _traitPresets = AddComboBox("Presets:", new Point(15, 7), traitPresetsList.ToArray(), Phase.TraitSelection);
+            _traitPresets.SelectedItemChanged += SelectPreset;
             _selectedTraits = AddListBox("Selected:", new Point(3, 10), Array.Empty<object>(), Phase.TraitSelection);
             _selectedTraits.Surface.DefaultBackground = Color.Black;
             _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), traits, Phase.TraitSelection);
             _availableTraits.Surface.DefaultBackground = Color.Black;
+            UpdatePoints();
+        }
+
+        private int _availablePoints = Constants.Configuration.NpcTraitsStartingPoints;
+
+        private void RemoveSelectedTrait(object sender, ListBox.SelectedItemEventArgs args)
+        {
+            var obj = (ColoredString)args.Item;
+            var req = GetRequiredPoints(obj.String);
+            if (_availablePoints + req < 0)
+            {
+                ScWindow.Message("You cannot remove this trait as it will result in a negative available points balance.", "Ok");
+                return;
+            }
+
+            _availablePoints += req;
+            _selectedTraits.Items.Remove(args.Item);
+            _availableTraits.Items.Add(args.Item);
+            UpdatePoints();
+        }
+
+        private void AddSelectedTrait(object sender, ListBox.SelectedItemEventArgs args)
+        {
+            var obj = (ColoredString)args.Item;
+            var req = GetRequiredPoints(obj.String);
+            if (_availablePoints < req)
+            {
+                ScWindow.Message("You do not have enough points available to select this trait.", "Ok");
+                return;
+            }
+
+            _availablePoints -= req;
+            _selectedTraits.Items.Add(args.Item);
+            _availableTraits.Items.Remove(args.Item);
+            UpdatePoints();
+        }
+
+        private int GetRequiredPoints(string trait)
+        {
+            return NpcTraits.Get.NpcTraits[trait].Points;
+        }
+
+        private void UpdatePoints()
+        {
+            // Clear line on row 5
+            Surface.Clear(0, 5, Width);
+            var text = $"Available points: {_availablePoints}";
+            Surface.Print(Width / 2 - text.Length / 2, 5, text);
+        }
+
+        private void SelectPreset(object sender, ListBox.SelectedItemEventArgs e)
+        {
+            foreach (var trait in _selectedTraits.Items.OrderByDescending(a => NpcTraits.Get.NpcTraits[((ColoredString)a).String].Points).ToArray())
+                RemoveSelectedTrait(sender, new ListBox.SelectedItemEventArgs(trait));
+
+            if ((string)e.Item == string.Empty)
+                return;
+
+            var traits = _availableTraits.Items.Select(a => (ColoredString)a).ToHashSet();
+            var preset = NpcTraits.Get.NpcTraitPresets[(string)e.Item];
+            foreach (var value in preset.Traits.OrderBy(a => NpcTraits.Get.NpcTraits[a].Points))
+            {
+                var match = traits.First(a => a.String == value);
+                AddSelectedTrait(this, new ListBox.SelectedItemEventArgs(match));
+            }
         }
 
         private void ClickCancel(object sender, EventArgs e)
@@ -379,8 +449,14 @@ namespace Astralis.Scenes.Screens
             SetLabelTheme(label);
             Controls.Add(label);
 
-            var listBox = new ListBox(labelText == "Traits:" ? 17 : 16, 12) { Name = phase.ToString(), Position = position };
-            listBox.DrawBorder = true;
+            var isAllTraits = labelText == "Traits:";
+            var listBox = new ListBox(isAllTraits ? 17 : 16, 12)
+            {
+                Name = phase.ToString(),
+                Position = position,
+                DrawBorder = true
+            };
+            listBox.SelectedItemExecuted += isAllTraits ? AddSelectedTrait : RemoveSelectedTrait;
             SetControlTheme(listBox);
             foreach (var value in values)
                 listBox.Items.Add(value);
