@@ -231,7 +231,7 @@ namespace Astralis.Scenes.Screens
             _availableTraits.MouseMove += HandleHoverScreenTraits;
             _availableTraits.MouseExit += HoverScreenExit;
 
-            _traitPresets = AddComboBox("Presets:", new Point(_selectedTraits.Position.X + 1, _selectedTraits.Position.Y + _selectedTraits.Height + 1), traitPresetsList.ToArray(), Phase.TraitSelection);
+            _traitPresets = AddComboBox("Presets:", new Point(_selectedTraits.Position.X + 1, _selectedTraits.Position.Y + _selectedTraits.Height + 2), traitPresetsList.ToArray(), Phase.TraitSelection);
             _traitPresets.SelectedItemChanged += SelectPreset;
 
             UpdatePoints();
@@ -556,7 +556,7 @@ namespace Astralis.Scenes.Screens
             Controls.Add(label);
 
             var isAllTraits = labelText == "Traits:";
-            var listBox = new ListBox(isAllTraits ? 17 : 16, 12)
+            var listBox = new ListBox(isAllTraits ? 17 : 16, 19)
             {
                 Name = phase.ToString(),
                 Position = position,
