@@ -2,6 +2,7 @@
 using Astralis.Extended;
 using Astralis.Scenes;
 using SadConsole;
+using SadConsole.Components;
 using SadConsole.Entities;
 using SadRogue.Primitives;
 using System;
@@ -20,8 +21,10 @@ namespace Astralis.GameCode.Npcs
         public Race Race { get; private init; }
         public Class Class { get; private init; }
         public Point WorldPosition { get; private set; }
+        public bool IsMoving { get { return _smoothMove.IsMoving; } }
 
         private readonly int _forwardGlyph;
+        protected readonly SmoothMove _smoothMove;
 
         public Actor(Point worldPosition, int forwardGlyph, Gender gender, Race race, Class @class, IEnumerable<NpcTrait> traits = null, int zIndex = 1)
             : base(Color.White, Color.Transparent, forwardGlyph, zIndex)
@@ -33,6 +36,9 @@ namespace Astralis.GameCode.Npcs
             Traits = new ObservableCollection<NpcTrait>(traits ?? Enumerable.Empty<NpcTrait>());
 
             _forwardGlyph = forwardGlyph;
+
+            _smoothMove = new SmoothMove(GameplayScene.Instance.WorldFontSize);
+            SadComponents.Add(_smoothMove);
 
             UseMouse = false;
             UseKeyboard = false;

@@ -14,10 +14,18 @@ namespace Astralis.GameCode.Npcs
             : base(worldPosition, Constants.PlayerData.PlayerForwardGlyph, gender, race, @class, traits)
         {
             Instance = this;
-            OnWorldPositionChanged += Player_OnWorldPositionChanged;
-            base.SetPosition(new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2));
-
             UseKeyboard = true;
+            OnWorldPositionChanged += Player_OnWorldPositionChanged;
+
+            // TODO: Implement custom smooth move for player
+            // The sadconsole surface needs to lerp its position using pixelpositions
+            // Then when the lerp is finished, the flowvitae grid should center on the new location
+            // The sadconsole surface should position back into the original position
+            // This means the worldscreen should be atleast 2x2 larger (1 in each direction)
+            // And ofcourse the world should match the worldscreen so it can render it.
+            SadComponents.Remove(_smoothMove);
+
+            base.SetPosition(new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2));
         }
 
         private void Player_OnWorldPositionChanged(object sender, PositionChangedArgs e)

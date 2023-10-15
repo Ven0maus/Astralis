@@ -90,7 +90,7 @@ namespace Astralis
 
         public static class WorldGeneration
         {
-            public const float WorldZoomFactor = 2f;
+            public const float WorldZoomFactor = 2.5f;
             public const bool DrawBordersOnDebugMode = false;
             public const int ExtraChunkRadius = 2;
             public const int ChunkSize = 32;
