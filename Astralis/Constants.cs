@@ -45,9 +45,12 @@ namespace Astralis
 
             public static class NpcFonts
             {
-                public const string TemplateNpcFont = "Resources/Npcs/TemplateNpc_16x16.font";
-                public const string BaseNpc = "Resources/Npcs/BaseNpc_16x16.font";
-                public const string ProceduralNpcsFont = $"{DynamicFontsPath}/ProceduralNpcs_16x16.font";
+                public const string NpcFont = "Resources/Npcs/Npcs_16x16.font";
+                public const string CharacterCreationBaseFont = "Resources/Npcs/BaseNpc_16x16.font";
+                /// <summary>
+                /// Font that is modified with the player glyphs and stored as gamedata
+                /// </summary>
+                public const string GamedataNpcFont = $"{DynamicFontsPath}/Npcs_16x16.font";
 
                 internal static Color[] PredefinedColors = new Color[]
                 {

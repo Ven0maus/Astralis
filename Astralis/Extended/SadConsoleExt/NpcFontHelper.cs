@@ -76,8 +76,11 @@ namespace Astralis.Extended.SadConsoleExt
             return Constants.Fonts.NpcFonts.PredefinedColors[Constants.Random.Next(0, Constants.Fonts.NpcFonts.PredefinedColors.Length)];
         }
 
-        public static int[] GenerateRandomNpcGlyphs(string savePath = null)
+        public static int[] GenerateRandomNpcGlyphs(string savePath)
         {
+            if (string.IsNullOrWhiteSpace(savePath))
+                throw new ArgumentException("Param savePath cannot be null or empty.", nameof(savePath));
+
             var skinColorStartEnd = Constants.Fonts.NpcFonts.GetSkinColors(Race.Human);
             var skinColors = skinColorStartEnd[0].LerpSteps(skinColorStartEnd[1], 15);
 
@@ -118,7 +121,7 @@ namespace Astralis.Extended.SadConsoleExt
                 }
                 npcGlyphs.Add(indexes[0]);
             }
-            SaveFont(GetProceduralNpcFont(savePath));
+            SaveFont(GetGamedataNpcFont(savePath, true));
             SaveNpcFonts();
 
             return npcGlyphs.ToArray();
@@ -139,7 +142,7 @@ namespace Astralis.Extended.SadConsoleExt
             {
                 surface = new ScreenSurface(1, 1)
                 {
-                    Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.BaseNpc],
+                    Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.CharacterCreationBaseFont],
                     FontSize = new Point(16, 16),
                 };
                 surface.Surface.DefaultBackground = Color.Transparent;
@@ -173,7 +176,7 @@ namespace Astralis.Extended.SadConsoleExt
             int index = -1;
             if (addGlyphToFont)
             {
-                index = AddGlyphToFont(surface, GetProceduralNpcFont());
+                index = AddGlyphToFont(surface, GetGamedataNpcFont());
             }
 
             if (wasNull)
@@ -197,12 +200,12 @@ namespace Astralis.Extended.SadConsoleExt
                     .ToArray();
         }
 
-        private static SadFont _proceduralNpcFont;
-        public static SadFont GetProceduralNpcFont(string savePath = null, bool overwrite = false)
+        private static SadFont _npcsFont;
+        public static SadFont GetGamedataNpcFont(string savePath = null, bool overwrite = false)
         {
-            if (!overwrite && _proceduralNpcFont != null) return _proceduralNpcFont;
+            if (!overwrite && _npcsFont != null) return _npcsFont;
 
-            var path = savePath ?? Constants.Fonts.NpcFonts.ProceduralNpcsFont;
+            var path = savePath ?? Constants.Fonts.NpcFonts.GamedataNpcFont;
 
             var directory = Path.GetDirectoryName(path);
             if (Directory.Exists(directory))
@@ -216,15 +219,15 @@ namespace Astralis.Extended.SadConsoleExt
                 sadFont = ReadExistingNpcFont(path);
             else
                 sadFont = (SadFont)Game.Instance.Fonts[path];
-            return _proceduralNpcFont = sadFont;
+            return _npcsFont = sadFont;
         }
 
         public static SadFont CreateNewNpcFont(string fontConfigFile)
         {
             // Make a copy of the template
             var fontImageFile = fontConfigFile.Replace(".font", ".png", StringComparison.OrdinalIgnoreCase);
-            File.Copy(Constants.Fonts.NpcFonts.TemplateNpcFont, fontConfigFile, true);
-            File.Copy(Constants.Fonts.NpcFonts.TemplateNpcFont.Replace(".font", ".png"), fontImageFile, true);
+            File.Copy(Constants.Fonts.NpcFonts.NpcFont, fontConfigFile, true);
+            File.Copy(Constants.Fonts.NpcFonts.NpcFont.Replace(".font", ".png"), fontImageFile, true);
 
             // Index for where npc glyph adding starts
             const int startIndex = 2;

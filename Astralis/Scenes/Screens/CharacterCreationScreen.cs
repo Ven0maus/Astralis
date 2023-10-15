@@ -70,7 +70,7 @@ namespace Astralis.Scenes.Screens
             // We do 16font * 16cells = 256
             _characterView = new ScreenSurface(1, 1)
             {
-                Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.BaseNpc],
+                Font = Game.Instance.Fonts[Constants.Fonts.NpcFonts.CharacterCreationBaseFont],
                 FontSize = new Point(256, 256),
                 UsePixelPositioning = true,
                 Position = new Point(16, 15)
@@ -466,7 +466,7 @@ namespace Astralis.Scenes.Screens
 
         private void AddCharacterToNpcFont()
         {
-            SadFont sadFont = NpcFontHelper.GetProceduralNpcFont(overwrite: true);
+            SadFont sadFont = NpcFontHelper.GetGamedataNpcFont(overwrite: true);
 
             var facings = new[] { Facing.Forward, Facing.Left, Facing.Backwards };
             foreach (var facing in facings)

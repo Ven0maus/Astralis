@@ -30,18 +30,17 @@ namespace Astralis.Scenes
         public ConcurrentEntityManager EntityManager { get; private set; }
 
         private readonly bool _isMainMenu;
-        private readonly int[] _npcGlyphs;
 
         public GameplayScene(bool mainMenu, string savePath = null)
         {
             Instance = this;
             _isMainMenu = mainMenu;
 
-            // Generates procedural npc glyphs that can be used
-            _npcGlyphs = NpcFontHelper.GenerateRandomNpcGlyphs(savePath);
-
+            // For main menu scene, we can just use the base npc font, as we don't need the player visual
             EntityManager = new ConcurrentEntityManager();
-            EntityManager.EntityComponent.AlternativeFont = Game.Instance.Fonts[Constants.Fonts.NpcFonts.ProceduralNpcsFont];
+            EntityManager.EntityComponent.AlternativeFont = _isMainMenu ?
+                Game.Instance.Fonts[Constants.Fonts.NpcFonts.NpcFont] :
+                Game.Instance.Fonts[Constants.Fonts.NpcFonts.GamedataNpcFont];
 
             // Generate world
             var worldGenerator = new WorldGenerator(Constants.GameSeed, new Extended.NoiseHelper(Constants.GameSeed));

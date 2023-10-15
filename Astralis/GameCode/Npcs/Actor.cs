@@ -35,16 +35,16 @@ namespace Astralis.GameCode.Npcs
             _forwardGlyph = forwardGlyph;
         }
 
-        public void MoveTowards(Direction dir)
+        public void MoveTowards(Direction dir, bool checkCollision = true)
         {
-            MoveTowards(WorldPosition + dir);
+            MoveTowards(WorldPosition + dir, false, checkCollision);
         }
 
-        public void MoveTowards(Point pos, bool canTeleport = false)
+        public void MoveTowards(Point pos, bool canTeleport = false, bool checkCollision = true)
         {
             if (WorldPosition == pos) return;
             SetFacing(CalculateFacingDirection(WorldPosition, pos));
-            if (!CanMoveTowards(pos, canTeleport)) return;
+            if (checkCollision && !CanMoveTowards(pos, canTeleport)) return;
 
             var oldWorldPos = WorldPosition;
             WorldPosition = pos;
