@@ -34,7 +34,7 @@ namespace Astralis.Scenes.Screens
             int centerX = Width / 2;
             int centerY = Height / 2;
             _characterCreationScreen.Position = new Point(
-                centerX - _characterCreationScreen.Width / 2, 
+                centerX - _characterCreationScreen.Width / 2,
                 centerY - _characterCreationScreen.Height / 2);
 
             Surface.DefaultBackground = Color.Lerp(Color.Black, Color.Transparent, 0.2f);

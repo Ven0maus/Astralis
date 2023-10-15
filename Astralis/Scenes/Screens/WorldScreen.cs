@@ -24,14 +24,14 @@ namespace Astralis.Scenes.Screens
         /// </summary>
         public bool MainMenuCamera { get; set; } = false;
 
-        public WorldScreen(World world) : base(Constants.ScreenWidth, Constants.ScreenHeight)
+        public WorldScreen(World world) : base(world.Width, world.Height)
         {
             // Set 16x16 font for the overworld
             Font = Game.Instance.Fonts[Constants.Fonts.UserInterfaceFonts.Anno];
 
             // Make world zoom in
-            var zoomFentity = Constants.WorldGeneration.WorldZoomFentity;
-            FontSize = new Point((int)(Font.GlyphWidth * zoomFentity), (int)(Font.GlyphHeight * zoomFentity));
+            var zoomFactor = Constants.WorldGeneration.WorldZoomFactor;
+            FontSize = new Point((int)(Font.GlyphWidth * zoomFactor), (int)(Font.GlyphHeight * zoomFactor));
 
             _objectsLayer = new ScreenSurface(Width, Height)
             {
@@ -166,7 +166,7 @@ namespace Astralis.Scenes.Screens
             int deltaX = startPosition.X - targetPosition.X;
             int deltaY = startPosition.Y - targetPosition.Y;
 
-            // Apply a scaling fentity to control camera speed
+            // Apply a scaling factor to control camera speed
             deltaX = -1 * deltaX;
             deltaY = -1 * deltaY;
 

@@ -1,5 +1,4 @@
 ﻿using Astralis.Configuration.Models;
-using Astralis.GameCode.WorldGen;
 using Astralis.Scenes;
 using SadRogue.Primitives;
 using System.Collections.Generic;
@@ -10,11 +9,12 @@ namespace Astralis.GameCode.Npcs
     {
         public static Player Instance { get; private set; }
 
-        public Player(Point worldPosition, Gender gender, Race race, Class @class, IEnumerable<NpcTrait> traits) 
+        public Player(Point worldPosition, Gender gender, Race race, Class @class, IEnumerable<NpcTrait> traits)
             : base(worldPosition, Constants.PlayerData.PlayerForwardGlyph, gender, race, @class, traits)
         {
             Instance = this;
             OnWorldPositionChanged += Player_OnWorldPositionChanged;
+            base.SetPosition(new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2));
         }
 
         private void Player_OnWorldPositionChanged(object sender, PositionChangedArgs e)

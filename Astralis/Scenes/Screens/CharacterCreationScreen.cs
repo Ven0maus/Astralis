@@ -45,13 +45,13 @@ namespace Astralis.Scenes.Screens
 
         private readonly HoverScreen _hoverScreen;
 
-        public CharacterCreationScreen(MainMenuScreen mainMenuScreen, Action<object, WorldScreen> startGameMethod) : 
-            base((int)(Constants.ScreenWidth / 100f * 35), 
+        public CharacterCreationScreen(MainMenuScreen mainMenuScreen, Action<object, WorldScreen> startGameMethod) :
+            base((int)(Constants.ScreenWidth / 100f * 35),
                 (int)(Constants.ScreenHeight / 100f * 50))
         {
             _mainMenuScreen = mainMenuScreen;
             _characterBorderScreen = new ScreenSurface(18, 18);
-            for (int x=0; x < _characterBorderScreen.Width; x++)
+            for (int x = 0; x < _characterBorderScreen.Width; x++)
             {
                 for (int y = 0; y < _characterBorderScreen.Height; y++)
                 {
@@ -149,7 +149,7 @@ namespace Astralis.Scenes.Screens
 
         private void CreateControlsDesignPhase()
         {
-            var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y -2);
+            var currentPosition = new Point((int)(Width / 100f * 9), _characterBorderScreen.Position.Y - 2);
             _name = AddTextBox("Name:", currentPosition, Phase.Design);
 
             var genders = Enum.GetValues<Gender>();

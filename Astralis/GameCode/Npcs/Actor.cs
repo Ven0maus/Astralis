@@ -23,7 +23,7 @@ namespace Astralis.GameCode.Npcs
 
         private readonly int _forwardGlyph;
 
-        public Actor(Point worldPosition, int forwardGlyph, Gender gender, Race race, Class @class, IEnumerable<NpcTrait> traits = null, int zIndex = 1) 
+        public Actor(Point worldPosition, int forwardGlyph, Gender gender, Race race, Class @class, IEnumerable<NpcTrait> traits = null, int zIndex = 1)
             : base(Color.White, Color.Transparent, forwardGlyph, zIndex)
         {
             WorldPosition = worldPosition;
@@ -69,7 +69,12 @@ namespace Astralis.GameCode.Npcs
 
         protected virtual void SetPosition(Point @new)
         {
-            Position = @new;
+            Position = NormalizePositionToFontSize(@new);
+        }
+
+        private Point NormalizePositionToFontSize(Point @new)
+        {
+            return @new.TranslateFont(GameplayScene.Instance.WorldSourceFontSize, GameplayScene.Instance.WorldFontSize);
         }
 
         public bool CanMoveTowards(Point @new, bool canTeleport = false)

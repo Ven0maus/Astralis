@@ -8,7 +8,7 @@ namespace Astralis.Extended.SadConsoleExt
         private readonly int _maxContentWidth;
         private readonly ScreenSurface _innerSurface;
 
-        public HoverScreen(int width) 
+        public HoverScreen(int width)
             : base(1, 1)
         {
             // -2 for border

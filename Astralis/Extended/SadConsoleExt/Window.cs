@@ -52,7 +52,7 @@ namespace Astralis.Extended.SadConsoleExt
         {
             var width = window.Width;
             int currentX = x, currentY = y;
-            for (int i= 0; i < message.Length; i++)
+            for (int i = 0; i < message.Length; i++)
             {
                 if (currentX >= width - 2)
                 {

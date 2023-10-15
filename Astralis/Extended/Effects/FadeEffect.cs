@@ -1,7 +1,5 @@
 ﻿using Astralis.Extended.Effects.Core;
-using Astralis.Extended.SadConsoleExt;
 using SadConsole;
-using SadConsole.UI;
 using SadRogue.Primitives;
 using System;
 using System.Collections.Generic;

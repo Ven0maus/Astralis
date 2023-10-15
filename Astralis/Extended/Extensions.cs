@@ -29,7 +29,7 @@ namespace Astralis.Extended
 
         public static IEnumerable<Point> GetSquarePositions(this Point center, int radius)
         {
-            for (int x=center.X - radius; x <= center.X + radius; x++)
+            for (int x = center.X - radius; x <= center.X + radius; x++)
             {
                 for (int y = center.Y - radius; y <= center.Y + radius; y++)
                 {

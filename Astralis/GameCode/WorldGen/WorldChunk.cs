@@ -165,21 +165,21 @@ namespace Astralis.GameCode.WorldGen
             Right
         }
 
-        private static Color BlendColors(Color color1, Color color2, float blendFentity)
+        private static Color BlendColors(Color color1, Color color2, float blendFactor)
         {
-            int r = (int)(color1.R * (1 - blendFentity) + color2.R * blendFentity);
-            int g = (int)(color1.G * (1 - blendFentity) + color2.G * blendFentity);
-            int b = (int)(color1.B * (1 - blendFentity) + color2.B * blendFentity);
+            int r = (int)(color1.R * (1 - blendFactor) + color2.R * blendFactor);
+            int g = (int)(color1.G * (1 - blendFactor) + color2.G * blendFactor);
+            int b = (int)(color1.B * (1 - blendFactor) + color2.B * blendFactor);
             return new Color(r, g, b);
         }
 
         private static Color GetBiomeColor(Color biomeA, Color biomeB)
         {
-            // Adjust the blend fentity as needed
-            float blendFentity = 0.12f;
+            // Adjust the blend factor as needed
+            float blendFactor = 0.12f;
 
             // Blend the colors
-            return BlendColors(biomeA, biomeB, blendFentity);
+            return BlendColors(biomeA, biomeB, blendFactor);
         }
     }
 }

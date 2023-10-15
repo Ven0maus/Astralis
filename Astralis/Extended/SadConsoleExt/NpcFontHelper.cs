@@ -1,14 +1,14 @@
-﻿using SadConsole;
-using SadConsole.FontEditing;
-using System;
-using SadRogue.Primitives;
-using SadConsole.Renderers;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Astralis.GameCode.Npcs;
 using Microsoft.Xna.Framework.Graphics;
-using Astralis.GameCode.Npcs;
+using Newtonsoft.Json.Linq;
+using SadConsole;
+using SadConsole.FontEditing;
+using SadConsole.Renderers;
+using SadRogue.Primitives;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Astralis.Extended.SadConsoleExt
 {
@@ -290,7 +290,7 @@ namespace Astralis.Extended.SadConsoleExt
             Color[] pixels = ((ScreenSurfaceRenderer)surfaceObject.Renderer).Output.GetPixels();
 
             var availableIndex = _npcFontCache[font].NextAvailableIndex;
-            _npcFontCache[font].NextAvailableIndex = availableIndex+1;
+            _npcFontCache[font].NextAvailableIndex = availableIndex + 1;
 
             // Add a new row when needed
             if (availableIndex == font.TotalGlyphs)
@@ -307,7 +307,7 @@ namespace Astralis.Extended.SadConsoleExt
 
         public static void Edit_SetGlyph_Pixel(this IFont font, int glyphIndex, Color[] pixels)
         {
-            if (pixels.Length != font.GlyphWidth * font.GlyphHeight) 
+            if (pixels.Length != font.GlyphWidth * font.GlyphHeight)
                 throw new ArgumentOutOfRangeException(nameof(pixels), $"Amount of pixels must match font glyph width * height: {font.GlyphWidth * font.GlyphHeight}.");
 
             var cachedFontTexturePixels = font.Image.GetPixels();

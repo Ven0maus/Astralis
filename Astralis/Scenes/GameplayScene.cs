@@ -7,7 +7,6 @@ using Astralis.Scenes.Screens;
 using SadConsole;
 using SadRogue.Primitives;
 using System;
-using System.Collections.Generic;
 
 namespace Astralis.Scenes
 {
@@ -17,6 +16,9 @@ namespace Astralis.Scenes
         private WorldScreen _worldScreen;
 
         public static GameplayScene Instance { get; private set; }
+
+        public Point WorldSourceFontSize { get { return _worldScreen.Font.GetFontSize(IFont.Sizes.One); } }
+        public Point WorldFontSize { get { return _worldScreen.FontSize; } }
 
         /// <summary>
         /// Used to push information between the mainmenu if this overworld is used as a background visual for it.
@@ -82,9 +84,6 @@ namespace Astralis.Scenes
         /// </summary>
         private void GameWorldInit()
         {
-            // Set screen location in middle of screen (viewport width/height)
-            Player.Position = new Point(World.Width / 2, World.Height / 2);
-
             // Add into entity manager
             EntityManager.SpawnAt(Player.Position, Player);
 
