@@ -42,7 +42,7 @@ namespace Astralis
             if (!Constants.DebugMode)
                 return new MainMenuScene();
             else
-                return new OverworldScene(false);
+                return new GameplayScene(false);
         }
     }
 }

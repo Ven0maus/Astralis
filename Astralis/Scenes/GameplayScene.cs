@@ -11,24 +11,28 @@ using System.Collections.Generic;
 
 namespace Astralis.Scenes
 {
-    internal class OverworldScene : Scene
+    internal class GameplayScene : Scene
     {
-        private World _world;
+        private readonly World _world;
         private WorldScreen _worldScreen;
+
+        public static GameplayScene Instance { get; private set; }
 
         /// <summary>
         /// Used to push information between the mainmenu if this overworld is used as a background visual for it.
         /// </summary>
         public event EventHandler<WorldScreen> OnFadeFinished;
 
+        public Player Player { get; private set; }
         public World World { get { return _world; } }
         public ConcurrentEntityManager EntityManager { get; private set; }
 
         private readonly bool _isMainMenu;
-        private readonly Dictionary<int, (int left, int backwards)> _npcGlyphs;
+        private readonly int[] _npcGlyphs;
 
-        public OverworldScene(bool mainMenu, string savePath = null)
+        public GameplayScene(bool mainMenu, string savePath = null)
         {
+            Instance = this;
             _isMainMenu = mainMenu;
 
             // Generates procedural npc glyphs that can be used
@@ -51,17 +55,20 @@ namespace Astralis.Scenes
             Children.Add(_worldScreen);
         }
 
-        ~OverworldScene()
+        ~GameplayScene()
         {
             Dispose();
         }
 
-        public void StartGame()
+        public void StartGame(Player player)
         {
+            Player = player;
+            GameWorldInit();
+
             if (!Constants.DebugMode)
             {
                 var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
-                fadeEffect.OnFinished += GameStart;
+                fadeEffect.OnFinished = GameStart;
                 Effects.Add(fadeEffect);
             }
             else
@@ -70,9 +77,30 @@ namespace Astralis.Scenes
             }
         }
 
+        /// <summary>
+        /// Called before the world is transitioned
+        /// </summary>
+        private void GameWorldInit()
+        {
+            // Set screen location
+            Player.Position = new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2);
+
+            // Add into entity manager
+            EntityManager.SpawnAt(Player.Position, Player);
+
+            // Set to a valid world location based on current world location (0, 0)
+            Player.AdjustWorldPositionToValidLocation();
+
+            // Adjust world camera position on the same position of the player
+            _worldScreen.SetCameraPosition(Player.WorldPosition);
+        }
+
+        /// <summary>
+        /// Called after the game world is transitioned
+        /// </summary>
         private void GameStart()
         {
-            // TODO
+            // TODO:
         }
 
         public void FadeIn(int seconds, Action<WorldScreen> actionOnStart = null)

@@ -94,6 +94,12 @@ namespace Astralis.Scenes.Screens
             Dispose();
         }
 
+        public Player GetCreatedPlayer(Point worldPosition)
+        {
+            var traits = _selectedTraits.Items.Select(a => NpcTraits.Get.NpcTraits[((ColoredString)a).String]);
+            return new Player(worldPosition, (Gender)_gender.SelectedItem, (Race)_race.SelectedItem, (Class)_class.SelectedItem, traits);
+        }
+
         public void ShowHide()
         {
             IsVisible = !IsVisible;
@@ -460,7 +466,7 @@ namespace Astralis.Scenes.Screens
 
         private void AddCharacterToNpcFont()
         {
-            SadFont sadFont = NpcFontHelper.GetProceduralNpcFont();
+            SadFont sadFont = NpcFontHelper.GetProceduralNpcFont(overwrite: true);
 
             var facings = new[] { Facing.Forward, Facing.Left, Facing.Backwards };
             foreach (var facing in facings)

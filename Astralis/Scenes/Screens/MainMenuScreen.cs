@@ -19,12 +19,12 @@ namespace Astralis.Scenes.Screens
             Exit_Game
         }
 
-        private OverworldScene _backgroundOverworldScene;
+        private GameplayScene _backgroundOverworldScene;
         private OptionsScreen _optionsScreen;
         private LoadGameScreen _loadGameScreen;
         private CharacterCreationScreen _characterCreationScreen;
 
-        public MainMenuScreen(OverworldScene overworldScene) : base(Constants.ScreenWidth, Constants.ScreenHeight)
+        public MainMenuScreen(GameplayScene overworldScene) : base(Constants.ScreenWidth, Constants.ScreenHeight)
         {
             _backgroundOverworldScene = overworldScene;
             _optionsScreen = new OptionsScreen() { IsVisible = false }; Children.Add(_optionsScreen);
@@ -169,8 +169,8 @@ namespace Astralis.Scenes.Screens
 
             _backgroundOverworldScene.OnFadeFinished -= StartGame;
 
-            Game.Instance.Screen = new OverworldScene(false);
-            ((OverworldScene)Game.Instance.Screen).StartGame();
+            Game.Instance.Screen = new GameplayScene(false);
+            ((GameplayScene)Game.Instance.Screen).StartGame(_characterCreationScreen.GetCreatedPlayer(new Point(0, 0)));
         }
 
         private void LoadGame()

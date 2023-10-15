@@ -10,6 +10,7 @@ namespace Astralis.GameCode.WorldGen
     {
         public byte CellType { get; set; }
         public bool BlocksView { get; set; }
+        public bool Walkable { get; set; }
 
         public ObjectTile(ObjectTileKey key)
         {
@@ -18,13 +19,15 @@ namespace Astralis.GameCode.WorldGen
             BlocksView = key.BlocksView;
             Background = key.Background;
             Foreground = key.Foreground;
+            Walkable = key.Walkable;
         }
 
         public bool Equals(ObjectTile other)
         {
             return other != null &&
                 CellType == other.CellType &&
-                BlocksView == other.BlocksView;
+                BlocksView == other.BlocksView &&
+                Walkable == other.Walkable;
         }
 
         public override bool Equals(object obj)
@@ -34,7 +37,7 @@ namespace Astralis.GameCode.WorldGen
 
         public override int GetHashCode()
         {
-            return CellType.GetHashCode() ^ BlocksView.GetHashCode();
+            return CellType.GetHashCode() ^ BlocksView.GetHashCode() ^ Walkable.GetHashCode();
         }
     }
 
@@ -45,6 +48,7 @@ namespace Astralis.GameCode.WorldGen
     {
         public byte CellType { get; set; }
         public bool BlocksView { get; set; }
+        public bool Walkable { get; set; }
 
         public ObjectTileKey(BiomeGeneration.BiomeObject obj, Random random)
         {
@@ -52,6 +56,7 @@ namespace Astralis.GameCode.WorldGen
             CellType = worldObject.Id;
             Glyph = worldObject.Glyphs.Random(random);
             BlocksView = worldObject.BlocksView;
+            Walkable = worldObject.Walkable;
             Background = Color.Transparent;
             Foreground = obj.CopyBiomeColor != null && obj.CopyBiomeColor.Value ? obj.Biome.Color :
                 worldObject.Colors.Random(random);
@@ -64,7 +69,8 @@ namespace Astralis.GameCode.WorldGen
                 BlocksView == other.BlocksView &&
                 Glyph == other.Glyph &&
                 Background == other.Background &&
-                Foreground == other.Foreground;
+                Foreground == other.Foreground &&
+                Walkable == other.Walkable;
         }
 
         public override bool Equals(object obj)
@@ -80,6 +86,7 @@ namespace Astralis.GameCode.WorldGen
             hash = hash * 31 + Glyph.GetHashCode();
             hash = hash * 31 + Background.GetHashCode();
             hash = hash * 31 + Foreground.GetHashCode();
+            hash = hash * 31 + Walkable.GetHashCode();
             return hash;
         }
     }

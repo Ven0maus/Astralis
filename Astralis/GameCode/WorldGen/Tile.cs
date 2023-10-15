@@ -13,6 +13,15 @@ namespace Astralis.GameCode.WorldGen
         {
             get { return Object != null && Object.BlocksView; }
         }
+        public bool Walkable 
+        { 
+            get 
+            {
+                if (CellType == (int)BiomeType.Ocean || CellType == (int)BiomeType.River)
+                    return false;
+                return Object == null || Object.Walkable;
+            } 
+        }
         public bool IsExplored { get; set; }
         public ObjectTile Object { get; set; }
 

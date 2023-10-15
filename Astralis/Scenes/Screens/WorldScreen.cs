@@ -12,7 +12,7 @@ namespace Astralis.Scenes.Screens
     {
         private readonly World _world;
         private Point startDragPos;
-        private bool isDragging = false;
+        private bool _isDragging = false;
 
         private readonly FontWindow _fontWindow;
         private readonly ScreenSurface _objectsLayer;
@@ -134,14 +134,14 @@ namespace Astralis.Scenes.Screens
 
             Point mousePos = state.CellPosition;
 
-            if (state.Mouse.LeftButtonDown && !isDragging)
+            if (state.Mouse.LeftButtonDown && !_isDragging)
             {
                 // Mouse button is pressed, start tracking the drag operation
-                isDragging = true;
+                _isDragging = true;
                 startDragPos = mousePos;
             }
 
-            if (isDragging)
+            if (_isDragging)
             {
                 // Do camera movement
                 MoveCamera(startDragPos, mousePos);
@@ -150,10 +150,10 @@ namespace Astralis.Scenes.Screens
                 startDragPos = mousePos;
             }
 
-            if (!state.Mouse.LeftButtonDown && isDragging)
+            if (!state.Mouse.LeftButtonDown && _isDragging)
             {
                 // Mouse button was released after dragging, stop tracking the drag operation
-                isDragging = false;
+                _isDragging = false;
             }
 
             // If not dragging, call the base method to handle other mouse events
@@ -178,6 +178,12 @@ namespace Astralis.Scenes.Screens
 
             // Move the viewport based on the camera position
             _world.Center(CameraPosition.X, CameraPosition.Y);
+        }
+
+        internal void SetCameraPosition(Point position)
+        {
+            if (_isDragging) return;
+            CameraPosition = position;
         }
     }
 }

@@ -47,6 +47,7 @@ namespace Astralis.Configuration.Models
         public string Name { get; set; }
 
         public bool BlocksView { get; set; }
+        public bool Walkable { get; set; }
 
         [JsonConverter(typeof(IntArrayConverter))]
         public int[] Glyphs { get; set; }

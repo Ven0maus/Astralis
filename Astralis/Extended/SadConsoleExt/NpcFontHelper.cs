@@ -76,14 +76,14 @@ namespace Astralis.Extended.SadConsoleExt
             return Constants.Fonts.NpcFonts.PredefinedColors[Constants.Random.Next(0, Constants.Fonts.NpcFonts.PredefinedColors.Length)];
         }
 
-        public static Dictionary<int, (int left, int backwards)> GenerateRandomNpcGlyphs(string savePath = null)
+        public static int[] GenerateRandomNpcGlyphs(string savePath = null)
         {
             var skinColorStartEnd = Constants.Fonts.NpcFonts.GetSkinColors(Race.Human);
             var skinColors = skinColorStartEnd[0].LerpSteps(skinColorStartEnd[1], 15);
 
             var facings = new[] { Facing.Forward, Facing.Left, Facing.Backwards };
             var uniqueCombinations = new HashSet<NpcCombination>();
-            var npcGlyphs = new Dictionary<int, (int left, int backwards)>();
+            var npcGlyphs = new List<int>();
             const int total = 76;
             int half = total / 2;
             // Generate glyphs
@@ -116,12 +116,12 @@ namespace Astralis.Extended.SadConsoleExt
                     var index = CreateNpcGlyph(facing, gender, skinColor, hairColor, shirtColor, pantsColor, true);
                     indexes.Add(index);
                 }
-                npcGlyphs.Add(indexes[0], (indexes[1], indexes[2]));
+                npcGlyphs.Add(indexes[0]);
             }
             SaveFont(GetProceduralNpcFont(savePath));
             SaveNpcFonts();
 
-            return npcGlyphs;
+            return npcGlyphs.ToArray();
         }
 
         public static int CreateNpcGlyph(
@@ -198,9 +198,9 @@ namespace Astralis.Extended.SadConsoleExt
         }
 
         private static SadFont _proceduralNpcFont;
-        public static SadFont GetProceduralNpcFont(string savePath = null)
+        public static SadFont GetProceduralNpcFont(string savePath = null, bool overwrite = false)
         {
-            if (_proceduralNpcFont != null) return _proceduralNpcFont;
+            if (!overwrite && _proceduralNpcFont != null) return _proceduralNpcFont;
 
             var path = savePath ?? Constants.Fonts.NpcFonts.ProceduralNpcsFont;
 

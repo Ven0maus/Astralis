@@ -9,6 +9,35 @@ namespace Astralis.Extended
 {
     internal static class Extensions
     {
+        public static IEnumerable<Point> GetCirclePositions(this Point center, int radius)
+        {
+            var coords = new List<Point>(radius * radius);
+            for (int y = center.Y - radius; y <= center.Y + radius; y++)
+            {
+                for (int x = center.X - radius; x <= center.X + radius; x++)
+                {
+                    coords.Add(new Point(x, y));
+                }
+            }
+
+            foreach (var coord in coords)
+            {
+                if (((coord.X - center.X) * (coord.X - center.X)) + ((coord.Y - center.Y) * (coord.Y - center.Y)) <= radius * radius)
+                    yield return coord;
+            }
+        }
+
+        public static IEnumerable<Point> GetSquarePositions(this Point center, int radius)
+        {
+            for (int x=center.X - radius; x <= center.X + radius; x++)
+            {
+                for (int y = center.Y - radius; y <= center.Y + radius; y++)
+                {
+                    yield return new Point(x, y);
+                }
+            }
+        }
+
         public static void PrettyPrint(this ICellSurface surface, int x, int y, ColoredString text)
         {
             if (string.IsNullOrWhiteSpace(text.String)) return;

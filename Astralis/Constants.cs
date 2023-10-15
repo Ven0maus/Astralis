@@ -93,6 +93,11 @@ namespace Astralis
             public const int ChunkSize = 32;
         }
 
+        public static class PlayerData
+        {
+            public const int PlayerForwardGlyph = 2;
+        }
+
         public static class Configuration
         {
             public const string JsonFilesPath = "Configuration/Data";

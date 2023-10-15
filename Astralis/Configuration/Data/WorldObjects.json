@@ -4,6 +4,7 @@
       "id": 1,
       "name": "OakTree",
       "blocksview": true,
+      "walkable": false,
       "glyphs": [ 1 ],
       "colors": [ "#FFFFFF" ]
     },
@@ -11,6 +12,7 @@
       "id": 2,
       "name": "SwampTree",
       "blocksview": true,
+      "walkable": false,
       "glyphs": [ 2 ],
       "colors": [ "#7c9465" ]
     },
@@ -18,6 +20,7 @@
       "id": 3,
       "name": "PalmTree",
       "blocksview": true,
+      "walkable": false,
       "glyphs": [ 5 ],
       "colors": [ "#568749" ]
     },
@@ -25,6 +28,7 @@
       "id": 4,
       "name": "Rock",
       "blocksview": true,
+      "walkable": false,
       "glyphs": [ 3, 4 ],
       "colors": [ "#545454" ]
     },
@@ -32,6 +36,7 @@
       "id": 5,
       "name": "Wave",
       "blocksview": false,
+      "walkable": false,
       "glyphs": [ 6 ],
       "colors": [ "#0077BE" ]
     },
@@ -39,6 +44,7 @@
       "id": 6,
       "name": "Grass",
       "blocksview": false,
+      "walkable": true,
       "glyphs": [ 7, 8, 18 ],
       "colors": [ "#00cc66" ]
     },
@@ -46,6 +52,7 @@
       "id": 7,
       "name": "Flowers",
       "blocksview": false,
+      "walkable": true,
       "glyphs": [ 9, 10, 11 ],
       "colors": [ "#ffb3ff", "#ffff80", "#4d94ff", "#b3ffff" ]
     },
@@ -53,6 +60,7 @@
       "id": 8,
       "name": "Sticks",
       "blocksview": false,
+      "walkable": true,
       "glyphs": [ 12, 13 ],
       "colors": [ "#4d2600", "#331a00" ]
     },
@@ -60,6 +68,7 @@
       "id": 9,
       "name": "AppleTree",
       "blocksview": true,
+      "walkable": false,
       "glyphs": [ 14 ],
       "colors": [ "#FFFFFF" ]
     },
@@ -67,6 +76,7 @@
       "id": 10,
       "name": "DeadTree",
       "blocksview": false,
+      "walkable": false,
       "glyphs": [ 15 ],
       "colors": [ "#FFFFFF" ]
     },
@@ -74,6 +84,7 @@
       "id": 11,
       "name": "Cactus",
       "blocksview": false,
+      "walkable": false,
       "glyphs": [ 16, 17 ],
       "colors": [ "#009933", "#006622" ]
     },
@@ -81,6 +92,7 @@
       "id": 12,
       "name": "SandWave",
       "blocksview": false,
+      "walkable": true,
       "glyphs": [ 19 ],
       "colors": [ "#7c9465" ]
     },
@@ -88,6 +100,7 @@
       "id": 13,
       "name": "SnowHeap",
       "blocksview": false,
+      "walkable": true,
       "glyphs": [ 20 ],
       "colors": [ "#FFFFFF" ]
     },
@@ -95,6 +108,7 @@
       "id": 14,
       "name": "IceBlock",
       "blocksview": false,
+      "walkable": false,
       "glyphs": [ 21 ],
       "colors": [ "#5cceff" ]
     },
@@ -102,6 +116,7 @@
       "id": 15,
       "name": "SwampPuddle",
       "blocksview": false,
+      "walkable": false,
       "glyphs": [ 22 ],
       "colors": [ "#FFFFFF" ]
     },
@@ -109,6 +124,7 @@
       "id": 16,
       "name": "Bush",
       "blocksview": false,
+      "walkable": false,
       "glyphs": [ 23, 24 ],
       "colors": [ "#7f8866" ]
     },
@@ -116,6 +132,7 @@
       "id": 17,
       "name": "PineTree",
       "blocksview": true,
+      "walkable": false,
       "glyphs": [ 25 ],
       "colors": [ "#104305" ]
     },
@@ -123,6 +140,7 @@
       "id": 18,
       "name": "Pebbles",
       "blocksview": false,
+      "walkable": true,
       "glyphs": [ 26 ],
       "colors": [ "#808080" ]
     },
@@ -130,6 +148,7 @@
       "id": 19,
       "name": "IcyGround",
       "blocksview": false,
+      "walkable": true,
       "glyphs": [ 27 ],
       "colors": [ "#FFFFFF" ]
     }
