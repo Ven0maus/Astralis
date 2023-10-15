@@ -94,6 +94,7 @@ namespace Astralis
         public static class PlayerData
         {
             public const int PlayerForwardGlyph = 2;
+            public const float SmoothMoveTransition = 100f;
         }
 
         public static class Configuration

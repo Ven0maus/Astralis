@@ -13,12 +13,12 @@ namespace Astralis.Scenes
     internal class GameplayScene : Scene
     {
         private readonly World _world;
-        private WorldScreen _worldScreen;
+        public WorldScreen Display { get; private set; }
 
         public static GameplayScene Instance { get; private set; }
 
-        public Point WorldSourceFontSize { get { return _worldScreen.WorldSourceFontSize; } }
-        public Point WorldFontSize { get { return _worldScreen.FontSize; } }
+        public Point WorldSourceFontSize { get { return Display.WorldSourceFontSize; } }
+        public Point WorldFontSize { get { return Display.FontSize; } }
 
         /// <summary>
         /// Used to push information between the mainmenu if this overworld is used as a background visual for it.
@@ -57,9 +57,9 @@ namespace Astralis.Scenes
             };
 
             // Create world renderer
-            _worldScreen = new WorldScreen(_world, _isMainMenu);
-            _worldScreen.SadComponents.Add(EntityManager.EntityComponent);
-            Children.Add(_worldScreen);
+            Display = new WorldScreen(_world, _isMainMenu);
+            Display.SadComponents.Add(EntityManager.EntityComponent);
+            Children.Add(Display);
         }
 
         ~GameplayScene()
@@ -70,26 +70,26 @@ namespace Astralis.Scenes
         public void StartGame(Player player)
         {
             Player = player;
-            GameWorldInit();
+            GameWorldPreload();
 
             if (!Constants.DebugMode)
             {
-                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces())
+                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, new[] { Display })
                 {
-                    OnFinished = GameStart
+                    OnFinished = GameWorldAfterLoad
                 };
                 Effects.Add(fadeEffect);
             }
             else
             {
-                GameStart();
+                GameWorldAfterLoad();
             }
         }
 
         /// <summary>
         /// Called before the world is transitioned
         /// </summary>
-        private void GameWorldInit()
+        private void GameWorldPreload()
         {
             // Add into entity manager
             EntityManager.SpawnAt(Player.Position, Player);
@@ -98,30 +98,25 @@ namespace Astralis.Scenes
             Player.AdjustWorldPositionToValidLocation();
 
             // Adjust world camera position on the same position of the player
-            SetCameraPosition(Player.WorldPosition);
-        }
-
-        public void SetCameraPosition(Point worldPosition)
-        {
-            _worldScreen.SetCameraPosition(worldPosition);
+            Display.SetCameraPosition(Player.WorldPosition);
         }
 
         /// <summary>
         /// Called after the game world is transitioned
         /// </summary>
-        private void GameStart()
+        private void GameWorldAfterLoad()
         {
             // TODO:
         }
 
         public void FadeIn(int seconds, Action<WorldScreen> actionOnStart = null)
         {
-            actionOnStart?.Invoke(_worldScreen);
-            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(seconds), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces())
+            actionOnStart?.Invoke(Display);
+            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(seconds), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, new[] { Display })
             {
                 OnFinished = () =>
                 {
-                    OnFadeFinished?.Invoke(null, _worldScreen);
+                    OnFadeFinished?.Invoke(null, Display);
                 }
             };
             Effects.Add(fadeEffect);
@@ -129,12 +124,12 @@ namespace Astralis.Scenes
 
         public void FadeOut(int seconds, Action<WorldScreen> actionOnStart = null)
         {
-            actionOnStart?.Invoke(_worldScreen);
-            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(seconds), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, _worldScreen.GetSurfaces())
+            actionOnStart?.Invoke(Display);
+            var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(seconds), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeOut, false, new[] { Display })
             {
                 OnFinished = () =>
                 {
-                    OnFadeFinished?.Invoke(null, _worldScreen);
+                    OnFadeFinished?.Invoke(null, Display);
                 }
             };
             Effects.Add(fadeEffect);
@@ -142,11 +137,11 @@ namespace Astralis.Scenes
 
         public override void Dispose()
         {
-            if (_worldScreen != null)
+            if (Display != null)
             {
-                _worldScreen.IsFocused = false;
-                _worldScreen.Dispose();
-                _worldScreen = null;
+                Display.IsFocused = false;
+                Display.Dispose();
+                Display = null;
             }
 
             GC.SuppressFinalize(this);

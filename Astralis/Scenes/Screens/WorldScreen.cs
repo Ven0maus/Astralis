@@ -1,6 +1,7 @@
 ﻿using Astralis.Extended.SadConsoleExt;
 using Astralis.GameCode.WorldGen;
 using SadConsole;
+using SadConsole.Components;
 using SadConsole.Input;
 using SadRogue.Primitives;
 using System;
@@ -15,9 +16,11 @@ namespace Astralis.Scenes.Screens
         private bool _isDragging = false;
 
         private readonly FontWindow _fontWindow;
+        private readonly SmoothMove _smoothMove;
 
         public Point WorldSourceFontSize { get { return Font.GetFontSize(IFont.Sizes.One); } }
         public Point CameraPosition { get; private set; } = new(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
+        public bool IsMoving { get { return _smoothMove.IsMoving; } }
 
         /// <summary>
         /// If true will auto pan the camera into one direction forever, to be shown on the main menu.
@@ -26,6 +29,7 @@ namespace Astralis.Scenes.Screens
 
         public WorldScreen(World world, bool isMainMenu) : base(world.Width, world.Height)
         {
+            Position = new Point(-1, -1);
             // Set 16x16 font for the overworld
             Font = Game.Instance.Fonts[Constants.Fonts.WorldFonts.WorldFont];
 
@@ -36,7 +40,13 @@ namespace Astralis.Scenes.Screens
             // Resize world screen to fit the new fontsize
             if (zoomFactor != 1f)
             {
-                Point newSize = ((int)Math.Ceiling(Width / Constants.WorldGeneration.WorldZoomFactor), (int)Math.Ceiling(Height / Constants.WorldGeneration.WorldZoomFactor));
+                Point newSize = ((int)Math.Ceiling(Width / Constants.WorldGeneration.WorldZoomFactor) + 2, (int)Math.Ceiling(Height / Constants.WorldGeneration.WorldZoomFactor) + 2);
+                world.ResizeViewport(newSize.X, newSize.Y);
+                Resize(newSize.X, newSize.Y, false);
+            }
+            else
+            {
+                var newSize = new Point(Width + 2, Height + 2);
                 world.ResizeViewport(newSize.X, newSize.Y);
                 Resize(newSize.X, newSize.Y, false);
             }
@@ -56,11 +66,22 @@ namespace Astralis.Scenes.Screens
             // Set screen properties
             UseMouse = true;
             IsFocused = true;
+
+            // Add smooth move for player movement
+            _smoothMove = new SmoothMove(TimeSpan.FromMilliseconds(Constants.PlayerData.SmoothMoveTransition));
+            SadComponents.Add(_smoothMove);
         }
 
-        public ScreenSurface[] GetSurfaces()
+        public void DisableSmoothMove()
         {
-            return new[] { this };
+            if (_smoothMove.IsMoving) return;
+            SadComponents.Remove(_smoothMove);
+        }
+
+        public void EnableSmoothMove()
+        {
+            if (SadComponents.Contains(_smoothMove)) return;
+            SadComponents.Add(_smoothMove);
         }
 
         private readonly CellDecorator[] _objectArrayCache = new CellDecorator[1];

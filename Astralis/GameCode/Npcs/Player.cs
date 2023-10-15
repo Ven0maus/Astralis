@@ -2,6 +2,7 @@
 using Astralis.Scenes;
 using SadConsole.Input;
 using SadRogue.Primitives;
+using System;
 using System.Collections.Generic;
 
 namespace Astralis.GameCode.Npcs
@@ -9,29 +10,54 @@ namespace Astralis.GameCode.Npcs
     internal class Player : Actor
     {
         public static Player Instance { get; private set; }
+        private Direction _lastMovement;
+        private bool _movementCompleted = false, _canMove = true;
 
         public Player(Point worldPosition, Gender gender, Race race, Class @class, IEnumerable<NpcTrait> traits)
             : base(worldPosition, Constants.PlayerData.PlayerForwardGlyph, gender, race, @class, traits)
         {
             Instance = this;
             UseKeyboard = true;
-            OnWorldPositionChanged += Player_OnWorldPositionChanged;
+            _smoothMove.MoveEnded += OnMovementCompleted;
+            IsVisible = true;
 
-            // TODO: Implement custom smooth move for player
-            // The sadconsole surface needs to lerp its position using pixelpositions
-            // Then when the lerp is finished, the flowvitae grid should center on the new location
-            // The sadconsole surface should position back into the original position (because this is now the center)
-            // This means the worldscreen should be atleast 2x2 larger (1 in each direction)
-            // And ofcourse the world should match the worldscreen so it can render it.
+            // Set starting position with no smooth movement
             SadComponents.Remove(_smoothMove);
-
             base.SetPosition(new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2));
+            SadComponents.Add(_smoothMove);
         }
 
-        private void Player_OnWorldPositionChanged(object sender, PositionChangedArgs e)
+        public override void Update(TimeSpan delta)
         {
-            GameplayScene.Instance.World.Center(WorldPosition);
-            GameplayScene.Instance.SetCameraPosition(WorldPosition);
+            base.Update(delta);
+
+            // When the character finished its movement animation, wait until surface is done  too
+            if (_movementCompleted && !GameplayScene.Instance.Display.IsMoving)
+            {
+                // Adjust center position of FlowVitae
+                GameplayScene.Instance.World.Center(WorldPosition);
+
+                // Reset position of the sadconsole surface
+                GameplayScene.Instance.Display.DisableSmoothMove();
+                GameplayScene.Instance.Display.Position += _lastMovement;
+                GameplayScene.Instance.Display.EnableSmoothMove();
+
+                // Adjust camera position to match FlowVitae
+                GameplayScene.Instance.Display.SetCameraPosition(WorldPosition);
+
+                // Set player back to the center without smooth movement
+                SadComponents.Remove(_smoothMove);
+                Position -= _lastMovement;
+                SadComponents.Add(_smoothMove);
+
+                _movementCompleted = false;
+                _canMove = true;
+            }
+        }
+
+        private void OnMovementCompleted(object sender, EventArgs e)
+        {
+            _movementCompleted = true;
         }
 
         /// <summary>
@@ -39,7 +65,19 @@ namespace Astralis.GameCode.Npcs
         /// </summary>
         /// <param name="new"></param>
         protected override void SetPosition(Point @new)
-        { }
+        {
+            var prev = Position;
+            int deltaX = Math.Abs(@new.X - prev.X);
+            int deltaY = Math.Abs(@new.Y - prev.Y);
+            var moveOneTileOnly = (deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1);
+            if (!moveOneTileOnly) return;
+
+            var direction = Direction.GetDirection(prev, @new);
+            _lastMovement = direction;
+            Position += direction;
+            GameplayScene.Instance.Display.Position -= direction; // Move in opposite direction
+            _canMove = false;
+        }
 
         /// <summary>
         /// Puts the player nearby with enough space, like an unstuck function.
@@ -47,12 +85,9 @@ namespace Astralis.GameCode.Npcs
         public void AdjustWorldPositionToValidLocation()
         {
             // Calculate a suitable position to spawn the player
-            var position = FindSuitableSpawnLocation(WorldPosition);
-            var prev = WorldPosition;
-            MoveTowards(position, true);
-            // Extra center, in case the position happens to be the same as initial position
-            if (prev == position)
-                GameplayScene.Instance.World.Center(WorldPosition);
+            WorldPosition = FindSuitableSpawnLocation(WorldPosition);
+            GameplayScene.Instance.World.Center(WorldPosition);
+            GameplayScene.Instance.Display.SetCameraPosition(WorldPosition);
         }
 
         public override bool ProcessKeyboard(Keyboard keyboard)
@@ -68,6 +103,12 @@ namespace Astralis.GameCode.Npcs
             }
 
             return base.ProcessKeyboard(keyboard);
+        }
+
+        public override bool CanMoveTowards(Point @new, bool canTeleport = false)
+        {
+            if (!_canMove) return false;
+            return base.CanMoveTowards(@new, canTeleport);
         }
 
         private readonly Dictionary<Keys, Direction> _playerMovements =

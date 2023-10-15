@@ -20,7 +20,7 @@ namespace Astralis.GameCode.Npcs
         public Gender Gender { get; private init; }
         public Race Race { get; private init; }
         public Class Class { get; private init; }
-        public Point WorldPosition { get; private set; }
+        public Point WorldPosition { get; protected set; }
         public bool IsMoving { get { return _smoothMove.IsMoving; } }
 
         private readonly int _forwardGlyph;
@@ -37,7 +37,23 @@ namespace Astralis.GameCode.Npcs
 
             _forwardGlyph = forwardGlyph;
 
-            _smoothMove = new SmoothMove(GameplayScene.Instance.WorldFontSize);
+            // If the world position falls within the screenview, we update the entity position
+            var worldPositionOnScreen = GameplayScene.Instance.World.IsWorldCoordinateOnViewPort(WorldPosition);
+            if (worldPositionOnScreen)
+            {
+                var screenCoordinate = GameplayScene.Instance.World.WorldToScreenCoordinate(WorldPosition);
+                SetPosition(screenCoordinate);
+
+                // In screen, make visible
+                IsVisible = true;
+            }
+            else
+            {
+                // Not in screen, make invisible
+                IsVisible = false;
+            }
+
+            _smoothMove = new SmoothMove(GameplayScene.Instance.WorldFontSize, this is Player ? TimeSpan.FromMilliseconds(Constants.PlayerData.SmoothMoveTransition) : TimeSpan.FromMilliseconds(200));
             SadComponents.Add(_smoothMove);
 
             UseMouse = false;
@@ -51,7 +67,7 @@ namespace Astralis.GameCode.Npcs
 
         public void MoveTowards(Point pos, bool canTeleport = false, bool checkCollision = true)
         {
-            if (WorldPosition == pos) return;
+            if (WorldPosition == pos || _smoothMove.IsMoving) return;
             SetFacing(CalculateFacingDirection(WorldPosition, pos));
             if (checkCollision && !CanMoveTowards(pos, canTeleport)) return;
 
@@ -81,8 +97,9 @@ namespace Astralis.GameCode.Npcs
             Position = @new;
         }
 
-        public bool CanMoveTowards(Point @new, bool canTeleport = false)
+        public virtual bool CanMoveTowards(Point @new, bool canTeleport = false)
         {
+            if (_smoothMove.IsMoving) return false;
             return IsPositionValid(WorldPosition, @new, canTeleport);
         }
 
