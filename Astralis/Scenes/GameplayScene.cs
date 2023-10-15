@@ -36,6 +36,12 @@ namespace Astralis.Scenes
             Instance = this;
             _isMainMenu = mainMenu;
 
+            if (Constants.DebugMode)
+            {
+                // Create gamedata npc font when running through debugmode
+                _ = NpcFontHelper.GetGamedataNpcFont();
+            }
+
             // For main menu scene, we can just use the base npc font, as we don't need the player visual
             EntityManager = new ConcurrentEntityManager();
             EntityManager.EntityComponent.AlternativeFont = _isMainMenu ?

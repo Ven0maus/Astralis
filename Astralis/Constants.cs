@@ -7,7 +7,7 @@ namespace Astralis
 {
     public class Constants
     {
-        public static int GameSeed = 601;
+        public static int GameSeed = 600;
         public const bool DebugMode = false;
         public const bool FullScreen = false;
 
