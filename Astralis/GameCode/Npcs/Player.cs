@@ -20,7 +20,7 @@ namespace Astralis.GameCode.Npcs
             // TODO: Implement custom smooth move for player
             // The sadconsole surface needs to lerp its position using pixelpositions
             // Then when the lerp is finished, the flowvitae grid should center on the new location
-            // The sadconsole surface should position back into the original position
+            // The sadconsole surface should position back into the original position (because this is now the center)
             // This means the worldscreen should be atleast 2x2 larger (1 in each direction)
             // And ofcourse the world should match the worldscreen so it can render it.
             SadComponents.Remove(_smoothMove);
