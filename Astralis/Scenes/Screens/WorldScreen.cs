@@ -15,7 +15,6 @@ namespace Astralis.Scenes.Screens
         private bool _isDragging = false;
 
         private readonly FontWindow _fontWindow;
-        private readonly ScreenSurface _objectsLayer;
 
         public Point WorldSourceFontSize { get { return Font.GetFontSize(IFont.Sizes.One); } }
         public Point CameraPosition { get; private set; } = new(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
@@ -28,7 +27,7 @@ namespace Astralis.Scenes.Screens
         public WorldScreen(World world, bool isMainMenu) : base(world.Width, world.Height)
         {
             // Set 16x16 font for the overworld
-            Font = Game.Instance.Fonts[Constants.Fonts.UserInterfaceFonts.Anno];
+            Font = Game.Instance.Fonts[Constants.Fonts.WorldFonts.WorldFont];
 
             // Make world zoom in
             var zoomFactor = isMainMenu ? 1f : Constants.WorldGeneration.WorldZoomFactor;
@@ -41,19 +40,6 @@ namespace Astralis.Scenes.Screens
                 world.ResizeViewport(newSize.X, newSize.Y);
                 Resize(newSize.X, newSize.Y, false);
             }
-
-            _objectsLayer = new ScreenSurface(Width, Height)
-            {
-                Font = Game.Instance.Fonts[Constants.Fonts.WorldFonts.WorldObjects],
-                FontSize = FontSize,
-                UseMouse = false,
-                UseKeyboard = false
-            };
-            foreach (var cell in _objectsLayer.Surface)
-                cell.IsVisible = false;
-
-            _objectsLayer.Surface.IsDirty = true;
-            Children.Add(_objectsLayer);
 
             _fontWindow = new FontWindow(Font);
             Children.Add(_fontWindow);
@@ -74,38 +60,44 @@ namespace Astralis.Scenes.Screens
 
         public ScreenSurface[] GetSurfaces()
         {
-            return new[] { this, _objectsLayer };
+            return new[] { this };
         }
 
+        private readonly CellDecorator[] _objectArrayCache = new CellDecorator[1];
         public void OnCellUpdate(object sender, CellUpdateArgs<byte, Tile> args)
         {
             if (Width != _world.Width) return;
-            var surface = Surface;
+
             var cell = args.Cell;
+            int index = args.ScreenY * Width + args.ScreenX;
+
             if (cell == null)
             {
-                surface[args.ScreenX, args.ScreenY].IsVisible = false;
+                Surface[index].IsVisible = false;
                 return;
             }
 
-            surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(cell, false);
-            surface[args.ScreenX, args.ScreenY].IsVisible = cell.IsVisible;
-            surface.IsDirty = true;
+            Surface[index].CopyAppearanceFrom(cell, false);
+            Surface[index].IsVisible = cell.IsVisible;
 
             if (cell.Object != null)
             {
-                _objectsLayer.Surface[args.ScreenX, args.ScreenY].CopyAppearanceFrom(cell.Object, false);
-                _objectsLayer.Surface[args.ScreenX, args.ScreenY].IsVisible = cell.IsVisible;
-                _objectsLayer.Surface.IsDirty = true;
+                if (Surface[index].Decorators != null && Surface[index].Decorators.Count > 0)
+                    Surface.ClearDecorators(index, 1);
+
+                if (cell.Object.IsVisible)
+                {
+                    _objectArrayCache[0] = new CellDecorator(cell.Object.Foreground, cell.Object.Glyph, cell.Object.Mirror);
+                    Surface.AddDecorator(index, _objectArrayCache);
+                }
             }
             else
             {
-                var prev = _objectsLayer.Surface[args.ScreenX, args.ScreenY].IsVisible;
-                _objectsLayer.Surface[args.ScreenX, args.ScreenY].IsVisible = false;
-
-                if (prev != false)
-                    _objectsLayer.Surface.IsDirty = true;
+                if (Surface[index].Decorators != null && Surface[index].Decorators.Count > 0)
+                    Surface.ClearDecorators(index, 1);
             }
+
+            Surface.IsDirty = true;
         }
 
         private double _timePassed;

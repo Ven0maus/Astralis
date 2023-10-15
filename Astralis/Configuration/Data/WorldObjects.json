@@ -5,7 +5,7 @@
       "name": "OakTree",
       "blocksview": true,
       "walkable": false,
-      "glyphs": [ 1 ],
+      "glyphs": [ 28 ],
       "colors": [ "#FFFFFF" ]
     },
     {

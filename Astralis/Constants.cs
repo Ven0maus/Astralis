@@ -40,7 +40,7 @@ namespace Astralis
 
             public static class WorldFonts
             {
-                public const string WorldObjects = "Resources/Tilesets/WorldObjects_16x16.font";
+                public const string WorldFont = "Resources/Tilesets/World_16x16.font";
             }
 
             public static class NpcFonts

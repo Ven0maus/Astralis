@@ -19,7 +19,7 @@ namespace Astralis
                 .ConfigureFonts((fontConfig, game) =>
                 {
                     fontConfig.AddExtraFonts(
-                        Constants.Fonts.WorldFonts.WorldObjects,
+                        Constants.Fonts.WorldFonts.WorldFont,
                         Constants.Fonts.UserInterfaceFonts.Anno,
                         Constants.Fonts.NpcFonts.CharacterCreationBaseFont,
                         Constants.Fonts.NpcFonts.NpcFont);
