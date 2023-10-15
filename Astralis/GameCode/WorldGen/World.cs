@@ -41,9 +41,9 @@ namespace Astralis.GameCode.WorldGen
 
         protected override Tile Convert(int x, int y, byte cellType)
         {
-            var tile = base.Convert(x, y, cellType);
             if (_generator == null) return null;
 
+            var tile = base.Convert(x, y, cellType);
             var chunkCoordinate = GetChunkCoordinate(x, y);
             var chunkData = GetChunkData(chunkCoordinate.x, chunkCoordinate.y);
 

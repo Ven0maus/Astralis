@@ -17,13 +17,13 @@ namespace Astralis.GameCode.Npcs
             OnWorldPositionChanged += Player_OnWorldPositionChanged;
             base.SetPosition(new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2));
 
-            UseMouse = false;
             UseKeyboard = true;
         }
 
         private void Player_OnWorldPositionChanged(object sender, PositionChangedArgs e)
         {
-            GameplayScene.Instance.World.Center(WorldPosition.X, WorldPosition.Y);
+            GameplayScene.Instance.World.Center(WorldPosition);
+            GameplayScene.Instance.SetCameraPosition(WorldPosition);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Astralis.GameCode.Npcs
             MoveTowards(position, true);
             // Extra center, in case the position happens to be the same as initial position
             if (prev == position)
-                GameplayScene.Instance.World.Center(WorldPosition.X, WorldPosition.Y);
+                GameplayScene.Instance.World.Center(WorldPosition);
         }
 
         public override bool ProcessKeyboard(Keyboard keyboard)

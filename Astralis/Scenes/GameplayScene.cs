@@ -17,7 +17,7 @@ namespace Astralis.Scenes
 
         public static GameplayScene Instance { get; private set; }
 
-        public Point WorldSourceFontSize { get { return _worldScreen.Font.GetFontSize(IFont.Sizes.One); } }
+        public Point WorldSourceFontSize { get { return _worldScreen.WorldSourceFontSize; } }
         public Point WorldFontSize { get { return _worldScreen.FontSize; } }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Astralis.Scenes
             };
 
             // Create world renderer
-            _worldScreen = new WorldScreen(_world);
+            _worldScreen = new WorldScreen(_world, _isMainMenu);
             _worldScreen.SadComponents.Add(EntityManager.EntityComponent);
             Children.Add(_worldScreen);
         }
@@ -90,7 +90,12 @@ namespace Astralis.Scenes
             Player.AdjustWorldPositionToValidLocation();
 
             // Adjust world camera position on the same position of the player
-            _worldScreen.SetCameraPosition(Player.WorldPosition);
+            SetCameraPosition(Player.WorldPosition);
+        }
+
+        public void SetCameraPosition(Point worldPosition)
+        {
+            _worldScreen.SetCameraPosition(worldPosition);
         }
 
         /// <summary>

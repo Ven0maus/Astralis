@@ -17,6 +17,7 @@ namespace Astralis.Scenes.Screens
         private readonly FontWindow _fontWindow;
         private readonly ScreenSurface _objectsLayer;
 
+        public Point WorldSourceFontSize { get { return Font.GetFontSize(IFont.Sizes.One); } }
         public Point CameraPosition { get; private set; } = new(Constants.ScreenWidth / 2, Constants.ScreenHeight / 2);
 
         /// <summary>
@@ -24,14 +25,22 @@ namespace Astralis.Scenes.Screens
         /// </summary>
         public bool MainMenuCamera { get; set; } = false;
 
-        public WorldScreen(World world) : base(world.Width, world.Height)
+        public WorldScreen(World world, bool isMainMenu) : base(world.Width, world.Height)
         {
             // Set 16x16 font for the overworld
             Font = Game.Instance.Fonts[Constants.Fonts.UserInterfaceFonts.Anno];
 
             // Make world zoom in
-            var zoomFactor = Constants.WorldGeneration.WorldZoomFactor;
+            var zoomFactor = isMainMenu ? 1f : Constants.WorldGeneration.WorldZoomFactor;
             FontSize = new Point((int)(Font.GlyphWidth * zoomFactor), (int)(Font.GlyphHeight * zoomFactor));
+
+            // Resize world screen to fit the new fontsize
+            if (zoomFactor != 1f)
+            {
+                Point newSize = ((int)Math.Ceiling(Width / Constants.WorldGeneration.WorldZoomFactor), (int)Math.Ceiling(Height / Constants.WorldGeneration.WorldZoomFactor));
+                world.ResizeViewport(newSize.X, newSize.Y);
+                Resize(newSize.X, newSize.Y, false);
+            }
 
             _objectsLayer = new ScreenSurface(Width, Height)
             {
@@ -70,6 +79,7 @@ namespace Astralis.Scenes.Screens
 
         public void OnCellUpdate(object sender, CellUpdateArgs<byte, Tile> args)
         {
+            if (Width != _world.Width) return;
             var surface = Surface;
             var cell = args.Cell;
             if (cell == null)
@@ -124,6 +134,13 @@ namespace Astralis.Scenes.Screens
             {
                 _fontWindow.IsVisible = !_fontWindow.IsVisible;
             }
+
+            foreach (var entity in GameplayScene.Instance.EntityManager.EntityComponent)
+            {
+                if (entity.UseKeyboard)
+                    entity.ProcessKeyboard(keyboard);
+            }
+
             return base.ProcessKeyboard(keyboard);
         }
 

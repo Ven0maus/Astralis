@@ -33,6 +33,9 @@ namespace Astralis.GameCode.Npcs
             Traits = new ObservableCollection<NpcTrait>(traits ?? Enumerable.Empty<NpcTrait>());
 
             _forwardGlyph = forwardGlyph;
+
+            UseMouse = false;
+            UseKeyboard = false;
         }
 
         public void MoveTowards(Direction dir, bool checkCollision = true)
@@ -51,10 +54,10 @@ namespace Astralis.GameCode.Npcs
             OnWorldPositionChanged?.Invoke(this, new PositionChangedArgs(oldWorldPos, pos));
 
             // If the world position falls within the screenview, we update the entity position
-            var worldPositionOnScreen = GameplayScene.Instance.World.IsWorldCoordinateOnViewPort(WorldPosition.X, WorldPosition.Y);
+            var worldPositionOnScreen = GameplayScene.Instance.World.IsWorldCoordinateOnViewPort(WorldPosition);
             if (worldPositionOnScreen)
             {
-                var screenCoordinate = GameplayScene.Instance.World.WorldToScreenCoordinate(WorldPosition.X, WorldPosition.Y);
+                var screenCoordinate = GameplayScene.Instance.World.WorldToScreenCoordinate(WorldPosition);
                 SetPosition(screenCoordinate);
 
                 // In screen, make visible
@@ -69,12 +72,7 @@ namespace Astralis.GameCode.Npcs
 
         protected virtual void SetPosition(Point @new)
         {
-            Position = NormalizePositionToFontSize(@new);
-        }
-
-        private Point NormalizePositionToFontSize(Point @new)
-        {
-            return @new.TranslateFont(GameplayScene.Instance.WorldSourceFontSize, GameplayScene.Instance.WorldFontSize);
+            Position = @new;
         }
 
         public bool CanMoveTowards(Point @new, bool canTeleport = false)
@@ -166,7 +164,7 @@ namespace Astralis.GameCode.Npcs
 
         private void SetFacing(Facing facing)
         {
-            if (Facing == Facing) return;
+            if (Facing == facing) return;
             Facing = facing;
 
             switch (Facing)
