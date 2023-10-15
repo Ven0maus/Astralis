@@ -43,6 +43,8 @@ namespace Astralis.Scenes.Screens
 
         private readonly NpcTraits NpcTraits = GameConfiguration.Load<NpcTraits>();
 
+        private readonly HoverScreen _hoverScreen;
+
         public CharacterCreationScreen(MainMenuScreen mainMenuScreen, Action<object, WorldScreen> startGameMethod) : 
             base((int)(Constants.ScreenWidth / 100f * 35), 
                 (int)(Constants.ScreenHeight / 100f * 50))
@@ -80,6 +82,10 @@ namespace Astralis.Scenes.Screens
             _characterBorderScreen.Children.Add(_characterView);
             _startGameMethod = startGameMethod;
 
+            _hoverScreen = new HoverScreen(30);
+            _hoverScreen.Hide();
+            Children.Add(_hoverScreen);
+
             Initialize();
         }
 
@@ -98,7 +104,7 @@ namespace Astralis.Scenes.Screens
             _characterBorderScreen.IsVisible = true;
             _characterView.IsVisible = true;
             Controls.Where(control => control.Name == null || control.Name.Equals(Phase.Design.ToString()) || control.Name == "Continue" || control.Name == "Cancel")
-                .ForEach(a => a.IsVisible = true);
+                .ForEach(a => a.IsVisible = IsVisible);
         }
 
         public ScreenSurface[] GetSurfaces()
@@ -217,15 +223,91 @@ namespace Astralis.Scenes.Screens
 
             _selectedTraits = AddListBox("Selected:", new Point(3, 8), Array.Empty<object>(), Phase.TraitSelection);
             _selectedTraits.Surface.DefaultBackground = Color.Black;
+            _selectedTraits.MouseMove += HandleHoverScreenTraits;
+            _selectedTraits.MouseExit += HoverScreenExit;
+
             _availableTraits = AddListBox("Traits:", _selectedTraits.Position + new Point(_selectedTraits.Width + 3, 0), traits, Phase.TraitSelection);
             _availableTraits.Surface.DefaultBackground = Color.Black;
+            _availableTraits.MouseMove += HandleHoverScreenTraits;
+            _availableTraits.MouseExit += HoverScreenExit;
 
             _traitPresets = AddComboBox("Presets:", new Point(_selectedTraits.Position.X + 1, _selectedTraits.Position.Y + _selectedTraits.Height + 1), traitPresetsList.ToArray(), Phase.TraitSelection);
             _traitPresets.SelectedItemChanged += SelectPreset;
 
-            // TODO: Add hover surface when hovering over any of the traits to see point cost and their description.
-
             UpdatePoints();
+        }
+
+        private void HandleHoverScreenTraits(object sender, ControlBase.ControlMouseState e)
+        {
+            if (!e.IsMouseOver)
+            {
+                _hoverScreen.Hide();
+                return;
+            }
+
+            // Skip if we're on the border of the control
+            var mousePos = e.MousePosition;
+            if (mousePos.X == 0 || mousePos.Y == 0 || mousePos.X == e.Control.Width - 1 || mousePos.Y == e.Control.Height - 1)
+            {
+                _hoverScreen.Hide();
+                return;
+            }
+
+            var listBox = (ListBox)e.Control;
+
+            // Get the item the mouse is over, if there is any
+            var index = mousePos.Y - 1;
+            if (listBox.ScrollBar != null)
+                index += listBox.ScrollBar.Value;
+
+            // Hide when invalid position
+            if (listBox.Items.Count == 0 || listBox.Items.Count <= index)
+            {
+                _hoverScreen.Hide();
+                return;
+            }
+
+            var item = listBox.Items[index];
+            var trait = NpcTraits.Get.NpcTraits[((ColoredString)item).String];
+
+            var displayPosition = listBox.Position + mousePos;
+            _hoverScreen.Show(displayPosition);
+
+            // Set text
+            var coloredString = ColoredString.Parser.Parse($"[c:r f:Yellow]Trait: [c:undo]{item}\n[c:r f:Orange]Points: [c:undo]{trait.Points}\n[c:r f:Cyan]Description: [c:undo]{trait.Description}");
+            _hoverScreen.SetText(coloredString);
+
+            // If display position goes outside of the viewport, push it back inside
+            RepositionOffScreenHoverScreen();
+        }
+
+        protected void RepositionOffScreenHoverScreen()
+        {
+            // Calculate based on the fontsize
+            IScreenSurface console = _mainMenuScreen;
+            int screenBoundsX = console.Surface.Width;
+            int screenBoundsY = console.Surface.Height;
+            int containerBoundsX = (_hoverScreen.Position.X + _hoverScreen.Width) * console.FontSize.X / console.Font.GlyphWidth;
+            int containerBoundsY = (_hoverScreen.Position.Y + _hoverScreen.Height) * console.FontSize.Y / console.Font.GlyphHeight;
+
+            // We are going off the screen horizontally
+            if (containerBoundsX >= screenBoundsX)
+            {
+                int diff = containerBoundsX - screenBoundsX;
+                _hoverScreen.Position = new Point(_hoverScreen.Position.X - (int)Math.Round((decimal)diff / (console.FontSize.X / console.Font.GlyphWidth)), _hoverScreen.Position.Y);
+            }
+
+            // We are going off the screen vertically
+            if (containerBoundsY >= screenBoundsY)
+            {
+                int diff = containerBoundsY - screenBoundsY;
+                _hoverScreen.Position = new Point(_hoverScreen.Position.X, _hoverScreen.Position.Y - (int)Math.Round((decimal)diff / (console.FontSize.Y / console.Font.GlyphHeight)));
+            }
+        }
+
+        private void HoverScreenExit(object sender, ControlBase.ControlMouseState e)
+        {
+            _hoverScreen.Hide();
         }
 
         private int _availablePoints = Constants.Configuration.NpcTraitsStartingPoints;
@@ -427,8 +509,16 @@ namespace Astralis.Scenes.Screens
             Controls.Where(control => control.Name.Equals(Phase.Design.ToString()))
                 .ForEach(a => a.IsVisible = false);
 
-            // Add new controls
-            CreateControlsTraitSelectionPhase();
+            if (_selectedTraits != null)
+            {
+                Controls.Where(control => control.Name.Equals(Phase.TraitSelection.ToString()))
+                    .ForEach(a => a.IsVisible = true);
+            }
+            else
+            {
+                // Add new controls
+                CreateControlsTraitSelectionPhase();
+            }
         }
 
         private bool ValidateDesignPhase()

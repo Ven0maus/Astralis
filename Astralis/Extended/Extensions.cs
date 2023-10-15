@@ -1,12 +1,78 @@
 ﻿using SadConsole;
+using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Astralis.Extended
 {
     internal static class Extensions
     {
+        public static void PrettyPrint(this ICellSurface surface, int x, int y, ColoredString text)
+        {
+            if (string.IsNullOrWhiteSpace(text.String)) return;
+
+            int width = surface.Width;
+            int height = surface.Height;
+
+            int startPosX = x;
+            int startPosY = y;
+
+            // Split the character array into parts based on cell width
+            string[] splittedTextArray = text.String.WordWrap(width)
+                .Select(a => a.TrimEnd())
+                .Where(a => !string.IsNullOrWhiteSpace(a))
+                .ToArray();
+            int coloredIndex = 0;
+
+            int yIndex = 0;
+            for (; y < height; y++)
+            {
+                // Don't go out of bounds of the cell height
+                if (splittedTextArray.Length <= y)
+                    break;
+
+                // Print each array to the correct y index
+                // Remove spaces in the front on the newline
+                char[] textArr = splittedTextArray[y].SkipWhile(a => a == ' ').ToArray();
+
+                int index = 0;
+                foreach (char character in textArr)
+                {
+                    if (yIndex >= height)
+                    {
+                        y = height;
+                        break;
+                    }
+
+                    var realIndex = (startPosY + yIndex) * width + (startPosX + index++);
+
+                    if (!text.IgnoreGlyph)
+                        surface[realIndex].Glyph = text[coloredIndex].GlyphCharacter;
+
+                    if (!text.IgnoreBackground)
+                        surface[realIndex].Background = text[coloredIndex].Background;
+
+                    if (!text.IgnoreForeground)
+                        surface[realIndex].Foreground = text[coloredIndex].Foreground;
+
+                    if (!text.IgnoreMirror)
+                        surface[realIndex].Mirror = text[coloredIndex].Mirror;
+
+                    if (!text.IgnoreDecorators)
+                        surface[index].Decorators = text[coloredIndex].Decorators;
+
+                    coloredIndex++;
+                }
+                if (index != 0)
+                {
+                    yIndex++;
+                    coloredIndex++;
+                }
+            }
+        }
+
         public static T Random<T>(this IEnumerable<T> collection, Random random)
         {
             if (collection == null)
