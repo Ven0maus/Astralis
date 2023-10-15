@@ -17,7 +17,7 @@ namespace Astralis.GameCode.WorldGen
 
         public readonly int Width, Height;
 
-        private static readonly Dictionary<int, ObjectTile> _objectTileCache = new Dictionary<int, ObjectTile>();
+        private static readonly Dictionary<int, ObjectTile> _objectTileCache = new();
 
         public WorldChunk(byte[] biomes, BiomeGeneration.BiomeObject[] objects, int chunkWidth, int chunkHeight, Random random)
         {

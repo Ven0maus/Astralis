@@ -62,7 +62,7 @@ namespace Astralis.Extended.SadConsoleExt
 
             public override bool Equals(object obj)
             {
-                return obj is NpcCombination && Equals((NpcCombination)obj);
+                return obj is NpcCombination combination && Equals(combination);
             }
 
             public override int GetHashCode()

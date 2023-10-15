@@ -31,7 +31,7 @@ namespace Astralis.Scenes
 
         private readonly bool _isMainMenu;
 
-        public GameplayScene(bool mainMenu, string savePath = null)
+        public GameplayScene(bool mainMenu)
         {
             Instance = this;
             _isMainMenu = mainMenu;
@@ -74,8 +74,10 @@ namespace Astralis.Scenes
 
             if (!Constants.DebugMode)
             {
-                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces());
-                fadeEffect.OnFinished = GameStart;
+                var fadeEffect = new FadeEffect(TimeSpan.FromSeconds(2), FadeEffect.FadeContext.Both, FadeEffect.FadeMode.FadeIn, false, _worldScreen.GetSurfaces())
+                {
+                    OnFinished = GameStart
+                };
                 Effects.Add(fadeEffect);
             }
             else
@@ -146,6 +148,8 @@ namespace Astralis.Scenes
                 _worldScreen.Dispose();
                 _worldScreen = null;
             }
+
+            GC.SuppressFinalize(this);
         }
     }
 }

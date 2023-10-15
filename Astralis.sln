@@ -5,7 +5,12 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Astralis", "Astralis\Astralis.csproj", "{7776AF57-A91D-4D44-9070-22D1064BD778}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoiseGenerator", "NoiseGenerator\NoiseGenerator.csproj", "{22AB6899-21E6-4D23-82F6-2342355362BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoiseGenerator", "NoiseGenerator\NoiseGenerator.csproj", "{22AB6899-21E6-4D23-82F6-2342355362BA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F079398D-C8E4-46F7-BEEC-E98A88A8E182}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

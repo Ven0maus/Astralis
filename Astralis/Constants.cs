@@ -73,17 +73,12 @@ namespace Astralis
 
                 internal static Color[] GetSkinColors(Race race)
                 {
-                    switch (race)
+                    return race switch
                     {
-                        case Race.Orc:
-                            return new[] { "#4D2600".HexToColor(), "#006600".HexToColor() };
-                        case Race.Human:
-                        case Race.Elf:
-                        case Race.Dwarf:
-                            return new[] { "#e6bc98".HexToColor(), "#3b2219".HexToColor() };
-                        default:
-                            throw new NotImplementedException($"Skin color for race '{race}' not implemented.");
-                    }
+                        Race.Orc => new[] { "#4D2600".HexToColor(), "#006600".HexToColor() },
+                        Race.Human or Race.Elf or Race.Dwarf => new[] { "#e6bc98".HexToColor(), "#3b2219".HexToColor() },
+                        _ => throw new NotImplementedException($"Skin color for race '{race}' not implemented."),
+                    };
                 }
             }
         }

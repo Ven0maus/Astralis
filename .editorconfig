@@ -1,0 +1,6 @@
+﻿[*.cs]
+
+# CS0162: Unreachable code detected
+dotnet_diagnostic.CS0162.severity = suggestion
+# CA2211: Non-constant fields should not be visible
+dotnet_diagnostic.CA2211.severity = silent
