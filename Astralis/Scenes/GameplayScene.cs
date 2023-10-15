@@ -82,8 +82,8 @@ namespace Astralis.Scenes
         /// </summary>
         private void GameWorldInit()
         {
-            // Set screen location
-            Player.Position = new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2);
+            // Set screen location in middle of screen (viewport width/height)
+            Player.Position = new Point(World.Width / 2, World.Height / 2);
 
             // Add into entity manager
             EntityManager.SpawnAt(Player.Position, Player);
