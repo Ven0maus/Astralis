@@ -16,11 +16,11 @@ namespace Astralis.GameCode.Npcs
         private readonly Point _playerBasePosition;
 
         private bool _smoothMoveEnabled = true;
-        public bool SmoothMoveEnabled 
+        public bool SmoothMoveEnabled
         {
             get { return _smoothMoveEnabled; }
-            set 
-            {  
+            set
+            {
                 if (_smoothMoveEnabled != value)
                 {
                     _smoothMoveEnabled = value;

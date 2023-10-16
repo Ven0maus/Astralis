@@ -1,5 +1,4 @@
 ﻿using Astralis.Extended.SadConsoleExt;
-using Astralis.GameCode.Npcs;
 using Astralis.GameCode.WorldGen;
 using SadConsole;
 using SadConsole.Components;

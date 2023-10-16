@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Astralis.GameCode.Items.Equipables;
+using System;
 using System.Collections.Generic;
 
 namespace Astralis.GameCode.Items
@@ -12,8 +13,11 @@ namespace Astralis.GameCode.Items
         int TotalSlots { get; }
         int OpenSlots { get; }
         IReadOnlyDictionary<int, Item> Items { get; }
+        IReadOnlyDictionary<EquipableSlot, IEquipable> Equipment { get; }
         void Add(Item item);
         void Remove(Item item);
         void MoveItem(Item item, int slotIndex);
+        void Equip(EquipableSlot slot, IEquipable item);
+        void Unequip(EquipableSlot slot);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Astralis.Extended.SadConsoleExt;
 using Astralis.GameCode.Items;
+using Astralis.GameCode.Items.Equipables;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,7 +42,12 @@ namespace Astralis.GameCode.Components
         /// The items currently in the inventory.
         /// </summary>
         public IReadOnlyDictionary<int, Item> Items { get { return _items; } }
+        /// <summary>
+        /// The items currently equipped.
+        /// </summary>
+        public IReadOnlyDictionary<EquipableSlot, IEquipable> Equipment { get { return _equipment; } }
 
+        private readonly Dictionary<EquipableSlot, IEquipable> _equipment;
         private readonly Dictionary<int, Item> _items;
         private readonly bool _isPlayerInventory;
 
@@ -56,6 +62,12 @@ namespace Astralis.GameCode.Components
 
             _isPlayerInventory = isPlayerInventory;
             _items = new Dictionary<int, Item>(slots);
+            _equipment = new Dictionary<EquipableSlot, IEquipable>();
+
+            // Pre-fill the equipment slots
+            var equipableSlots = Enum.GetValues<EquipableSlot>();
+            foreach (var equipableSlot in equipableSlots)
+                _equipment.Add(equipableSlot, null);
         }
 
         /// <summary>
@@ -117,7 +129,7 @@ namespace Astralis.GameCode.Components
         /// <param name="slotIndex">The new slot to move to</param>
         public void MoveItem(Item item, int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex > TotalSlots - 1 || _items.ContainsKey(slotIndex) || 
+            if (slotIndex < 0 || slotIndex > TotalSlots - 1 || _items.ContainsKey(slotIndex) ||
                 !ContainsValue(item, out int oldSlotIndex))
             {
                 return;
@@ -127,6 +139,56 @@ namespace Astralis.GameCode.Components
             _items.Remove(oldSlotIndex);
             _items.Add(slotIndex, obj);
             OnItemMoved?.Invoke(this, new InventoryItemMovedArgs(item, oldSlotIndex, slotIndex));
+        }
+
+        /// <summary>
+        /// Equip the given item in the given slot.
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="item"></param>
+        public void Equip(EquipableSlot slot, IEquipable item)
+        {
+            if (!IsSlotValid(slot, item)) return;
+
+            // TODO: Replace existing equipped item if exists, and return it to the inventory
+            _equipment[slot] = item;
+        }
+
+        /// <summary>
+        /// Unequip the currently equipped item from the given slot.
+        /// </summary>
+        /// <param name="slot"></param>
+        public void Unequip(EquipableSlot slot)
+        {
+            // TODO: Return item to inventory if exists
+            _equipment[slot] = null;
+        }
+
+        private static bool IsSlotValid(EquipableSlot slot, IEquipable item)
+        {
+            switch (item.Type)
+            {
+                case EquipableType.Weapon:
+                    return slot == EquipableSlot.WeaponLeft || slot == EquipableSlot.WeaponRight;
+                case EquipableType.Shield:
+                    return slot == EquipableSlot.WeaponRight;
+                case EquipableType.Amulet:
+                    return slot == EquipableSlot.Amulet;
+                case EquipableType.Ring:
+                    return slot == EquipableSlot.RingLeft || slot == EquipableSlot.RingRight;
+                case EquipableType.Helmet:
+                    return slot == EquipableSlot.Helmet;
+                case EquipableType.Torso:
+                    return slot == EquipableSlot.Torso;
+                case EquipableType.Pants:
+                    return slot == EquipableSlot.Pants;
+                case EquipableType.Gloves:
+                    return slot == EquipableSlot.Gloves;
+                case EquipableType.Shoes:
+                    return slot == EquipableSlot.Shoes;
+                default:
+                    return false;
+            }
         }
 
         private bool ContainsValue(Item item, out int slotIndex)
