@@ -13,6 +13,29 @@ namespace Astralis.GameCode.Npcs
         private Direction _lastMovement;
         private bool _movementCompleted = false, _canMove = true;
 
+        private Point _playerBasePosition;
+
+        private bool _smoothMoveEnabled = true;
+        public bool SmoothMoveEnabled 
+        {
+            get { return _smoothMoveEnabled; }
+            set 
+            {  
+                if (_smoothMoveEnabled != value)
+                {
+                    _smoothMoveEnabled = value;
+                    if (_smoothMoveEnabled)
+                    {
+                        SadComponents.Add(_smoothMove);
+                    }
+                    else
+                    {
+                        SadComponents.Remove(_smoothMove);
+                    }
+                }
+            }
+        }
+
         public Player(Point worldPosition, Gender gender, Race race, Class @class, IEnumerable<NpcTrait> traits)
             : base(worldPosition, Constants.PlayerData.PlayerForwardGlyph, gender, race, @class, traits)
         {
@@ -20,11 +43,12 @@ namespace Astralis.GameCode.Npcs
             UseKeyboard = true;
             _smoothMove.MoveEnded += OnMovementCompleted;
             IsVisible = true;
+            OnWorldPositionChanged += ChangeWorldPosition;
 
             // Set starting position with no smooth movement
-            SadComponents.Remove(_smoothMove);
-            base.SetPosition(new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2));
-            SadComponents.Add(_smoothMove);
+            SmoothMoveEnabled = false;
+            base.SetPosition(_playerBasePosition = new Point(GameplayScene.Instance.World.Width / 2, GameplayScene.Instance.World.Height / 2));
+            SmoothMoveEnabled = true;
         }
 
         public override void Update(TimeSpan delta)
@@ -46,9 +70,9 @@ namespace Astralis.GameCode.Npcs
                 GameplayScene.Instance.Display.SetCameraPosition(WorldPosition);
 
                 // Set player back to the center without smooth movement
-                SadComponents.Remove(_smoothMove);
+                SmoothMoveEnabled = false;
                 Position -= _lastMovement;
-                SadComponents.Add(_smoothMove);
+                SmoothMoveEnabled = true;
 
                 _movementCompleted = false;
                 _canMove = true;
@@ -58,6 +82,23 @@ namespace Astralis.GameCode.Npcs
         private void OnMovementCompleted(object sender, EventArgs e)
         {
             _movementCompleted = true;
+        }
+
+        public void ResetCameraPosition()
+        {
+            SmoothMoveEnabled = false;
+            Position = _playerBasePosition;
+            SmoothMoveEnabled = true;
+
+            // Fix camera view
+            GameplayScene.Instance.World.Center(WorldPosition);
+            GameplayScene.Instance.Display.SetCameraPosition(WorldPosition);
+        }
+
+        private void ChangeWorldPosition(object sender, EventArgs args)
+        {
+            if (Position != _playerBasePosition)
+                ResetCameraPosition();
         }
 
         /// <summary>

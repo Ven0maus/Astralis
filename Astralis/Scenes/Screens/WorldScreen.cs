@@ -1,4 +1,5 @@
 ﻿using Astralis.Extended.SadConsoleExt;
+using Astralis.GameCode.Npcs;
 using Astralis.GameCode.WorldGen;
 using SadConsole;
 using SadConsole.Components;
@@ -208,6 +209,24 @@ namespace Astralis.Scenes.Screens
 
             // Move the viewport based on the camera position
             _world.Center(CameraPosition.X, CameraPosition.Y);
+
+            // Set player position on screen where he is on the camera
+            var player = GameplayScene.Instance.Player;
+            if (player != null)
+            {
+                if (_world.IsWorldCoordinateOnViewPort(player.WorldPosition))
+                {
+                    var screenCoordinate = _world.WorldToScreenCoordinate(player.WorldPosition);
+                    player.SmoothMoveEnabled = false;
+                    player.Position = screenCoordinate;
+                    player.SmoothMoveEnabled = true;
+                    player.IsVisible = true;
+                }
+                else
+                {
+                    player.IsVisible = false;
+                }
+            }
         }
 
         internal void SetCameraPosition(Point position)
