@@ -2,8 +2,8 @@
 
 namespace Astralis.GameCode.Items.Equipment.Equipables
 {
-    internal class Amulet : Item, IEquipable
+    internal class Amulet : Accessory
     {
-        public EquipableType Type => EquipableType.Amulet;
+        public override EquipableType Type => EquipableType.Amulet;
     }
 }

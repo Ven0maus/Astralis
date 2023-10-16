@@ -2,8 +2,8 @@
 
 namespace Astralis.GameCode.Items.Equipment.Equipables
 {
-    internal class Shield : Item, IEquipable
+    internal class Shield : Armour
     {
-        public EquipableType Type => EquipableType.Shield;
+        public override EquipableType Type => EquipableType.Shield;
     }
 }

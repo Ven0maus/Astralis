@@ -2,8 +2,8 @@
 
 namespace Astralis.GameCode.Items.Equipment.Equipables
 {
-    internal class Ring : Item, IEquipable
+    internal class Ring : Accessory
     {
-        public EquipableType Type => EquipableType.Ring;
+        public override EquipableType Type => EquipableType.Ring;
     }
 }
