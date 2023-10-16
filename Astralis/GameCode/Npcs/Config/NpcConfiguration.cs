@@ -1,4 +1,4 @@
-﻿namespace Astralis.GameCode.Npcs
+﻿namespace Astralis.GameCode.Npcs.Config
 {
     /* TODO: Adjust to only 1 character setup, auto calculated per row. So we can have diverse characters */
     internal enum NpcConfiguration

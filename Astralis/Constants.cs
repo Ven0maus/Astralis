@@ -1,5 +1,5 @@
 ﻿using Astralis.Extended;
-using Astralis.GameCode.Npcs;
+using Astralis.GameCode.Npcs.Config;
 using SadRogue.Primitives;
 using System;
 

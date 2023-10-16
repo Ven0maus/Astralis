@@ -1,4 +1,4 @@
-﻿using Astralis.GameCode.Npcs;
+﻿using Astralis.GameCode.Npcs.Config;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
 using SadConsole;

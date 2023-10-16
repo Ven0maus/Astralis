@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Astralis.GameCode.Npcs.Managers
 {
-    internal abstract class EntityManager
+    internal abstract class EntityManagerBase
     {
         /// <summary>
         /// Renderer component that the entities are using to render, hook this to a console.

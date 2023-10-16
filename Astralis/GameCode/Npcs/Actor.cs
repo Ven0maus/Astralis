@@ -1,5 +1,8 @@
 ﻿using Astralis.Configuration.Models;
 using Astralis.Extended;
+using Astralis.GameCode.Components;
+using Astralis.GameCode.Items;
+using Astralis.GameCode.Npcs.Config;
 using Astralis.Scenes;
 using SadConsole;
 using SadConsole.Components;
@@ -7,7 +10,6 @@ using SadConsole.Entities;
 using SadRogue.Primitives;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Astralis.GameCode.Npcs
@@ -15,13 +17,14 @@ namespace Astralis.GameCode.Npcs
     internal class Actor : Entity
     {
         public event EventHandler<PositionChangedArgs> OnWorldPositionChanged;
-        public ObservableCollection<NpcTrait> Traits { get; private set; }
+        public HashSet<NpcTrait> Traits { get; private set; }
         public Facing Facing { get; private set; }
         public Gender Gender { get; private init; }
         public Race Race { get; private init; }
         public Class Class { get; private init; }
         public Point WorldPosition { get; protected set; }
         public bool IsMoving { get { return _smoothMove.IsMoving; } }
+        public IInventory Inventory { get; private set; }
 
         private readonly int _forwardGlyph;
         protected readonly SmoothMove _smoothMove;
@@ -33,7 +36,11 @@ namespace Astralis.GameCode.Npcs
             Gender = gender;
             Race = race;
             Class = @class;
-            Traits = new ObservableCollection<NpcTrait>(traits ?? Enumerable.Empty<NpcTrait>());
+            Traits = (traits ?? Enumerable.Empty<NpcTrait>()).ToHashSet();
+
+            // Add inventory component
+            Inventory = new Inventory(20, this is Player);
+            SadComponents.Add((IComponent)Inventory);
 
             _forwardGlyph = forwardGlyph;
 

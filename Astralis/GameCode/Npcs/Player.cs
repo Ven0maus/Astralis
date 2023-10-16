@@ -1,4 +1,5 @@
 ﻿using Astralis.Configuration.Models;
+using Astralis.GameCode.Npcs.Config;
 using Astralis.Scenes;
 using SadConsole.Input;
 using SadRogue.Primitives;
@@ -12,8 +13,7 @@ namespace Astralis.GameCode.Npcs
         public static Player Instance { get; private set; }
         private Direction _lastMovement;
         private bool _movementCompleted = false, _canMove = true;
-
-        private Point _playerBasePosition;
+        private readonly Point _playerBasePosition;
 
         private bool _smoothMoveEnabled = true;
         public bool SmoothMoveEnabled 

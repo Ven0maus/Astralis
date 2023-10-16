@@ -10,7 +10,7 @@ namespace Astralis.GameCode.Npcs.Managers
     /// <summary>
     /// A concurrent implementation for managing entities.
     /// </summary>
-    internal class ConcurrentEntityManager : EntityManager
+    internal class ConcurrentEntityManager : EntityManagerBase
     {
         private readonly ConcurrentDictionary<Point, HashSet<Actor>> _entities = new();
         private readonly ConcurrentDictionary<Point, object> _lockObjects = new();
