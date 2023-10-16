@@ -40,7 +40,6 @@ namespace Astralis.GameCode.Npcs
 
             // Add inventory component
             Inventory = new Inventory(20, this is Player);
-            SadComponents.Add((IComponent)Inventory);
 
             _forwardGlyph = forwardGlyph;
 
