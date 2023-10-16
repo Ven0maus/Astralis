@@ -80,8 +80,7 @@ namespace Astralis.GameCode.Components
                         ScWindow.Message("Your inventory cannot hold more items!", "Ok");
                     return;
                 }
-                var nextSlotIndex = _items.Count;
-                _items.Add(nextSlotIndex, item);
+                _items.Add(GetNextAvailableSlotIndex(), item);
                 OnItemAdded?.Invoke(this, item);
             }
         }
@@ -140,6 +139,14 @@ namespace Astralis.GameCode.Components
 
             slotIndex = default;
             return false;
+        }
+
+        private int GetNextAvailableSlotIndex()
+        {
+            int nextSlotIndex = 0;
+            while (_items.ContainsKey(nextSlotIndex))
+                nextSlotIndex++;
+            return nextSlotIndex;
         }
 
         /// <inheritdoc/>
