@@ -2,7 +2,6 @@
 using Astralis.GameCode.Items;
 using Astralis.GameCode.Items.Equipables;
 using Astralis.GameCode.Npcs;
-using GoRogue.DiceNotation.Terms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,6 +30,14 @@ namespace Astralis.GameCode.Components
         /// Raised when the amount of an item in the inventory changed.
         /// </summary>
         public event EventHandler<InventoryItemChangedArgs> OnItemAmountChanged;
+        /// <summary>
+        /// Raised when an item is equipped.
+        /// </summary>
+        public event EventHandler<IEquipable> OnItemEquipped;
+        /// <summary>
+        /// Raised when an item is unequipped.
+        /// </summary>
+        public event EventHandler<IEquipable> OnItemUnequipped;
 
         /// <summary>
         /// The total amount of item slots the inventory contains.
@@ -176,6 +183,7 @@ namespace Astralis.GameCode.Components
 
             // Add stats of this item to the actor
             item.AddStats(_actor);
+            OnItemEquipped?.Invoke(this, item);
             return true;
         }
 
@@ -196,6 +204,7 @@ namespace Astralis.GameCode.Components
             Add((Item)oldEquipment);
 
             _equipment[slot] = null;
+            OnItemUnequipped?.Invoke(this, oldEquipment);
             return true;
         }
 
