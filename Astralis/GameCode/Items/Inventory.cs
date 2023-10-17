@@ -158,7 +158,7 @@ namespace Astralis.GameCode.Components
             var oldEquipment = _equipment[slot];
 
             // Check if there is space to return the item to the inventory
-            if (!HasSpaceToAddItem((Item)oldEquipment, (Item)item)) return false;
+            if (oldEquipment != null && !HasSpaceToAddItem((Item)oldEquipment, (Item)item)) return false;
 
             // Remove stats from previous item
             oldEquipment?.RemoveStats(_actor);
@@ -171,7 +171,8 @@ namespace Astralis.GameCode.Components
             _equipment[slot] = item;
 
             // Return oldEquipment back to the inventory
-            Add((Item)oldEquipment);
+            if (oldEquipment != null)
+                Add((Item)oldEquipment);
 
             // Add stats of this item to the actor
             item.AddStats(_actor);
@@ -185,7 +186,7 @@ namespace Astralis.GameCode.Components
         public bool Unequip(EquipableSlot slot)
         {
             var oldEquipment = _equipment[slot];
-            if (oldEquipment == null) return false;
+            if (oldEquipment == null) return true;
             if (!HasSpaceToAddItem((Item)oldEquipment)) return false;
 
             // Remove stats of this item from the actor
