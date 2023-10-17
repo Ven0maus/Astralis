@@ -1,6 +1,8 @@
 ﻿using Astralis.Extended.SadConsoleExt;
 using Astralis.GameCode.Items;
 using Astralis.GameCode.Items.Equipables;
+using Astralis.GameCode.Npcs;
+using GoRogue.DiceNotation.Terms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -50,17 +52,19 @@ namespace Astralis.GameCode.Components
         private readonly Dictionary<EquipableSlot, IEquipable> _equipment;
         private readonly Dictionary<int, Item> _items;
         private readonly bool _isPlayerInventory;
+        private readonly Actor _actor;
 
         /// <summary>
         /// Constructor for the inventory
         /// </summary>
         /// <param name="slots">The total slots the inventory can contain</param>
         /// <param name="isPlayerInventory">Popup messages will be shown for certain actions by the player</param>
-        public Inventory(int slots, bool isPlayerInventory = false)
+        public Inventory(Actor actor, int slots)
         {
             TotalSlots = slots;
 
-            _isPlayerInventory = isPlayerInventory;
+            _actor = actor;
+            _isPlayerInventory = actor is Player;
             _items = new Dictionary<int, Item>(slots);
             _equipment = new Dictionary<EquipableSlot, IEquipable>();
 
@@ -75,7 +79,7 @@ namespace Astralis.GameCode.Components
         /// </summary>
         /// <param name="item">Item</param>
         /// <param name="amount">Total to add</param>
-        public void Add(Item item)
+        public bool Add(Item item)
         {
             if (ContainsValue(item, out int slotIndex))
             {
@@ -90,11 +94,12 @@ namespace Astralis.GameCode.Components
                 {
                     if (_isPlayerInventory)
                         ScWindow.Message("Your inventory cannot hold more items!", "Ok");
-                    return;
+                    return false;
                 }
                 _items.Add(GetNextAvailableSlotIndex(), item);
                 OnItemAdded?.Invoke(this, item);
             }
+            return true;
         }
 
         /// <summary>
@@ -146,22 +151,51 @@ namespace Astralis.GameCode.Components
         /// </summary>
         /// <param name="slot"></param>
         /// <param name="item"></param>
-        public void Equip(EquipableSlot slot, IEquipable item)
+        public bool Equip(EquipableSlot slot, IEquipable item)
         {
-            if (!IsSlotValid(slot, item)) return;
+            if (!IsSlotValid(slot, item)) return false;
 
-            // TODO: Replace existing equipped item if exists, and return it to the inventory
+            var oldEquipment = _equipment[slot];
+
+            // Check if there is space to return the item to the inventory
+            if (!HasSpaceToAddItem((Item)oldEquipment, (Item)item)) return false;
+
+            // Remove stats from previous item
+            oldEquipment?.RemoveStats(_actor);
+
+            // Remove the new item from the inventory if its in there
+            if (ContainsValue((Item)item, out _))
+                Remove((Item)item);
+
+            // Replace existing equipped item
             _equipment[slot] = item;
+
+            // Return oldEquipment back to the inventory
+            Add((Item)oldEquipment);
+
+            // Add stats of this item to the actor
+            item.AddStats(_actor);
+            return true;
         }
 
         /// <summary>
         /// Unequip the currently equipped item from the given slot.
         /// </summary>
         /// <param name="slot"></param>
-        public void Unequip(EquipableSlot slot)
+        public bool Unequip(EquipableSlot slot)
         {
-            // TODO: Return item to inventory if exists
+            var oldEquipment = _equipment[slot];
+            if (oldEquipment == null) return false;
+            if (!HasSpaceToAddItem((Item)oldEquipment)) return false;
+
+            // Remove stats of this item from the actor
+            _equipment[slot].RemoveStats(_actor);
+
+            // Return item to inventory if exists
+            Add((Item)oldEquipment);
+
             _equipment[slot] = null;
+            return true;
         }
 
         private static bool IsSlotValid(EquipableSlot slot, IEquipable item)
@@ -189,6 +223,15 @@ namespace Astralis.GameCode.Components
                 default:
                     return false;
             }
+        }
+
+        private bool HasSpaceToAddItem(Item item, Item replaceOldItem = null)
+        {
+            if (ContainsValue(item, out _))
+                return true;
+            if (replaceOldItem != null && ContainsValue(replaceOldItem, out int slotIndex))
+                return _items[slotIndex].Amount == 1;
+            return _items.Count < TotalSlots - 1;
         }
 
         private bool ContainsValue(Item item, out int slotIndex)

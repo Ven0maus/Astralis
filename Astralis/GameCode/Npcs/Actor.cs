@@ -39,7 +39,7 @@ namespace Astralis.GameCode.Npcs
             Traits = (traits ?? Enumerable.Empty<NpcTrait>()).ToHashSet();
 
             // Add inventory component
-            Inventory = new Inventory(20, this is Player);
+            Inventory = new Inventory(this, 20);
 
             _forwardGlyph = forwardGlyph;
 
