@@ -14,10 +14,10 @@ namespace Astralis.GameCode.Items
         int OpenSlots { get; }
         IReadOnlyDictionary<int, Item> Items { get; }
         IReadOnlyDictionary<EquipableSlot, IEquipable> Equipment { get; }
-        void Add(Item item);
+        bool Add(Item item);
         void Remove(Item item);
         void MoveItem(Item item, int slotIndex);
-        void Equip(EquipableSlot slot, IEquipable item);
-        void Unequip(EquipableSlot slot);
+        bool Equip(EquipableSlot slot, IEquipable item);
+        bool Unequip(EquipableSlot slot);
     }
 }
