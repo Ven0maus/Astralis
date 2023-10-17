@@ -27,6 +27,8 @@ namespace Astralis.Scenes.Screens
         /// </summary>
         public bool MainMenuCamera { get; set; } = false;
 
+        private readonly InventoryScreen _inventoryScreen;
+
         public WorldScreen(World world, bool isMainMenu) : base(world.Width, world.Height)
         {
             Position = new Point(-1, -1);
@@ -70,6 +72,9 @@ namespace Astralis.Scenes.Screens
             // Add smooth move for player movement
             _smoothMove = new SmoothMove(TimeSpan.FromMilliseconds(Constants.PlayerData.SmoothMoveTransition));
             SadComponents.Add(_smoothMove);
+
+            _inventoryScreen = new InventoryScreen();
+            Children.Add(_inventoryScreen);
         }
 
         public void DisableSmoothMove()

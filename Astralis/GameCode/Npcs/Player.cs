@@ -1,6 +1,7 @@
 ﻿using Astralis.Configuration.Models;
 using Astralis.GameCode.Npcs.Config;
 using Astralis.Scenes;
+using Astralis.Scenes.Screens;
 using SadConsole.Input;
 using SadRogue.Primitives;
 using System;
@@ -141,6 +142,14 @@ namespace Astralis.GameCode.Npcs
                     MoveTowards(moveDirection);
                     return true;
                 }
+            }
+
+            if (keyboard.IsKeyPressed(Keys.I))
+            {
+                if (InventoryScreen.Instance.IsVisible)
+                    InventoryScreen.Instance.Hide();
+                else
+                    InventoryScreen.Instance.Show(Inventory);
             }
 
             return base.ProcessKeyboard(keyboard);
