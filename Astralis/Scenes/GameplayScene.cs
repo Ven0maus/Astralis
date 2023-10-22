@@ -1,6 +1,7 @@
 ﻿using Astralis.Extended.Effects;
 using Astralis.Extended.SadConsoleExt;
 using Astralis.GameCode.Npcs;
+using Astralis.GameCode.Npcs.Config;
 using Astralis.GameCode.Npcs.Managers;
 using Astralis.GameCode.WorldGen;
 using Astralis.Scenes.Screens;
@@ -60,6 +61,13 @@ namespace Astralis.Scenes
             Display = new WorldScreen(_world, _isMainMenu);
             Display.SadComponents.Add(EntityManager.EntityComponent);
             Children.Add(Display);
+
+            if (Constants.DebugMode)
+            {
+                // Add fake player
+                NpcFontHelper.GenerateRandomNpcGlyphs(Constants.Fonts.NpcFonts.GamedataNpcFont, amount: 1);
+                StartGame(new Player((0, 0), Gender.Male, Race.Human, Class.Warrior, null));
+            }
         }
 
         ~GameplayScene()

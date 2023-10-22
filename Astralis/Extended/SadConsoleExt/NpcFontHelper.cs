@@ -76,7 +76,7 @@ namespace Astralis.Extended.SadConsoleExt
             return Constants.Fonts.NpcFonts.PredefinedColors[Constants.Random.Next(0, Constants.Fonts.NpcFonts.PredefinedColors.Length)];
         }
 
-        public static int[] GenerateRandomNpcGlyphs(string savePath)
+        public static int[] GenerateRandomNpcGlyphs(string savePath, int amount)
         {
             if (string.IsNullOrWhiteSpace(savePath))
                 throw new ArgumentException("Param savePath cannot be null or empty.", nameof(savePath));
@@ -87,16 +87,16 @@ namespace Astralis.Extended.SadConsoleExt
             var facings = new[] { Facing.Forward, Facing.Left, Facing.Backwards };
             var uniqueCombinations = new HashSet<NpcCombination>();
             var npcGlyphs = new List<int>();
-            const int total = 76;
-            int half = total / 2;
+
             // Generate glyphs
-            for (int i = 0; i < total; i++)
+            for (int i = 0; i < amount; i++)
             {
                 var skinColor = skinColors[Constants.Random.Next(0, skinColors.Length)];
                 var hairColor = GetRandomColor();
                 var shirtColor = GetRandomColor();
                 var pantsColor = GetRandomColor();
-                var gender = i < half ? Gender.Male : Gender.Female;
+                var randValue = Constants.Random.Next(0, 2);
+                var gender = randValue == 0 ? Gender.Male : Gender.Female;
 
                 // Make sure they are all unique combinations
                 var combination = new NpcCombination(gender, skinColor, hairColor, shirtColor, pantsColor);
@@ -106,7 +106,7 @@ namespace Astralis.Extended.SadConsoleExt
                     hairColor = GetRandomColor();
                     shirtColor = GetRandomColor();
                     pantsColor = GetRandomColor();
-                    gender = i < half ? Gender.Male : Gender.Female;
+                    gender = randValue == 0 ? Gender.Male : Gender.Female;
 
                     combination = new NpcCombination(gender, skinColor, hairColor, shirtColor, pantsColor);
                 }

@@ -15,7 +15,6 @@ namespace Astralis.Scenes.Screens
         private Point startDragPos;
         private bool _isDragging = false;
 
-        private readonly FontWindow _fontWindow;
         private readonly SmoothMove _smoothMove;
 
         public Point WorldSourceFontSize { get { return Font.GetFontSize(IFont.Sizes.One); } }
@@ -52,13 +51,6 @@ namespace Astralis.Scenes.Screens
                 world.ResizeViewport(newSize.X, newSize.Y);
                 Resize(newSize.X, newSize.Y, false);
             }
-
-            _fontWindow = new FontWindow(Font);
-            Children.Add(_fontWindow);
-
-            _fontWindow.OnClick += (sender, index) => System.Console.WriteLine($"Char ({index}) '{(char)index}'");
-            _fontWindow.DrawFontSurface();
-            _fontWindow.IsVisible = Constants.DebugMode && !MainMenuCamera;
 
             // Setup world object
             _world = world;
@@ -148,10 +140,6 @@ namespace Astralis.Scenes.Screens
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
             if (MainMenuCamera) return false;
-            if (keyboard.IsKeyPressed(Keys.P))
-            {
-                _fontWindow.IsVisible = !_fontWindow.IsVisible;
-            }
 
             foreach (var entity in GameplayScene.Instance.EntityManager.EntityComponent)
             {
