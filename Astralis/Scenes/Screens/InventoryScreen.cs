@@ -115,7 +115,15 @@ namespace Astralis.Scenes.Screens
 
         private void AdjustItemIcon()
         {
-            // TODO
+            if (Item == null)
+            {
+                Surface.Clear();
+            }
+            else
+            {
+                // TODO
+
+            }
         }
     }
 }
