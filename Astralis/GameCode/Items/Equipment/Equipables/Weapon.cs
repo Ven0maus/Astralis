@@ -3,18 +3,18 @@ using Astralis.GameCode.Npcs;
 
 namespace Astralis.GameCode.Items.Equipment.Equipables
 {
-    internal class Weapon : Item, IEquipable
+    internal class Weapon : Equipable
     {
-        public EquipableType Type => EquipableType.Weapon;
+        public override EquipableType Type => EquipableType.Weapon;
 
-        public void AddStats(Actor actor)
+        public override void AddStats(Actor actor)
         {
-
+            // TODO:
         }
 
-        public void RemoveStats(Actor actor)
+        public override void RemoveStats(Actor actor)
         {
-
+            // TODO:
         }
     }
 }

@@ -210,29 +210,19 @@ namespace Astralis.GameCode.Components
 
         private static bool IsSlotValid(EquipableSlot slot, IEquipable item)
         {
-            switch (item.Type)
+            return item.Type switch
             {
-                case EquipableType.Weapon:
-                    return slot == EquipableSlot.WeaponLeft || slot == EquipableSlot.WeaponRight;
-                case EquipableType.Shield:
-                    return slot == EquipableSlot.WeaponRight;
-                case EquipableType.Amulet:
-                    return slot == EquipableSlot.Amulet;
-                case EquipableType.Ring:
-                    return slot == EquipableSlot.RingLeft || slot == EquipableSlot.RingRight;
-                case EquipableType.Helmet:
-                    return slot == EquipableSlot.Helmet;
-                case EquipableType.Torso:
-                    return slot == EquipableSlot.Torso;
-                case EquipableType.Pants:
-                    return slot == EquipableSlot.Pants;
-                case EquipableType.Gloves:
-                    return slot == EquipableSlot.Gloves;
-                case EquipableType.Shoes:
-                    return slot == EquipableSlot.Shoes;
-                default:
-                    return false;
-            }
+                EquipableType.Weapon => slot == EquipableSlot.WeaponLeft || slot == EquipableSlot.WeaponRight,
+                EquipableType.Shield => slot == EquipableSlot.WeaponRight,
+                EquipableType.Amulet => slot == EquipableSlot.Amulet,
+                EquipableType.Ring => slot == EquipableSlot.RingLeft || slot == EquipableSlot.RingRight,
+                EquipableType.Helmet => slot == EquipableSlot.Helmet,
+                EquipableType.Torso => slot == EquipableSlot.Torso,
+                EquipableType.Pants => slot == EquipableSlot.Pants,
+                EquipableType.Gloves => slot == EquipableSlot.Gloves,
+                EquipableType.Shoes => slot == EquipableSlot.Shoes,
+                _ => false,
+            };
         }
 
         private bool HasSpaceToAddItem(Item item, Item replaceOldItem = null)

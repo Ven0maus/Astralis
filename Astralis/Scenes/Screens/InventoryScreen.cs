@@ -1,4 +1,6 @@
 ﻿using Astralis.GameCode.Items;
+using Astralis.GameCode.Items.Equipables;
+using Astralis.GameCode.Items.Equipment;
 using Astralis.GameCode.Npcs;
 using SadConsole;
 using SadConsole.Input;
@@ -17,8 +19,8 @@ namespace Astralis.Scenes.Screens
         public static InventoryScreen Instance { get; private set; }
         private IInventory Inventory { get { return Player.Instance.Inventory; } }
 
-        private readonly List<Slot> _inventorySlots;
-        private readonly List<Slot> _equipmentSlots;
+        private readonly List<Slot<Item>> _inventorySlots;
+        private readonly Dictionary<EquipableSlot, Slot<Equipable>> _equipmentSlots;
 
         public InventoryScreen() : base(34, 26)
         {
@@ -34,10 +36,10 @@ namespace Astralis.Scenes.Screens
             var title2 = "Inventory";
             Surface.Print((Width / 2 + Width / 4) - title2.Length / 2, 1, title2, Color.LightGoldenrodYellow);
 
-            _inventorySlots = new List<Slot>();
+            _inventorySlots = new List<Slot<Item>>();
             InitSlotSurfaces(_slotsPerRow, _totalRows, fontSize: 48, originalFontSize: 16);
 
-            _equipmentSlots = new List<Slot>();
+            _equipmentSlots = new Dictionary<EquipableSlot, Slot<Equipable>>();
             InitEquipmentSurfaces();
 
             Surface.DefaultBackground = Color.Transparent;
@@ -87,7 +89,7 @@ namespace Astralis.Scenes.Screens
             {
                 for (int y = 0; y < totalY * 2; y += 2)
                 {
-                    var slot = new Slot(fontSize, false, count)
+                    var slot = new Slot<Item>(fontSize, false, count)
                     {
                         Position = new Point(
                             (Width / 2 * originalFontSize) + x * sizeMultiplier + originalFontSize / 2,
@@ -103,7 +105,7 @@ namespace Astralis.Scenes.Screens
             // Add main bar, 8 slots at the bottom
             for (int i=0; i < 8; i++)
             {
-                var slot = new Slot(fontSize, true, i)
+                var slot = new Slot<Item>(fontSize, true, i)
                 {
                     Position = new Point(
                         (originalFontSize + (originalFontSize / 2)) + 2 * i * sizeMultiplier,
@@ -116,10 +118,11 @@ namespace Astralis.Scenes.Screens
         }
     }
 
-    internal class Slot : ScreenSurface
+    internal class Slot<T> : ScreenSurface
+        where T : Item
     {
-        private Item _item;
-        public Item Item { get { return _item; } set { _item = value; AdjustItemIcon(); } }
+        private T _item;
+        public T Item { get { return _item; } set { _item = value; AdjustItemIcon(); } }
 
         public int SlotIndex { get; private set; }
         public bool MainSlot { get; private set; }
