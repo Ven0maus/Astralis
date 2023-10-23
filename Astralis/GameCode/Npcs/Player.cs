@@ -149,7 +149,7 @@ namespace Astralis.GameCode.Npcs
                 if (InventoryScreen.Instance.IsVisible)
                     InventoryScreen.Instance.Hide();
                 else
-                    InventoryScreen.Instance.Show(Inventory);
+                    InventoryScreen.Instance.Show();
             }
 
             return base.ProcessKeyboard(keyboard);

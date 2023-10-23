@@ -1,4 +1,5 @@
 ﻿using Astralis.GameCode.Items;
+using Astralis.GameCode.Npcs;
 using SadConsole;
 using SadConsole.Input;
 using SadConsole.UI;
@@ -10,12 +11,16 @@ namespace Astralis.Scenes.Screens
 {
     internal class InventoryScreen : ControlsConsole
     {
-        public static InventoryScreen Instance { get; private set; }
-        private const int _slotsPerRow = 5;
-        private readonly List<Slot> _slots;
-        private IInventory _inventory;
+        private const int _slotsPerRow = 4;
+        private const int _totalRows = 4;
 
-        public InventoryScreen() : base(42, 27)
+        public static InventoryScreen Instance { get; private set; }
+        private IInventory Inventory { get { return Player.Instance.Inventory; } }
+
+        private readonly List<Slot> _inventorySlots;
+        private readonly List<Slot> _equipmentSlots;
+
+        public InventoryScreen() : base(34, 26)
         {
             Instance = this;
             Position = new Point(Constants.ScreenWidth / 2 - Width / 2, Constants.ScreenHeight / 2 - Height / 2);
@@ -29,8 +34,11 @@ namespace Astralis.Scenes.Screens
             var title2 = "Inventory";
             Surface.Print((Width / 2 + Width / 4) - title2.Length / 2, 1, title2, Color.LightGoldenrodYellow);
 
-            _slots = new List<Slot>();
-            InitSlotSurfaces(_slotsPerRow, _slotsPerRow, fontSize: 48, originalFontSize: 16);
+            _inventorySlots = new List<Slot>();
+            InitSlotSurfaces(_slotsPerRow, _totalRows, fontSize: 48, originalFontSize: 16);
+
+            _equipmentSlots = new List<Slot>();
+            InitEquipmentSurfaces();
 
             Surface.DefaultBackground = Color.Transparent;
             for (int x = 0; x < Width; x++)
@@ -40,19 +48,14 @@ namespace Astralis.Scenes.Screens
             IsVisible = false;
         }
 
-        public void Show(IInventory inventory)
+        public void Show()
         {
-            _inventory = inventory;
-            AdjustSlots();
             IsVisible = true;
             IsFocused = true;
         }
 
         public void Hide()
         {
-            _inventory = null;
-            foreach (var slot in _slots)
-                slot.Item = null;
             IsVisible = false;
             IsFocused = false;
             Parent.IsFocused = true;
@@ -68,15 +71,9 @@ namespace Astralis.Scenes.Screens
             return base.ProcessKeyboard(keyboard);
         }
 
-        /// <summary>
-        /// Sets the items in the slots based on the inventory set
-        /// </summary>
-        /// <returns></returns>
-        private void AdjustSlots()
+        private void InitEquipmentSurfaces()
         {
-            int slots = 0;
-            foreach (var item in _inventory.Items)
-                _slots[slots].Item = item.Value;
+            // TODO
         }
 
         private void InitSlotSurfaces(int totalX, int totalY, int fontSize, int originalFontSize)
@@ -84,20 +81,37 @@ namespace Astralis.Scenes.Screens
             var sizePerSlot = fontSize / originalFontSize;
             var sizeDiff = (int)Math.Floor((double)sizePerSlot / 2) + 1;
             var sizeMultiplier = originalFontSize * sizeDiff;
+
+            int count = 0;
             for (int x = 0; x < totalX * 2; x += 2)
             {
                 for (int y = 0; y < totalY * 2; y += 2)
                 {
-                    var slot = new Slot(fontSize)
+                    var slot = new Slot(fontSize, false, count)
                     {
                         Position = new Point(
-                            (Width / 2 * originalFontSize) + x * sizeMultiplier,
+                            (Width / 2 * originalFontSize) + x * sizeMultiplier + originalFontSize / 2,
                             (originalFontSize * 3) + y * sizeMultiplier),
                         UsePixelPositioning = true
                     };
-                    _slots.Add(slot);
+                    _inventorySlots.Add(slot);
                     Children.Add(slot);
+                    count++;
                 }
+            }
+
+            // Add main bar, 8 slots at the bottom
+            for (int i=0; i < 8; i++)
+            {
+                var slot = new Slot(fontSize, true, i)
+                {
+                    Position = new Point(
+                        (originalFontSize + (originalFontSize / 2)) + 2 * i * sizeMultiplier,
+                        (Height * originalFontSize) - ((int)(originalFontSize * 4.5f))),
+                    UsePixelPositioning = true
+                };
+                _inventorySlots.Add(slot);
+                Children.Add(slot);
             }
         }
     }
@@ -107,10 +121,15 @@ namespace Astralis.Scenes.Screens
         private Item _item;
         public Item Item { get { return _item; } set { _item = value; AdjustItemIcon(); } }
 
-        public Slot(int fontSize) : base(1, 1)
+        public int SlotIndex { get; private set; }
+        public bool MainSlot { get; private set; }
+
+        public Slot(int fontSize, bool mainSlot, int slotIndex) : base(1, 1)
         {
             FontSize = (fontSize, fontSize);
-            Surface.DefaultBackground = Color.Lerp(Color.Red, Color.Transparent, 0.25f);
+            Surface.DefaultBackground = Color.Lerp(Color.Lerp(Color.Black, Color.Gray, 0.45f), Color.Transparent, 0.25f);
+            MainSlot = mainSlot;
+            SlotIndex = slotIndex;
         }
 
         private void AdjustItemIcon()
